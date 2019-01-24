@@ -327,7 +327,7 @@
     <value>Nombre total de fichiers du dossier sélectionné</value>
   </data>
   <data name="TotalFileSize" xml:space="preserve">
-    <value>Taille réelle totale des fichiers du dossier sélectionné</value>
+    <value>Taille totale des fichiers du dossier sélectionné</value>
   </data>
   <data name="TotalFolders" xml:space="preserve">
     <value>Nombre total de dossiers du dossier sélectionné</value>

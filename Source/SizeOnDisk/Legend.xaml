@@ -9,7 +9,7 @@
         ResizeMode="NoResize"
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
-        WindowStyle="ToolWindow"
+        WindowStyle="SingleBorderWindow"
         DataContext="{x:Static this:Localization.LegendDocument}"
         Width="180"
         ShowInTaskbar="False">

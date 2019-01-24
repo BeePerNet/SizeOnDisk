@@ -36,7 +36,7 @@ namespace SizeOnDisk
         /// </summary>
         /// <param name="sender">Object the sent the event.</param>
         /// <param name="e">Navigation events arguments.</param>
-        private void hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        private void _Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             if (e.Uri != null && string.IsNullOrEmpty(e.Uri.OriginalString) == false)
             {
@@ -181,7 +181,7 @@ namespace SizeOnDisk
             }
 
             // if the attribute wasn't found or it did not have a value, then look in an xml resource.
-            if (result == string.Empty)
+            if (string.IsNullOrEmpty(result))
             {
                 // if that fails, try to get it from a resource.
                 result = GetLogicalResourceString(xpathQuery);

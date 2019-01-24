@@ -5,17 +5,16 @@ using System.Windows.Input;
 
 namespace SizeOnDisk.UI
 {
-    public class DataGridRollbackOnUnfocusedBehaviour
+    public static class DataGridRollbackOnUnfocusedBehaviour
     {
         #region DataGridRollbackOnUnfocusedBehaviour
 
-        public static bool GetDataGridRollbackOnUnfocused(DataGrid datagrid)
+        public static bool GetDataGridRollbackOnUnfocused(DependencyObject datagrid)
         {
             return (bool)datagrid.GetValue(DataGridRollbackOnUnfocusedProperty);
         }
 
-        public static void SetDataGridRollbackOnUnfocused(
-         DataGrid datagrid, bool value)
+        public static void SetDataGridRollbackOnUnfocused(DependencyObject datagrid, bool value)
         {
             datagrid.SetValue(DataGridRollbackOnUnfocusedProperty, value);
         }
@@ -52,7 +51,6 @@ namespace SizeOnDisk.UI
         static void RollbackDataGridOnLostFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             DataGrid senderDatagrid = sender as DataGrid;
-
             if (senderDatagrid == null)
                 return;
 
@@ -88,7 +86,7 @@ namespace SizeOnDisk.UI
 
             if (element is ComboBoxItem) //since ComboBoxItem.Parent is null, we must pass through ItemsPresenter in order to get the parent ComboBox
             {
-                ItemsPresenter parentItemsPresenter = Helper.FindParentControl<ItemsPresenter>((element as ComboBoxItem));
+                ItemsPresenter parentItemsPresenter = Helper.FindParentControl<ItemsPresenter>(element as ComboBoxItem);
                 ComboBox combobox = parentItemsPresenter.TemplatedParent as ComboBox;
                 childElement = combobox;
             }

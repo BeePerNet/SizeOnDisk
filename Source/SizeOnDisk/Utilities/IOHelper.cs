@@ -53,14 +53,14 @@ namespace SizeOnDisk.Utilities
             [DllImport("shell32.dll", CharSet = CharSet.Auto)]
             private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 
-            private static void DemandDirectoryPermission(string fullDirectoryPath, FileIOPermissionAccess access)
+            /*private static void DemandDirectoryPermission(string fullDirectoryPath, FileIOPermissionAccess access)
             {
                 if (!(fullDirectoryPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal) | fullDirectoryPath.EndsWith(Path.AltDirectorySeparatorChar.ToString(), StringComparison.Ordinal)))
                 {
                     fullDirectoryPath = fullDirectoryPath + Path.DirectorySeparatorChar;
                 }
                 new FileIOPermission(access, fullDirectoryPath).Demand();
-            }
+            }*/
 
             private static SHFILEOPSTRUCT GetShellOperationInfo(FileOperationType OperationType, FileOperationFlags OperationFlags, string[] SourcePath)
             {
@@ -84,10 +84,12 @@ namespace SizeOnDisk.Utilities
 
             private static SHFILEOPSTRUCT GetShellOperationInfo(FileOperationType OperationType, FileOperationFlags OperationFlags, string[] SourcePaths, string TargetPath)
             {
-                SHFILEOPSTRUCT shfileopstruct2 = new SHFILEOPSTRUCT();
-                shfileopstruct2.wFunc = OperationType;
-                shfileopstruct2.fFlags = OperationFlags;
-                shfileopstruct2.pFrom = GetShellPath(SourcePaths);
+                SHFILEOPSTRUCT shfileopstruct2 = new SHFILEOPSTRUCT
+                {
+                    wFunc = OperationType,
+                    fFlags = OperationFlags,
+                    pFrom = GetShellPath(SourcePaths)
+                };
                 if (TargetPath == null)
                 {
                     shfileopstruct2.pTo = null;
@@ -394,7 +396,7 @@ namespace SizeOnDisk.Utilities
                 }
                 else if (num == 2)
                     return;
-                else if (num != 0) throw new Win32Exception(num);
+                else if (num != 0) //throw new Win32Exception(num);
                 return;
             }
         }
@@ -406,8 +408,7 @@ namespace SizeOnDisk.Utilities
         /// <param name="data">The file attribute structure to fill</param>
         public static void GetCompressedFileSize(string filename, ref IOHelper.WIN32_FILE_ATTRIBUTE_DATA data)
         {
-            uint hosize;
-            uint losize = SafeNativeMethods.GetCompressedFileSize(filename, out hosize);
+            uint losize = SafeNativeMethods.GetCompressedFileSize(filename, out uint hosize);
             int error = Marshal.GetLastWin32Error();
             if (hosize == 0 && losize == 0xFFFFFFFF && error != 0)
                 throw new Win32Exception(error);
@@ -418,8 +419,7 @@ namespace SizeOnDisk.Utilities
         public static uint GetClusterSize(string path)
         {
             string drive = System.IO.Path.GetPathRoot(path);
-            uint dummy, sectorsPerCluster, bytesPerSector;
-            bool result = SafeNativeMethods.GetDiskFreeSpace(drive, out sectorsPerCluster, out bytesPerSector, out dummy, out dummy);
+            bool result = SafeNativeMethods.GetDiskFreeSpace(drive, out uint sectorsPerCluster, out uint bytesPerSector, out uint dummy, out dummy);
             if (!result) throw new Win32Exception(Marshal.GetLastWin32Error());
             return sectorsPerCluster * bytesPerSector;
         }

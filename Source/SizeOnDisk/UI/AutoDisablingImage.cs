@@ -31,7 +31,7 @@ namespace SizeOnDisk.UI
                 AutoDisablingImage autoGreyScaleImg = source as AutoDisablingImage;
                 if (autoGreyScaleImg != null)
                 {
-                    if (!Convert.ToBoolean(args.NewValue))
+                    if (!(args.NewValue as bool? ?? false))
                     {
                         // Get the source bitmap
                         var bitmapImage = new BitmapImage(new Uri(autoGreyScaleImg.Source.ToString()));

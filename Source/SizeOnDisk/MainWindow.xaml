@@ -150,7 +150,7 @@
             </Grid.ColumnDefinitions>
             <TreeView Name="treeView"
                       ItemsSource="{Binding Folders}"
-                      SelectedItemChanged="treeView_SelectedItemChanged"
+                      SelectedItemChanged="_TreeView_SelectedItemChanged"
                       VirtualizingStackPanel.IsVirtualizing="True"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ContextMenu="{StaticResource VMContextMenu}"
@@ -179,7 +179,7 @@
                       Name="Listing"
                       DataContext="{Binding ElementName=treeView, Path=SelectedItem}"
                       ItemsSource="{Binding Childs}"
-                      MouseDoubleClick="datagrid_MouseDoubleClick"
+                      MouseDoubleClick="_Datagrid_MouseDoubleClick"
                       AutoGenerateColumns="False"
                       HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                       VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"

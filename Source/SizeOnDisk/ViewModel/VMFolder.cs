@@ -15,9 +15,8 @@ namespace SizeOnDisk.ViewModel
     {
         #region fields
 
-        protected NotifyCollection<VMFile> _InternalChilds = new NotifyCollection<VMFile>();
-        protected Collection<VMFolder> _InternalFolders;
-        protected Dispatcher _Dispatcher;
+        private readonly Dispatcher _Dispatcher;
+        protected Dispatcher Dispatcher { get => _Dispatcher; }
 
         #endregion fields
 
@@ -35,15 +34,9 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public Collection<VMFile> Childs
-        {
-            get { return _InternalChilds; }
-        }
+        public NotifyCollection<VMFile> Childs { get; } = new NotifyCollection<VMFile>();
 
-        public Collection<VMFolder> Folders
-        {
-            get { return _InternalFolders; }
-        }
+        public Collection<VMFolder> Folders { get; protected set; }
 
         public override bool IsFile
         {
@@ -78,11 +71,11 @@ namespace SizeOnDisk.ViewModel
                 if (value != base.IsSelected)
                 {
                     base.IsSelected = value;
-                    if (value && this._InternalChilds != null)
+                    if (value && this.Childs != null)
                     {
                         new Thread(() =>
                         {
-                            _InternalChilds.ToList().ForEach((T) => T.RefreshOnView());
+                            this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                             //Parallel.ForEach(_InternalChilds, (T) => T.RefreshOnView());
                         }).Start();
                     }
@@ -96,27 +89,27 @@ namespace SizeOnDisk.ViewModel
 
         internal void RemoveChild(VMFile file)
         {
-            this._InternalChilds.Remove(file);
+            this.Childs.Remove(file);
 
             this.RefreshLists();
         }
 
         private void RefreshLists()
         {
-            _Dispatcher.BeginInvoke((Action)(() =>
+            Dispatcher.BeginInvoke((Action)(() =>
             {
-                this._InternalChilds.OnCollectionChanged();
+                this.Childs.OnCollectionChanged();
             }));
-            this._InternalFolders = new Collection<VMFolder>(_InternalChilds.OfType<VMFolder>().OrderBy(T => T.Name).ToList());
+            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().OrderBy(T => T.Name).ToList());
             this.OnPropertyChanged("Folders");
         }
 
         public void RefreshCount()
         {
-            this.FileCount = this._InternalChilds.Sum(T => T.FileCount);
+            this.FileCount = this.Childs.Sum(T => T.FileCount);
             this.FolderCount = this.Folders.Sum(T => T.FolderCount) + this.Folders.Count;
-            this.DiskSize = _InternalChilds.Sum(T => T.DiskSize);
-            this.FileSize = _InternalChilds.Sum(T => T.FileSize);
+            this.DiskSize = this.Childs.Sum(T => T.DiskSize);
+            this.FileSize = this.Childs.Sum(T => T.FileSize);
         }
 
         public void RefreshParents()
@@ -137,21 +130,25 @@ namespace SizeOnDisk.ViewModel
             {
                 string[] childs;
                 childs = Directory.GetDirectories(this.Path);
-                VMFolder.RefreshChildsList<VMFolder>(childs, _InternalChilds, (p, q) => new VMFolder(this, p, q, this._Dispatcher));
+                VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.Dispatcher));
                 childs = Directory.GetFiles(this.Path);
-                VMFolder.RefreshChildsList<VMFile>(childs, _InternalChilds, (p, q) => new VMFile(this, p, q));
+                VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));
 
                 this.RefreshLists();
 
                 if (this.IsSelected)
                 {
                     //Parallel.ForEach(_InternalChilds, parallelOptions, (T) => T.RefreshOnView());
-                    _InternalChilds.ToList().ForEach((T) => T.RefreshOnView());
+                    this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                 }
 
-                Parallel.ForEach(_InternalChilds, parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
+                Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
 
                 this.RefreshCount();
+            }
+            catch (DirectoryNotFoundException)
+            {
+
             }
             catch (OperationCanceledException)
             {

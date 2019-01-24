@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
 
@@ -23,7 +24,7 @@ namespace SizeOnDisk.Utilities
 
         public static void ShowException(string startText, Exception ex)
         {
-            ExceptionBox.ShowException(string.Format("{0}{1}{2}", startText, Environment.NewLine, new TextExceptionFormatter(ex).Format()));
+            ExceptionBox.ShowException(string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", startText, Environment.NewLine, new TextExceptionFormatter(ex).Format()));
         }
 
         private static void ShowException(string text)

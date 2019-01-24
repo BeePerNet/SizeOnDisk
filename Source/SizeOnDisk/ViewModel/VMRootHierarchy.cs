@@ -33,9 +33,9 @@ namespace SizeOnDisk.ViewModel
 
         public void AddRootFolder(string path)
         {
-            VMRootFolder newFolder = new VMRootFolder(this, path, path, this._Dispatcher);
-            this._InternalChilds.Add(newFolder);
-            this._InternalFolders = new Collection<VMFolder>(this._InternalChilds.Cast<VMFolder>().ToList());
+            VMRootFolder newFolder = new VMRootFolder(this, path, path, this.Dispatcher);
+            this.Childs.Add(newFolder);
+            this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
             this.OnPropertyChanged("Folders");
             newFolder.RefreshAsync();
         }
@@ -45,15 +45,15 @@ namespace SizeOnDisk.ViewModel
             if (folder == null)
                 throw new ArgumentNullException("folder", "Can not remove null item");
             this.SelectedRootFolder = null;
-            this._InternalChilds.Remove(folder);
-            this._InternalFolders = new Collection<VMFolder>(this._InternalChilds.Cast<VMFolder>().ToList());
+            this.Childs.Remove(folder);
+            this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
             this.OnPropertyChanged("Folders");
             folder.Dispose();
         }
 
         public void StopAsync()
         {
-            foreach (VMRootFolder folder in this._InternalChilds)
+            foreach (VMRootFolder folder in this.Childs)
                 folder.StopAsync();
         }
 
@@ -65,7 +65,7 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return this._InternalChilds.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
+                return this.Childs.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
             }
         }
 
@@ -134,7 +134,7 @@ namespace SizeOnDisk.ViewModel
             e.Handled = true;
             if (e.Command == RefreshAllCommand)
             {
-                foreach (VMRootFolder folder in this._InternalChilds)
+                foreach (VMRootFolder folder in this.Childs)
                     folder.RefreshAsync();
             }
             else

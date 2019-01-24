@@ -27,13 +27,6 @@ namespace SizeOnDisk.UI
             }
         }
 
-        private string GetText()
-        {
-            return null;
-        }
-
-
-
         // Properties 
         public new string Text
         {
@@ -45,7 +38,7 @@ namespace SizeOnDisk.UI
                 }
                 else
                 {
-                    return this.GetText();
+                    return _text;
                 }
             }
             set

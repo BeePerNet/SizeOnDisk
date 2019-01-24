@@ -5,13 +5,14 @@ using System.Text;
 using System.IO;
 using SizeOnDisk.Utilities;
 using Microsoft.Win32;
+using System.Globalization;
 
 namespace SizeOnDisk.ViewModel
 {
     public class VMFileAttributes
     {
-        private string _FileType = null;
-        private FileAttributes _Attributes;
+        private readonly string _FileType = null;
+        private readonly FileAttributes _Attributes;
 
         private DateTime? _CreationTime;
         private DateTime? _LastAccessTime;
@@ -107,7 +108,7 @@ namespace SizeOnDisk.ViewModel
                     // Couldn't find the file type in the registry. Display some default.
                     if (string.IsNullOrEmpty(fileType))
                     {
-                        fileType = String.Format(Localization.FileTypeUnkown, extension.ToUpper().Replace(".", ""));
+                        fileType = String.Format(CultureInfo.CurrentCulture, Localization.FileTypeUnkown, extension.Replace(".", ""));
                     }
                 }
 

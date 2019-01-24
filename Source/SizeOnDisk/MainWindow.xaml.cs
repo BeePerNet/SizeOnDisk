@@ -64,7 +64,7 @@ namespace SizeOnDisk
         private VMRootHierarchy _RootHierarchy;
         private Legend _Legend;
 
-        private void datagrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void _Datagrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DataGrid datagrid = sender as DataGrid;
             if (datagrid.SelectedItem != null && datagrid.SelectedItem is VMFolder)
@@ -78,7 +78,7 @@ namespace SizeOnDisk
         /// <summary>
         /// When selection changed, scroll to the first item of the list
         /// </summary>
-        private void treeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void _TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             ICollectionView view = CollectionViewSource.GetDefaultView(this.Listing.ItemsSource);
             IEditableCollectionView collection = view as IEditableCollectionView;
@@ -103,8 +103,10 @@ namespace SizeOnDisk
         {
             if (_Legend == null || !_Legend.IsVisible)
             {
-                _Legend = new Legend();
-                _Legend.Owner = this;
+                _Legend = new Legend
+                {
+                    Owner = this
+                };
                 _Legend.Show();
             }
             else
@@ -116,8 +118,10 @@ namespace SizeOnDisk
 
         private void ButtonOptions_Click(object sender, RoutedEventArgs e)
         {
-            WindowOptions options = new WindowOptions(this);
-            options.Owner = this;
+            WindowOptions options = new WindowOptions(this)
+            {
+                Owner = this
+            };
             options.ShowDialog();
         }
 

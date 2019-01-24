@@ -13,6 +13,7 @@
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
+        WindowStyle="SingleBorderWindow"
         ShowInTaskbar="False"
         Loaded="Window_Loaded">
     <Window.Resources>

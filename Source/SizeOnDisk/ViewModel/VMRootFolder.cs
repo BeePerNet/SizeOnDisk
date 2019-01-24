@@ -18,7 +18,7 @@ namespace SizeOnDisk.ViewModel
         long _HardDriveUsage;
         long _HardDriveFree;
         TaskExecutionState _ExecutionState = TaskExecutionState.Ready;
-        private string _HardDrivePath;
+        private readonly string _HardDrivePath;
 
         #endregion fields
 
@@ -120,8 +120,10 @@ namespace SizeOnDisk.ViewModel
         {
             if (_Timer == null)
             {
-                _Timer = new DispatcherTimer(DispatcherPriority.DataBind);
-                _Timer.Interval = new TimeSpan(0, 0, 1);
+                _Timer = new DispatcherTimer(DispatcherPriority.DataBind)
+                {
+                    Interval = new TimeSpan(0, 0, 1)
+                };
                 _Timer.Tick += new EventHandler(_timer_Tick);
             }
             this.StopAsync();
@@ -149,7 +151,7 @@ namespace SizeOnDisk.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    _Dispatcher.Invoke((ThreadStart)delegate
+                    Dispatcher.Invoke((ThreadStart)delegate
                     {
                         ExceptionBox.ShowException(ex);
                     });
@@ -183,6 +185,7 @@ namespace SizeOnDisk.ViewModel
             {
                 _CancellationTokenSource.Cancel();
             }
+            this.ExecutionState = TaskExecutionState.Canceled;
         }
 
         public TaskExecutionState ExecutionState
