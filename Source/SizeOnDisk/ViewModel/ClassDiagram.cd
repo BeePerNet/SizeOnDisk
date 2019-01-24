@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SizeOnDisk.ViewModel.NotifyCollection&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\NotifyCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SizeOnDisk.ViewModel.VMRootHierarchy" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAACAAAAAAAAAQABAAgA1BIAAAAAAACBAAAgACAAAIA=</HashCode>
+      <FileName>ViewModel\VMRootHierarchy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SizeOnDisk.ViewModel.VMFile" Collapsed="true">
+    <Position X="3.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AADQAAAAAABAUAJsAAAEYBSRhEGFAAECAEQAAAI4oQA=</HashCode>
+      <FileName>ViewModel\VMFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SizeOnDisk.ViewModel.VMFileAttributes" Collapsed="true">
+    <Position X="6.25" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAxAgAAIAAAAAEACBAAAAAQEAAAAAACAAAAgAAAAAA=</HashCode>
+      <FileName>ViewModel\VMFileAttributes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SizeOnDisk.ViewModel.VMFolder" Collapsed="true">
+    <Position X="3.25" Y="2.25" Width="1.5" />
+    <AssociationLine Name="Childs" Type="SizeOnDisk.ViewModel.VMFile">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.327" Y="0.341" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Folders" Type="SizeOnDisk.ViewModel.VMFolder" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.625" Y="2.25" />
+        <Point X="3.625" Y="1.899" />
+        <Point X="2.875" Y="1.899" />
+        <Point X="2.875" Y="2.701" />
+        <Point X="3.25" Y="2.701" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.11" Y="0.393" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AQAAAQAAAIBAEIIIAAAAAAAAAgKEAAAASAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\VMFolder.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Childs" />
+      <Property Name="Folders" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SizeOnDisk.ViewModel.VMRootFolder" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIACCAABCBIAAAACAgAAICAAAAACAAAIAQAASAAAEQ=</HashCode>
+      <FileName>ViewModel\VMRootFolder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Enum Name="SizeOnDisk.ViewModel.TaskExecutionState" Collapsed="true">
+    <Position X="6.25" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAgAQAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\TaskExecutionState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizeOnDisk", "SizeOnDisk\SizeOnDisk.csproj", "{483C22C0-1B87-4323-9166-10980EF42BC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{146BB42D-1509-4D88-8CFA-C41AE54D4C8B}"
+	ProjectSection(SolutionItems) = preProject
+		References\WPFLocalizeExtension.dll = References\WPFLocalizeExtension.dll
+	EndProjectSection
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SizeOnDiskSetup", "SizeOnDiskSetup\SizeOnDiskSetup.wixproj", "{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{483C22C0-1B87-4323-9166-10980EF42BC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{483C22C0-1B87-4323-9166-10980EF42BC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{483C22C0-1B87-4323-9166-10980EF42BC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{483C22C0-1B87-4323-9166-10980EF42BC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}.Release|Any CPU.ActiveCfg = Release|x86
+		{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}.Release|Any CPU.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

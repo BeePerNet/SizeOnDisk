@@ -1,0 +1,376 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Attributes" xml:space="preserve">
+    <value>Atributos</value>
+  </data>
+  <data name="Calculating" xml:space="preserve">
+    <value>Calculando</value>
+  </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Cancelado</value>
+  </data>
+  <data name="ChooseFolder" xml:space="preserve">
+    <value>Escolher pasta...</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="DiskSize" xml:space="preserve">
+    <value>Tamanho em disco</value>
+  </data>
+  <data name="FileCount" xml:space="preserve">
+    <value>Numero de arquivos</value>
+  </data>
+  <data name="FileSize" xml:space="preserve">
+    <value>Tamanho do arquivo</value>
+  </data>
+  <data name="FileType" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="FileTypeFolder" xml:space="preserve">
+    <value>Pasta</value>
+  </data>
+  <data name="FileTypeUnkown" xml:space="preserve">
+    <value>{0} arquivo</value>
+    <comment>{0} gets replaced by extension (uppercase)</comment>
+  </data>
+  <data name="Finished" xml:space="preserve">
+    <value>Finalizado</value>
+  </data>
+  <data name="FolderCount" xml:space="preserve">
+    <value>Número de Pastas</value>
+  </data>
+  <data name="HardDriveUsage" xml:space="preserve">
+    <value>Utilização do HD</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="Legend" xml:space="preserve">
+    <value>Legenda</value>
+  </data>
+  <data name="LegendDocument" xml:space="preserve">
+    <value>&lt;FlowDocument         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" PagePadding="4" 
+                          FontSize="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=FontSize}" 
+                          FontFamily="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=FontFamily}" IsOptimalParagraphEnabled="True"&gt;
+                &lt;Table CellSpacing="0"&gt;
+                    &lt;Table.Columns&gt;
+                        &lt;TableColumn Width="20" /&gt;
+                        &lt;TableColumn Width="Auto" /&gt;
+                    &lt;/Table.Columns&gt;
+                    &lt;TableRowGroup&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;
+                                    &lt;Image Margin="0,1" Width="16" Height="16" Source="/SizeOnDisk;component/Icons/File.png" SnapsToDevicePixels="True"&gt;&lt;/Image&gt;
+                                &lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Arquivo&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;
+                                    &lt;Image Margin="0,1" Width="16" Height="16" Source="/SizeOnDisk;component/Icons/Folder.png" SnapsToDevicePixels="True"&gt;&lt;/Image&gt;
+                                &lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Diretório&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Você não tem permissão de leitura."&gt;
+                            &lt;TableCell&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="Red"&gt;Protegido&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;R&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Somente Leitura&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Este arquivo não está incluido na listagem de diretório"&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="LightGray"&gt;H&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Oculto&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Este arquivo faz parte do sistema operacional oou é usado exclusivamente para o sistema operacional"&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;S&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Sistema&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="O(s) status dos arquivos. Aplicações usam este atributo para marcar arquivos para backup ou remove-los."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;A&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Arquivo&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Reservado para uso futuro. Por favor informe se você encontrou um."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;D&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Device&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="O arquivo é normal e não tem outros atributos definidos. Este atributo é valido se você usar sozinho."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;N&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Normal&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Arquivo de sistema que mantem todas as informações de dados na memoria para acesso rapido. O arquivo temporario deverá ser deletado pela aplicação assim que não seja mais utilizado."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;T&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Temporario&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Arquivos Sparso são arquivos grandes com data zerada."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Sf&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Arquivo Sparso&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="O Arquivo contem pontos de reparação, onde o bloco definido pelo usuario é acossiado para outra pasta/diretorio."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Rp&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;ReparsePoint&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;C&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="Blue"&gt;Comprimido&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Os dados do arquivo não estão disponiveis imediatamente."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;O&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Offline&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="O arquivo não será indexado pelo sistema operacional."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;I&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;NotContentIndexed&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Para este arquivo, todos os dados deste arquivo estão criptografados. Para um diretorio, significa que a criptografia foi recentemente criada em arquivos/diretorios."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;E&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="LimeGreen"&gt;Encrypted&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                    &lt;/TableRowGroup&gt;
+                &lt;/Table&gt;
+            &lt;/FlowDocument&gt;</value>
+    <comment>Title cell and tooltip needs to be localized</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Opções</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Pronto</value>
+  </data>
+  <data name="Recalculate" xml:space="preserve">
+    <value>Recalcular</value>
+  </data>
+  <data name="RunAsAdministrator" xml:space="preserve">
+    <value>Executar como Administrador</value>
+  </data>
+  <data name="RunTime" xml:space="preserve">
+    <value>Executar</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Salvar</value>
+  </data>
+  <data name="SizeFormat" xml:space="preserve">
+    <value>Tamanho do formato</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Parar</value>
+  </data>
+  <data name="TotalDiskSize" xml:space="preserve">
+    <value>Utilização do disco total na pasta selecionada</value>
+  </data>
+  <data name="TotalFiles" xml:space="preserve">
+    <value>Numero de arquivos na pasta selecionada</value>
+  </data>
+  <data name="TotalFileSize" xml:space="preserve">
+    <value>Tamanho de arquivos totais na pasta selecionada</value>
+  </data>
+  <data name="TotalFolders" xml:space="preserve">
+    <value>Total de pastas na pasta selecionada</value>
+  </data>
+  <data name="UISizeFormatType" xml:space="preserve">
+    <value>UISizeFormatType</value>
+    <comment>Do not localize this line</comment>
+  </data>
+  <data name="UISizeFormatType_Bytes" xml:space="preserve">
+    <value>Bytes</value>
+  </data>
+  <data name="UISizeFormatType_FactorBy1024" xml:space="preserve">
+    <value>Fator 1024</value>
+  </data>
+  <data name="UISizeFormatType_KBytes" xml:space="preserve">
+    <value>KBytes</value>
+  </data>
+  <data name="DateCreation" xml:space="preserve">
+    <value>Data de Criacao</value>
+  </data>
+  <data name="DateLastAccess" xml:space="preserve">
+    <value>Ultimo Acesso</value>
+  </data>
+  <data name="DateLastWrite" xml:space="preserve">
+    <value>Ultima escrita</value>
+  </data>
+</root>

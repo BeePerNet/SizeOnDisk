@@ -1,0 +1,23 @@
+﻿<Window x:Class="SizeOnDisk.Legend"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:SizeOnDisk.Converters"
+        xmlns:lex="http://schemas.root-project.org/xaml/presentation"
+        xmlns:this="clr-namespace:SizeOnDisk"
+        xmlns:ui="clr-namespace:SizeOnDisk.UI"
+        Title="{lex:LocText SizeOnDisk:Localization:Legend}"
+        ResizeMode="NoResize"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="ToolWindow"
+        DataContext="{x:Static this:Localization.LegendDocument}"
+        Width="180"
+        ShowInTaskbar="False">
+    <Window.Resources>
+        <conv:FlowDocumentConverter x:Key="FlowDocumentConverter" />
+    </Window.Resources>
+    <Grid>
+        <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Document="{Binding Converter={StaticResource FlowDocumentConverter}}" />
+    </Grid>
+</Window>

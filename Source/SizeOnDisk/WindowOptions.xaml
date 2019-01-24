@@ -1,0 +1,87 @@
+﻿<Window x:Class="SizeOnDisk.WindowOptions"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ut="clr-namespace:SizeOnDisk.Utilities"
+        xmlns:lex="http://schemas.root-project.org/xaml/presentation"
+        xmlns:loc="clr-namespace:WPFLocalizeExtension.Engine;assembly=WPFLocalizeExtension"
+        xmlns:ui="clr-namespace:SizeOnDisk.UI"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:conv="clr-namespace:SizeOnDisk.Converters"
+        FlowDirection="{ui:LocFlowDirectionExtension2}"
+        lex:LocalizeDictionary.DesignCulture="Fr"
+        Title="Options"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <CollectionViewSource x:Key="Languages"
+                              Source="{x:Static ut:LanguageHelper.Cultures}" />
+        <CollectionViewSource x:Key="SizeFormatList">
+            <CollectionViewSource.Source>
+                <ObjectDataProvider ObjectType="{x:Type sys:Enum}"
+                                    MethodName="GetNames">
+                    <ObjectDataProvider.MethodParameters>
+                        <x:Type TypeName="conv:UISizeFormatType" />
+                    </ObjectDataProvider.MethodParameters>
+                </ObjectDataProvider>
+            </CollectionViewSource.Source>
+        </CollectionViewSource>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin"
+                    Value="6" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Width"
+                    Value="88" />
+            <Setter Property="Margin"
+                    Value="0,6,6,6" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="6,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{lex:LocText SizeOnDisk:Localization:Language}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Right" />
+            <ComboBox Grid.Column="1"
+                      Name="LanguageSelector"
+                      ItemsSource="{Binding Source={StaticResource Languages}}"
+                      DisplayMemberPath="Value"
+                      SelectedValuePath="Key"
+                      SelectionChanged="LanguageSelector_SelectionChanged" />
+            <TextBlock Grid.Row="1"
+                       Text="{lex:LocText SizeOnDisk:Localization:SizeFormat}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Right" />
+            <ComboBox Grid.Row="1"
+                      Grid.Column="1"
+                      Name="SizeFormatSelector"
+                      ItemsSource="{ui:LocEnum SizeOnDisk:Localization:UISizeFormatType, {x:Type conv:UISizeFormatType}}"
+                      SelectionChanged="SizeFormatSelector_SelectionChanged" />
+        </Grid>
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button Content="{lex:LocText SizeOnDisk:Localization:Save}"
+                    Click="Save_Click" />
+            <Button Content="{lex:LocText SizeOnDisk:Localization:Close}"
+                    IsDefault="True"
+                    IsCancel="True"
+                    Click="Cancel_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

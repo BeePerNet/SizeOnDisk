@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="ja-JP" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <String Id="LANG">1041</String>
+  <String Id="Francais">Francais</String>
+  <String Id="Espanol">Espanol</String>
+  <String Id="Portugues">Portugues</String>
+  <String Id="HigherVersionDetectedError">An higher version of this software is already installed. Remove it before, if you want to downgrade.</String>
+</WixLocalization>

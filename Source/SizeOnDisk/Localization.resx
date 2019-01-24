@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Calculating" xml:space="preserve">
+    <value>Calculating</value>
+  </data>
+  <data name="ChooseFolder" xml:space="preserve">
+    <value>Add folder...</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="DiskSize" xml:space="preserve">
+    <value>Disk size</value>
+  </data>
+  <data name="FileCount" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="FileSize" xml:space="preserve">
+    <value>File size</value>
+  </data>
+  <data name="Finished" xml:space="preserve">
+    <value>Finished</value>
+  </data>
+  <data name="FolderCount" xml:space="preserve">
+    <value>Folders</value>
+  </data>
+  <data name="HardDriveUsage" xml:space="preserve">
+    <value>Hard drive usage</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Legend" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="LegendDocument" xml:space="preserve">
+    <value>&lt;FlowDocument         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" PagePadding="4" 
+                          FontSize="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=FontSize}" 
+                          FontFamily="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=FontFamily}" IsOptimalParagraphEnabled="True"&gt;
+                &lt;Table CellSpacing="0"&gt;
+                    &lt;Table.Columns&gt;
+                        &lt;TableColumn Width="20" /&gt;
+                        &lt;TableColumn Width="Auto" /&gt;
+                    &lt;/Table.Columns&gt;
+                    &lt;TableRowGroup&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;
+                                    &lt;Image Margin="0,1" Width="16" Height="16" Source="/SizeOnDisk;component/Icons/File.png" SnapsToDevicePixels="True"&gt;&lt;/Image&gt;
+                                &lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;File&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;
+                                    &lt;Image Margin="0,1" Width="16" Height="16" Source="/SizeOnDisk;component/Icons/Folder.png" SnapsToDevicePixels="True"&gt;&lt;/Image&gt;
+                                &lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Directory&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="You not have the permission required to read it."&gt;
+                            &lt;TableCell&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="Red"&gt;Protected&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;R&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;ReadOnly&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="The file is not included in an ordinary directory listing"&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="LightGray"&gt;H&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Hidden&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="The file is part of the operating system or is used exclusively by the operating system"&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;S&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;System&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="The file's archive status. Applications use this attribute to mark files for backup or removal."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;A&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Archive&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Reserved for future use. Please tell me if you found one."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;D&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Device&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="The file is normal and has no other attributes set. This attribute is valid only if used alone."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;N&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Normal&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="File systems attempt to keep all of the data in memory for quicker access rather than flushing the data back to mass storage. A temporary file should be deleted by the application as soon as it is no longer needed."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;T&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Temporary&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="Sparse files are typically large files whose data are mostly zeros."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Sf&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;SparseFile&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="The file contains a reparse point, which is a block of user-defined data associated with a file or a directory."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Rp&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;ReparsePoint&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;C&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="Blue"&gt;Compressed&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="The data of the file is not immediately available."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;O&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;Offline&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="The file will not be indexed by the operating system's content indexing service."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;I&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;NotContentIndexed&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                        &lt;TableRow ToolTip="For a file, this means that all data in the file is encrypted. For a directory, this means that encryption is the default for newly created files and directories."&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph&gt;E&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                            &lt;TableCell&gt;
+                                &lt;Paragraph Foreground="LimeGreen"&gt;Encrypted&lt;/Paragraph&gt;
+                            &lt;/TableCell&gt;
+                        &lt;/TableRow&gt;
+                    &lt;/TableRowGroup&gt;
+                &lt;/Table&gt;
+            &lt;/FlowDocument&gt;</value>
+    <comment>Title cell and tooltip needs to be localized</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Recalculate" xml:space="preserve">
+    <value>Recalculate</value>
+  </data>
+  <data name="RunAsAdministrator" xml:space="preserve">
+    <value>Run as administrator</value>
+  </data>
+  <data name="RunTime" xml:space="preserve">
+    <value>Run time</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SizeFormat" xml:space="preserve">
+    <value>Size format</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="TotalDiskSize" xml:space="preserve">
+    <value>Sum of file disk usage in the selected folder</value>
+  </data>
+  <data name="TotalFiles" xml:space="preserve">
+    <value>Total number of files in the selected folder</value>
+  </data>
+  <data name="TotalFileSize" xml:space="preserve">
+    <value>Sum of file size in the selected folder</value>
+  </data>
+  <data name="TotalFolders" xml:space="preserve">
+    <value>Total number of folders in the selected folder</value>
+  </data>
+  <data name="UISizeFormatType" xml:space="preserve">
+    <value>UISizeFormatType</value>
+    <comment>Do not localize this line</comment>
+  </data>
+  <data name="UISizeFormatType_Bytes" xml:space="preserve">
+    <value>Bytes</value>
+  </data>
+  <data name="UISizeFormatType_FactorBy1024" xml:space="preserve">
+    <value>Factor of 1024</value>
+  </data>
+  <data name="UISizeFormatType_KBytes" xml:space="preserve">
+    <value>KBytes</value>
+  </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Canceled</value>
+  </data>
+  <data name="Attributes" xml:space="preserve">
+    <value>Attr.</value>
+  </data>
+  <data name="FileType" xml:space="preserve">
+    <value>File Type</value>
+  </data>
+  <data name="FileTypeFolder" xml:space="preserve">
+    <value>File Folder</value>
+  </data>
+  <data name="FileTypeUnkown" xml:space="preserve">
+    <value>{0} File</value>
+    <comment>{0} gets replaced by extension (uppercase)</comment>
+  </data>
+  <data name="DateCreation" xml:space="preserve">
+    <value>Creation</value>
+  </data>
+  <data name="DateLastAccess" xml:space="preserve">
+    <value>Last access</value>
+  </data>
+  <data name="DateLastWrite" xml:space="preserve">
+    <value>Last write</value>
+  </data>
+  <data name="HardDriveFree" xml:space="preserve">
+    <value>Hard drive free</value>
+  </data>
+</root>
