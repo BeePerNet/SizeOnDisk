@@ -21,7 +21,7 @@
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
-!$GIT_DIR/Release/
+!/Release/
 [Rr]eleases/
 x64/
 x86/
