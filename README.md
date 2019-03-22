@@ -8,7 +8,8 @@ The main goal of this software is to pass throught all files as fast as possible
 [Softpedia review](https://www.softpedia.com/get/PORTABLE-SOFTWARE/System/File-management/SizeOnDisk-Portable.shtml)
 
 Connaître l'utilisation de l'espace disque utilisé par les fichiers.  
-Le but principal du logiciel est de passer tous les fichiers du disque dur le plus rapidement possible.
+Le but principal du logiciel est de passer tous les fichiers du disque dur le plus rapidement possible.  
+[Évaluation de Softonic](https://sizeondisk.fr.softonic.com/?ex=BB-865.0#tab-review)
 
 [Setup](https://github.com/BeePerNet/SizeOnDisk/releases/download/r1.0.13/SizeOnDiskSetup.msi)
 
