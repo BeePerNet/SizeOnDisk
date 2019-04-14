@@ -16,5 +16,6 @@ Le but principal du logiciel est de passer tous les fichiers du disque dur le pl
 [Portable](https://github.com/BeePerNet/SizeOnDisk/releases/download/r1.0.13/SizeOnDiskPortable.zip)
 
 Ce projet vous est utile, offrez-moi un café :)  
-If this project help you reduce time to find the famous hard drive space "consumers", you can give me a cup of coffee :)  
+This project is helpful, give me a cup of coffee :)  
+[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png)](https://www.buymeacoffee.com/qOW2sheSw)  
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/BeePerNet)
