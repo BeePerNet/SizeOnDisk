@@ -162,11 +162,16 @@ namespace SizeOnDisk.Utilities
                 }
                 throw new OperationCanceledException();
             }
-
-
-
-
-
+                                                         
+            /// <summary>
+            /// Send file to recycle bin
+            /// </summary>
+            /// <param name="path">Location of directory or file to recycle</param>
+            /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
+            public static bool MoveToRecycleBin(string[] path)
+            {
+                return ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, path);
+            }
 
 
             /// <summary>
@@ -174,19 +179,11 @@ namespace SizeOnDisk.Utilities
             /// </summary>
             /// <param name="path">Location of directory or file to recycle</param>
             /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-            public static bool MoveToRecycleBin(string[] path, FileOperationFlags flags)
+            public static bool PermanentDelete(string[] path)
             {
-                return ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | flags, path);
+                return ShellDeleteOperation(0, path);
             }
 
-            /// <summary>
-            /// Send file to recycle bin.  Display dialog, display warning if files are too big to fit (FOF_WANTNUKEWARNING)
-            /// </summary>
-            /// <param name="path">Location of directory or file to recycle</param>
-            public static bool MoveToRecycleBin(string[] path)
-            {
-                return MoveToRecycleBin(path, FileOperationFlags.FOF_WANTNUKEWARNING);
-            }
         }
 
         /// <summary>

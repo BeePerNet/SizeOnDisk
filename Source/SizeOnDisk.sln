@@ -1,12 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizeOnDisk", "SizeOnDisk\SizeOnDisk.csproj", "{483C22C0-1B87-4323-9166-10980EF42BC7}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{146BB42D-1509-4D88-8CFA-C41AE54D4C8B}"
-	ProjectSection(SolutionItems) = preProject
-		References\WPFLocalizeExtension.dll = References\WPFLocalizeExtension.dll
-	EndProjectSection
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SizeOnDiskSetup", "SizeOnDiskSetup\SizeOnDiskSetup.wixproj", "{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}"
 EndProject
@@ -26,5 +23,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C572FBB0-EFC3-43F9-BF95-09860E6A0255}
 	EndGlobalSection
 EndGlobal

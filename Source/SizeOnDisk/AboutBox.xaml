@@ -12,7 +12,7 @@
                          IsInitialLoadEnabled="True">
             <x:XData>
                 <ApplicationInfo xmlns="">
-                    <Link Uri="http://sizeondisk.codeplex.com">More Info</Link>
+                    <Link Uri="https://github.com/BeePerNet/SizeOnDisk">More Info</Link>
                 </ApplicationInfo>
             </x:XData>
         </XmlDataProvider>

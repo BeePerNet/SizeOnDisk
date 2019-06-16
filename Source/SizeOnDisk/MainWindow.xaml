@@ -2,19 +2,26 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:SizeOnDisk.Converters"
-        xmlns:lex="http://schemas.root-project.org/xaml/presentation"
         xmlns:vm="clr-namespace:SizeOnDisk.ViewModel"
         xmlns:ui="clr-namespace:SizeOnDisk.UI"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:engine="http://wpflocalizeextension.codeplex.com"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        mc:Ignorable="d" 
+        engine:ResxLocalizationProvider.DefaultAssembly="SizeOnDisk"
+        engine:ResxLocalizationProvider.DefaultDictionary="Localization"
+        engine:LocalizeDictionary.DesignCulture="fr"
         ui:CreateCommandContext.Context="{Binding}"
-        FlowDirection="{ui:LocFlowDirectionExtension2}"
         Title="{Binding Path=SelectedValue, StringFormat=SizeOnDisk - \{0\}, ElementName=treeView}"
         Height="500"
         Width="800"
         ResizeMode="CanResizeWithGrip"
+        d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}}"
         Loaded="Window_Loaded"
-        xmlns:my="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Royale"
-        lex:LocalizeDictionary.DesignCulture="Fr"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        d:DesignHeight="150" 
+        d:DesignWidth="600">
     <Window.DataContext>
         <vm:VMRootHierarchy />
     </Window.DataContext>
@@ -59,6 +66,13 @@
                                            Source="/SizeOnDisk;component/Icons/DeleteHS.png" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Command="vm:VMFile.PermanentDeleteCommand">
+                <MenuItem.Icon>
+                    <ui:AutoDisablingImage Width="16"
+                                           Height="16"
+                                           Source="/SizeOnDisk;component/Icons/DeleteHS.png" />
+                </MenuItem.Icon>
+            </MenuItem>
             <Separator />
             <MenuItem Command="Properties" />
         </ContextMenu>
@@ -71,7 +85,7 @@
         </Grid.RowDefinitions>
         <ToolBar Grid.Row="0"
                  Height="Auto">
-            <Button ToolTip="{lex:LocText SizeOnDisk:Localization:ChooseFolder}"
+            <Button ToolTip="{lex:Loc ChooseFolder}"
                     Command="Open"
                     Margin="2">
                 <Button.Content>
@@ -80,7 +94,7 @@
                            Source="/SizeOnDisk;component/Icons/openfolderHS.png" />
                 </Button.Content>
             </Button>
-            <Button ToolTip="{lex:LocText SizeOnDisk:Localization:Recalculate}"
+            <Button ToolTip="{lex:Loc Recalculate}"
                     Command="NavigationCommands.Refresh"
                     Margin="2">
                 <Button.Content>
@@ -89,7 +103,7 @@
                                            Source="/SizeOnDisk;component/Icons/Refresh.png" />
                 </Button.Content>
             </Button>
-            <Button ToolTip="{lex:LocText SizeOnDisk:Localization:Stop}"
+            <Button ToolTip="{lex:Loc Stop}"
                     Command="Stop"
                     Margin="2">
                 <Button.Content>
@@ -98,7 +112,7 @@
                                            Source="/SizeOnDisk;component/Icons/StopHS.png" />
                 </Button.Content>
             </Button>
-            <Button ToolTip="{lex:LocText SizeOnDisk:Localization:Close}"
+            <Button ToolTip="{lex:Loc Close}"
                     Command="Close"
                     Margin="2">
                 <Button.Content>
@@ -108,7 +122,7 @@
                 </Button.Content>
             </Button>
             <Separator  Margin="2" />
-            <Button ToolTip="{lex:LocText SizeOnDisk:Localization:Legend}"
+            <Button ToolTip="{lex:Loc Legend}"
                     Click="ButtonLegend_Click"
                     Margin="2">
                 <Button.Content>
@@ -120,7 +134,7 @@
             <Separator  Margin="2" />
             <Button Name="RunAsAdmin"
                     Click="RunAsAdmin_Click"
-                    ToolTip="{lex:LocText SizeOnDisk:Localization:RunAsAdministrator}"
+                    ToolTip="{lex:Loc RunAsAdministrator}"
                     Margin="2">
                 <Button.Content>
                     <ui:AutoDisablingImage Width="16"
@@ -128,7 +142,7 @@
                                            Source="/SizeOnDisk;component/Icons/Shield.png" />
                 </Button.Content>
             </Button>
-            <Button ToolTip="{lex:LocText SizeOnDisk:Localization:Options}"
+            <Button ToolTip="{lex:Loc Options}"
                     Click="ButtonOptions_Click"
                     Margin="2">
                 <Button.Content>
@@ -228,7 +242,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{lex:LocText SizeOnDisk:Localization:Name}"
+                    <DataGridTemplateColumn Header="{lex:Loc Name}"
                                             SortMemberPath="Name" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -259,42 +273,42 @@
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn SortMemberPath="FileType"
-                                        Header="{lex:LocText SizeOnDisk:Localization:FileType}"
+                                        Header="{lex:Loc FileType}"
                                         IsReadOnly="True"
                                         Binding="{Binding Attributes.FileType}" />
-                    <DataGridTextColumn Header="{lex:LocText SizeOnDisk:Localization:FolderCount}"
+                    <DataGridTextColumn Header="{lex:Loc FolderCount}"
                                         Binding="{Binding FolderCount,StringFormat=N0}"
                                         SortMemberPath="FolderCount"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:LocText SizeOnDisk:Localization:FileCount}"
+                    <DataGridTextColumn Header="{lex:Loc FileCount}"
                                         Binding="{Binding FileCount,StringFormat=N0}"
                                         SortMemberPath="FileCount"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:LocText SizeOnDisk:Localization:FileSize}"
+                    <DataGridTextColumn Header="{lex:Loc FileSize}"
                                         Binding="{Binding FileSize,Converter={StaticResource SizeConverter}}"
                                         SortMemberPath="FileSize"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:LocText SizeOnDisk:Localization:DiskSize}"
+                    <DataGridTextColumn Header="{lex:Loc DiskSize}"
                                         Binding="{Binding DiskSize,Converter={StaticResource SizeConverter}}"
                                         SortMemberPath="DiskSize"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Attributes.Attributes,Converter={StaticResource FileAttributesConverter}}"
-                                        Header="{lex:LocText SizeOnDisk:Localization:Attributes}"
+                                        Header="{lex:Loc Attributes}"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Attributes.CreationTime}"
-                                        Header="{lex:LocText SizeOnDisk:Localization:DateCreation}"
+                                        Header="{lex:Loc DateCreation}"
                                         SortMemberPath="DateCreation"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Attributes.LastAccessTime}"
-                                        Header="{lex:LocText SizeOnDisk:Localization:DateLastAccess}"
+                                        Header="{lex:Loc DateLastAccess}"
                                         SortMemberPath="DateLastAccess"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Attributes.LastWriteTime}"
-                                        Header="{lex:LocText SizeOnDisk:Localization:DateLastWrite}"
+                                        Header="{lex:Loc DateLastWrite}"
                                         SortMemberPath="DateLastWrite"
                                         IsReadOnly="True" />
                 </DataGrid.Columns>
@@ -352,38 +366,38 @@
                            Margin="3,0"
                            Content="{Binding Path=SelectedItem.FolderCount, ElementName=treeView}"
                            ContentStringFormat="N0"
-                           ToolTip="{lex:LocText SizeOnDisk:Localization:TotalFolders}" />
+                           ToolTip="{lex:Loc TotalFolders}" />
             <Separator Grid.Column="10" />
             <StatusBarItem Grid.Column="11"
                            Margin="3,0"
                            Content="{Binding Path=SelectedItem.FileCount, ElementName=treeView}"
                            ContentStringFormat="N0"
-                           ToolTip="{lex:LocText SizeOnDisk:Localization:TotalFiles}" />
+                           ToolTip="{lex:Loc TotalFiles}" />
             <Separator Grid.Column="12" />
             <StatusBarItem Grid.Column="13"
                            Margin="3,0"
                            Content="{Binding Path=SelectedItem.FileSize, ElementName=treeView,Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:LocText SizeOnDisk:Localization:TotalFileSize}" />
+                           ToolTip="{lex:Loc TotalFileSize}" />
             <Separator Grid.Column="14" />
             <StatusBarItem Grid.Column="15"
                            Margin="3,0"
                            Content="{Binding Path=SelectedItem.DiskSize, ElementName=treeView,Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:LocText SizeOnDisk:Localization:TotalDiskSize}" />
+                           ToolTip="{lex:Loc TotalDiskSize}" />
             <Separator Grid.Column="16" />
             <StatusBarItem Grid.Column="17"
                            Margin="3,0,0,0"
                            Content="{Binding SelectedRootFolder.HardDrivePath}"
-                           ToolTip="{lex:LocText SizeOnDisk:Localization:HardDriveUsage}" />
+                           ToolTip="{lex:Loc HardDriveUsage}" />
             <Separator Grid.Column="18" />
             <StatusBarItem Grid.Column="19"
                            Margin="0,0,3,0"
                            Content="{Binding SelectedRootFolder.HardDriveUsage,Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:LocText SizeOnDisk:Localization:HardDriveUsage}" />
+                           ToolTip="{lex:Loc HardDriveUsage}" />
             <Separator Grid.Column="20" />
             <StatusBarItem Grid.Column="21"
                            Margin="0,0,3,0"
                            Content="{Binding SelectedRootFolder.HardDriveFree,Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:LocText SizeOnDisk:Localization:HardDriveFree}" />
+                           ToolTip="{lex:Loc HardDriveFree}" />
         </StatusBar>
     </Grid>
     <Window.TaskbarItemInfo>

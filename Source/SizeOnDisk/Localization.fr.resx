@@ -332,13 +332,13 @@
   <data name="TotalFolders" xml:space="preserve">
     <value>Nombre total de dossiers du dossier sélectionné</value>
   </data>
-  <data name="UISizeFormatType_Bytes" xml:space="preserve">
+  <data name="Bytes" xml:space="preserve">
     <value>Octets</value>
   </data>
-  <data name="UISizeFormatType_FactorBy1024" xml:space="preserve">
+  <data name="FactorBy1024" xml:space="preserve">
     <value>Par facteur de 1024</value>
   </data>
-  <data name="UISizeFormatType_KBytes" xml:space="preserve">
+  <data name="KBytes" xml:space="preserve">
     <value>Kilooctets</value>
   </data>
   <data name="Canceled" xml:space="preserve">
@@ -371,5 +371,8 @@
   </data>
   <data name="HardDriveFree" xml:space="preserve">
     <value>Espace disque disponible</value>
+  </data>
+  <data name="PermanentDelete" xml:space="preserve">
+    <value>_Supprimer définitivement</value>
   </data>
 </root>

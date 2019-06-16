@@ -226,7 +226,7 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedUICommand OpenAsCommand = new RoutedUICommand("Open _with...", "openas", typeof(VMFile));
         public static readonly RoutedUICommand EditCommand = new RoutedUICommand("_Edit", "edit", typeof(VMFile));
         public static readonly RoutedUICommand ExploreCommand = new RoutedUICommand("E_xplore", "explore", typeof(VMFile));
-        //public static readonly RoutedUICommand DeleteCommand = new RoutedUICommand("_Delete", "delete", typeof(VMFile));
+        public static readonly RoutedUICommand PermanentDeleteCommand = new RoutedUICommandEx("PermanentDelete", "permanentdelete", typeof(VMFile));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
@@ -240,11 +240,12 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(ApplicationCommands.Print, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(ApplicationCommands.Properties, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(ApplicationCommands.Delete, CallDeleteCommand, CanCallDeleteCommand));
+            bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
         }
 
         public override void AddInputModels(InputBindingCollection bindingCollection)
         {
-            //bindingCollection.Add(new InputBinding(DeleteCommand, new KeyGesture(Key.Delete)));
+            bindingCollection.Add(new InputBinding(PermanentDeleteCommand, new KeyGesture(Key.Delete, ModifierKeys.Shift)));
         }
 
         private static void CallDeleteCommand(object sender, ExecutedRoutedEventArgs e)
@@ -256,6 +257,30 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
             file.Delete();
+        }
+
+        private static void CallPermanentDeleteCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            VMFile file = GetViewModelObject(e.OriginalSource);
+            if (file == null)
+                throw new ArgumentNullException("e", "OriginalSource is not VMFile");
+
+            file.PermanentDelete();
+        }
+
+        public void PermanentDelete()
+        {
+            if (IOHelper.SafeNativeMethods.PermanentDelete(new string[] { this.Path }))
+            {
+                if (!File.Exists(this.Path) && !Directory.Exists(this.Path))
+                {
+                    this.Parent.RemoveChild(this);
+                    this.Parent.RefreshCount();
+                    this.Parent.RefreshParents();
+                }
+            }
         }
 
         public void Delete()

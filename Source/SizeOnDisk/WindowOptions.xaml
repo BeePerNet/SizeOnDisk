@@ -1,34 +1,31 @@
 ﻿<Window x:Class="SizeOnDisk.WindowOptions"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ut="clr-namespace:SizeOnDisk.Utilities"
-        xmlns:lex="http://schemas.root-project.org/xaml/presentation"
-        xmlns:loc="clr-namespace:WPFLocalizeExtension.Engine;assembly=WPFLocalizeExtension"
-        xmlns:ui="clr-namespace:SizeOnDisk.UI"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:conv="clr-namespace:SizeOnDisk.Converters"
-        FlowDirection="{ui:LocFlowDirectionExtension2}"
-        lex:LocalizeDictionary.DesignCulture="Fr"
+        xmlns:vm="clr-namespace:SizeOnDisk.ViewModel"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:engine="http://wpflocalizeextension.codeplex.com"
+        engine:ResxLocalizationProvider.DefaultAssembly="SizeOnDisk"
+        engine:ResxLocalizationProvider.DefaultDictionary="Localization"
+        engine:LocalizeDictionary.DesignCulture="fr"
+        mc:Ignorable="d" 
+        d:DataContext="{d:DesignInstance {x:Type vm:VMOptions}}"
         Title="Options"
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         WindowStyle="SingleBorderWindow"
-        ShowInTaskbar="False"
-        Loaded="Window_Loaded">
+        ShowInTaskbar="False">
+    <Window.DataContext>
+        <vm:VMOptions />
+    </Window.DataContext>
     <Window.Resources>
-        <CollectionViewSource x:Key="Languages"
-                              Source="{x:Static ut:LanguageHelper.Cultures}" />
-        <CollectionViewSource x:Key="SizeFormatList">
-            <CollectionViewSource.Source>
-                <ObjectDataProvider ObjectType="{x:Type sys:Enum}"
-                                    MethodName="GetNames">
-                    <ObjectDataProvider.MethodParameters>
-                        <x:Type TypeName="conv:UISizeFormatType" />
-                    </ObjectDataProvider.MethodParameters>
-                </ObjectDataProvider>
-            </CollectionViewSource.Source>
-        </CollectionViewSource>
+        <Style TargetType="lex:EnumComboBox">
+            <Setter Property="Margin"
+                    Value="6" />
+        </Style>
         <Style TargetType="ComboBox">
             <Setter Property="Margin"
                     Value="6" />
@@ -55,34 +52,31 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{lex:LocText SizeOnDisk:Localization:Language}"
+            <TextBlock Text="{lex:Loc Language}"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Right" />
             <ComboBox Grid.Column="1"
                       Name="LanguageSelector"
-                      ItemsSource="{Binding Source={StaticResource Languages}}"
+                      ItemsSource="{Binding Languages}"
                       DisplayMemberPath="Value"
                       SelectedValuePath="Key"
-                      SelectionChanged="LanguageSelector_SelectionChanged" />
+                      SelectedValue="{Binding Language}" />
             <TextBlock Grid.Row="1"
-                       Text="{lex:LocText SizeOnDisk:Localization:SizeFormat}"
+                       Text="{lex:Loc SizeFormat}"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Right" />
-            <ComboBox Grid.Row="1"
+            <lex:EnumComboBox Grid.Row="1"
                       Grid.Column="1"
                       Name="SizeFormatSelector"
-                      ItemsSource="{ui:LocEnum SizeOnDisk:Localization:UISizeFormatType, {x:Type conv:UISizeFormatType}}"
-                      SelectionChanged="SizeFormatSelector_SelectionChanged" />
+                      Type="conv:UISizeFormatType"
+                      SelectedValue="{Binding UISizeFormat}" />
         </Grid>
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
-            <Button Content="{lex:LocText SizeOnDisk:Localization:Save}"
-                    Click="Save_Click" />
-            <Button Content="{lex:LocText SizeOnDisk:Localization:Close}"
+            <Button Content="{lex:Loc Close}"
                     IsDefault="True"
-                    IsCancel="True"
-                    Click="Cancel_Click" />
+                    IsCancel="True" />
         </StackPanel>
     </Grid>
 </Window>

@@ -4,12 +4,12 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
-using WPFLocalizeExtension.BaseExtensions;
+//using WPFLocalizeExtension.BaseExtensions;
 using WPFLocalizeExtension.Engine;
 
 namespace SizeOnDisk.UI
 {
-    /// <summary>
+    /*/// <summary>
     /// Add FlowDirection tag to the Window xaml implementation
     /// </summary>
     /// <example>
@@ -82,5 +82,5 @@ namespace SizeOnDisk.UI
         {
             return input;
         }
-    }
+    }*/
 }

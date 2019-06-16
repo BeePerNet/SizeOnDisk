@@ -19,7 +19,7 @@ namespace SizeOnDisk {
     // à l'aide d'un outil, tel que ResGen ou Visual Studio.
     // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
     // avec l'option /str ou régénérez votre projet VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Localization {
@@ -66,6 +66,15 @@ namespace SizeOnDisk {
         public static string Attributes {
             get {
                 return ResourceManager.GetString("Attributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Bytes.
+        /// </summary>
+        public static string Bytes {
+            get {
+                return ResourceManager.GetString("Bytes", resourceCulture);
             }
         }
         
@@ -138,6 +147,15 @@ namespace SizeOnDisk {
         public static string DiskSize {
             get {
                 return ResourceManager.GetString("DiskSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Factor of 1024.
+        /// </summary>
+        public static string FactorBy1024 {
+            get {
+                return ResourceManager.GetString("FactorBy1024", resourceCulture);
             }
         }
         
@@ -223,6 +241,15 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à KBytes.
+        /// </summary>
+        public static string KBytes {
+            get {
+                return ResourceManager.GetString("KBytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Language.
         /// </summary>
         public static string Language {
@@ -267,6 +294,15 @@ namespace SizeOnDisk {
         public static string Options {
             get {
                 return ResourceManager.GetString("Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à _Permanent Delete.
+        /// </summary>
+        public static string PermanentDelete {
+            get {
+                return ResourceManager.GetString("PermanentDelete", resourceCulture);
             }
         }
         
@@ -375,33 +411,6 @@ namespace SizeOnDisk {
         public static string UISizeFormatType {
             get {
                 return ResourceManager.GetString("UISizeFormatType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Bytes.
-        /// </summary>
-        public static string UISizeFormatType_Bytes {
-            get {
-                return ResourceManager.GetString("UISizeFormatType_Bytes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Factor of 1024.
-        /// </summary>
-        public static string UISizeFormatType_FactorBy1024 {
-            get {
-                return ResourceManager.GetString("UISizeFormatType_FactorBy1024", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à KBytes.
-        /// </summary>
-        public static string UISizeFormatType_KBytes {
-            get {
-                return ResourceManager.GetString("UISizeFormatType_KBytes", resourceCulture);
             }
         }
     }

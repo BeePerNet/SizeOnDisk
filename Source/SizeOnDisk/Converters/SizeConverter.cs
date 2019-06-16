@@ -18,14 +18,14 @@ namespace SizeOnDisk.Converters
                 ulong size = System.Convert.ToUInt64(value, culture);
                 switch (Properties.Settings.Default.UISizeFormat)
                 {
-                    case 1:
+                    case UISizeFormatType.KBytes:
                         if (size < 1024 && size > 0)
                         {
                             return (size / 1024D).ToString("N3", culture);
                         }
                         size /= 1024;
                         break;
-                    case 2:
+                    case UISizeFormatType.FactorBy1024:
                         byte factor = 0;
                         while (size > 1024)
                         {

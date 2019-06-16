@@ -339,13 +339,13 @@
     <value>UISizeFormatType</value>
     <comment>Do not localize this line</comment>
   </data>
-  <data name="UISizeFormatType_Bytes" xml:space="preserve">
+  <data name="Bytes" xml:space="preserve">
     <value>Bytes</value>
   </data>
-  <data name="UISizeFormatType_FactorBy1024" xml:space="preserve">
+  <data name="FactorBy1024" xml:space="preserve">
     <value>Factor of 1024</value>
   </data>
-  <data name="UISizeFormatType_KBytes" xml:space="preserve">
+  <data name="KBytes" xml:space="preserve">
     <value>KBytes</value>
   </data>
   <data name="Canceled" xml:space="preserve">
@@ -375,5 +375,8 @@
   </data>
   <data name="HardDriveFree" xml:space="preserve">
     <value>Hard drive free</value>
+  </data>
+  <data name="PermanentDelete" xml:space="preserve">
+    <value>_Permanent Delete</value>
   </data>
 </root>
