@@ -170,7 +170,7 @@
                       ContextMenu="{StaticResource VMContextMenu}"
                       BorderBrush="{Binding ElementName=Listing, Path=BorderBrush}"
                       DisplayMemberPath="Name"
-                      SelectedValuePath="Path">
+                      SelectedValuePath="Path" PreviewMouseRightButtonDown="TreeView_PreviewMouseRightButtonDown">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <Setter Property="Padding"

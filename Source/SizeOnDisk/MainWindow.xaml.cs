@@ -9,6 +9,7 @@ using System.Windows.Input;
 using SizeOnDisk.Utilities;
 using SizeOnDisk.ViewModel;
 using System.IO;
+using SizeOnDisk.UI;
 
 namespace SizeOnDisk
 {
@@ -190,11 +191,15 @@ namespace SizeOnDisk
             e.Handled = true;
         }
 
+        private void TreeView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TreeViewItem treeViewItem = Helper.FindParentControl<TreeViewItem>(e.OriginalSource as DependencyObject);
 
-
-
-
-
-
+            if (treeViewItem != null)
+            {
+                treeViewItem.Focus();
+                e.Handled = true;
+            }
+        }
     }
 }
