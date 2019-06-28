@@ -151,6 +151,24 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ctrl+E.
+        /// </summary>
+        public static string EditKey {
+            get {
+                return ResourceManager.GetString("EditKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à _Edit.
+        /// </summary>
+        public static string EditText {
+            get {
+                return ResourceManager.GetString("EditText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Factor of 1024.
         /// </summary>
         public static string FactorBy1024 {

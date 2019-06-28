@@ -4,6 +4,8 @@ using System.Linq;
 using System.Windows.Input;
 using SizeOnDisk.Utilities;
 using System.Windows.Threading;
+using System.Windows;
+using System.ComponentModel;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -24,9 +26,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public VMRootHierarchy()
-            : base(null, string.Empty, string.Empty, Dispatcher.CurrentDispatcher)
+        public VMRootHierarchy() : base(null, string.Empty, string.Empty, Dispatcher.CurrentDispatcher)
         {
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
+                this.Childs.Add(newFolder);
+                this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
+            }
         }
 
         #region function
@@ -74,7 +81,7 @@ namespace SizeOnDisk.ViewModel
             this.OnPropertyChanged("IsRunning");
         }
 
-        public static readonly RoutedUICommand RefreshAllCommand = new RoutedUICommand("Refresh _all", "RefreshAll", typeof(VMFile));
+        public static readonly RoutedCommand RefreshAllCommand = new RoutedCommand("RefreshAll", typeof(VMFile));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {

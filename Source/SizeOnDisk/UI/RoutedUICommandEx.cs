@@ -1,27 +1,49 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Runtime;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.UI
 {
-    //[TypeConverter("System.Windows.Input.CommandConverter, PresentationFramework, Version=4.0.0.0, PublicKeyToken=31bf3856ad364e35, Custom=null")]
-    [TypeConverter("System.Windows.Input.CommandConverter, PresentationFramework")]
-    public class RoutedUICommandEx : RoutedUICommand
+    public class RoutedUICommandEx: RoutedUICommand
     {
-        // Methods publicRoutedUICommand()    { this._text = string.Empty;    }
-        [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-        public RoutedUICommandEx(string text, string name, Type ownerType) : this(text, name, ownerType, null) { }
-
-        public RoutedUICommandEx(string text, string name, Type ownerType, InputGestureCollection inputGestures) :
-            base(Helper.GetLocalizedValue(text), name, ownerType, inputGestures)
+        /*public static readonly DependencyProperty CommandProperty = DependencyProperty.RegisterAttached(
+            "Command", typeof(ICommand), typeof(RoutedUICommandEx), new PropertyMetadata(_CommandPropertyChanged));
+        private static void _CommandPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            MenuItem target = d as MenuItem;
+            if (target != null)
+            {
+                IMenuCommand command = (IMenuCommand)e.NewValue;
+                if (command != null)
+                {
+                    target.Command = command;
+                    target.Header = command.Header;
+                }
+                else
+                {
+                    target.Command = null;
+                    target.Header = null;
+                }
+            }
         }
-               
+        public static void SetCommand(MenuItem target, IMenuCommand command)
+        {
+            target.SetValue(CommandProperty, command);
+        }
+        public static IMenuCommand GetCommand(MenuItem target)
+        {
+            return (IMenuCommand)target.GetValue(CommandProperty);
+        }*/
+
+
+
+
+
+
+
     }
 }
-
-
-

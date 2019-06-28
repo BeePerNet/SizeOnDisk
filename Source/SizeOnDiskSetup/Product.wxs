@@ -31,8 +31,11 @@
         <RemoveFile Id="AllFiles" Name="*.*" On="both"/>
         <File Id="ApplicationFile" Name="$(var.SizeOnDisk.TargetFileName)" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/SizeOnDisk.exe" KeyPath="yes" Vital="yes" />
       </Component>
-      <Component Id="HelperComponent" Guid="*">
-        <File Id="HelperFile" Name="WPFLocalizeExtension.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/WPFLocalizeExtension.dll" KeyPath="yes" Vital="yes" />
+      <Component Id="XAMLMarkupComponent" Guid="*">
+        <File Id="XAMLMarkupFile" Name="XAMLMarkupExtensions.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/XAMLMarkupExtensions.dll" KeyPath="yes" Vital="yes" />
+      </Component>
+      <Component Id="WPFLocalizeComponent" Guid="*">
+        <File Id="WPFLocalizeFile" Name="WPFLocalizeExtension.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/WPFLocalizeExtension.dll" KeyPath="yes" Vital="yes" />
       </Component>
     </DirectoryRef>
 
@@ -116,7 +119,8 @@
 
     <Feature Id="ProductFeature" Title="SizeOnDisk required files" Level="1" ConfigurableDirectory="INSTALLDIR">
       <ComponentRef Id="ApplicationFileComponent" />
-      <ComponentRef Id="HelperComponent" />
+      <ComponentRef Id="XAMLMarkupComponent" />
+      <ComponentRef Id="WPFLocalizeComponent" />
       <ComponentRef Id="ApplicationFileShortcutComponent" />
     </Feature>
     <Feature Id="LanguagesFeature" Title="Languages" Level="1">

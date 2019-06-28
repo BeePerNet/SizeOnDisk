@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -7,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 using SizeOnDisk.Utilities;
+using System.Linq;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -66,6 +69,23 @@ namespace SizeOnDisk.ViewModel
         #endregion properties
 
         #region creator
+
+        [DesignOnly(true)]
+        internal VMRootFolder(VMRootHierarchy parent, string name)
+            : base(parent, name)
+        {
+            this.IsExpanded = true;
+            this.IsSelected = true;
+
+            VMFolder newFolder = new VMFolder(this, "Folder 1");
+            this.Childs.Add(newFolder);
+            newFolder = new VMFolder(this, "Folder 2");
+            this.Childs.Add(newFolder);
+            newFolder = new VMFolder(this, "Folder 3");
+            this.Childs.Add(newFolder);
+            this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
+
+        }
 
         internal VMRootFolder(VMRootHierarchy parent, string name, string path, Dispatcher dispatcher)
             : base(parent, name, path, dispatcher)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -222,11 +223,11 @@ namespace SizeOnDisk.ViewModel
 
         #region Commands
 
-        public static readonly RoutedUICommand OpenCommand = new RoutedUICommand("_Open", "open", typeof(VMFile));
-        public static readonly RoutedUICommand OpenAsCommand = new RoutedUICommand("Open _with...", "openas", typeof(VMFile));
-        public static readonly RoutedUICommand EditCommand = new RoutedUICommand("_Edit", "edit", typeof(VMFile));
-        public static readonly RoutedUICommand ExploreCommand = new RoutedUICommand("E_xplore", "explore", typeof(VMFile));
-        public static readonly RoutedUICommand PermanentDeleteCommand = new RoutedUICommandEx("PermanentDelete", "permanentdelete", typeof(VMFile));
+        public static readonly RoutedCommand OpenCommand = new RoutedCommand("open", typeof(VMFile));
+        public static readonly RoutedCommand OpenAsCommand = new RoutedCommand("openas", typeof(VMFile));
+        public static readonly RoutedCommand EditCommand = new RoutedCommand("edit", typeof(VMFile));
+        public static readonly RoutedCommand ExploreCommand = new RoutedCommand("explore", typeof(VMFile));
+        public static readonly RoutedCommand PermanentDeleteCommand = new RoutedCommand("permanentdelete", typeof(VMFile));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
@@ -245,6 +246,7 @@ namespace SizeOnDisk.ViewModel
 
         public override void AddInputModels(InputBindingCollection bindingCollection)
         {
+            bindingCollection.Add(new InputBinding(EditCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
             bindingCollection.Add(new InputBinding(PermanentDeleteCommand, new KeyGesture(Key.Delete, ModifierKeys.Shift)));
         }
 

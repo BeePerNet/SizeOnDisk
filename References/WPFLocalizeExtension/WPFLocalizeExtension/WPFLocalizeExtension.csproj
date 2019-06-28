@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: P:\Sébastien\GitHub\SizeOnDisk\References\WPFLocalizeExtension.3.4.0-alpha0039\lib\net452\WPFLocalizeExtension.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{97622B9A-D365-43C5-9D96-08B130CA391C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>WPFLocalizeExtension</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <ApplicationVersion>3.4.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>WPFLocalizeExtension</RootNamespace>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XAMLMarkupExtensions">
+      <HintPath>..\..\..\Source\packages\XAMLMarkupExtensions.1.6.0\lib\net452\XAMLMarkupExtensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="TypeConverters\BitmapSourceTypeConverter.cs" />
+    <Compile Include="TypeConverters\DefaultConverter.cs" />
+    <Compile Include="TypeConverters\RegisterMissingTypeConverters.cs" />
+    <Compile Include="TypeConverters\ThicknessConverter.cs" />
+    <Compile Include="Providers\CSVEmbeddedLocalizationProvider.cs" />
+    <Compile Include="Providers\CSVLocalizationProvider.cs" />
+    <Compile Include="Providers\CSVLocalizationProviderBase.cs" />
+    <Compile Include="Providers\FQAssemblyDictionaryKey.cs" />
+    <Compile Include="Providers\FullyQualifiedResourceKeyBase.cs" />
+    <Compile Include="Providers\ILocalizationProvider.cs" />
+    <Compile Include="Providers\InheritingResxLocalizationProvider.cs" />
+    <Compile Include="Providers\ParentChangedNotifierHelper.cs" />
+    <Compile Include="Providers\ProviderEventArgs.cs" />
+    <Compile Include="Providers\ProviderChangedEventHandler.cs" />
+    <Compile Include="Providers\1ProviderEventArgs.cs" />
+    <Compile Include="Providers\ProviderErrorEventHandler.cs" />
+    <Compile Include="Providers\2ProviderEventArgs.cs" />
+    <Compile Include="Providers\ValueChangedEventHandler.cs" />
+    <Compile Include="Providers\ResxLocalizationProvider.cs" />
+    <Compile Include="Providers\ResxLocalizationProviderBase.cs" />
+    <Compile Include="Extensions\BLoc.cs" />
+    <Compile Include="Extensions\Compatibility.cs" />
+    <Compile Include="Extensions\1Compatibility.cs" />
+    <Compile Include="Extensions\2Compatibility.cs" />
+    <Compile Include="Extensions\3Compatibility.cs" />
+    <Compile Include="Extensions\4Compatibility.cs" />
+    <Compile Include="Extensions\5Compatibility.cs" />
+    <Compile Include="Extensions\6Compatibility.cs" />
+    <Compile Include="Extensions\7Compatibility.cs" />
+    <Compile Include="Extensions\FELoc.cs" />
+    <Compile Include="Extensions\LocExtension.cs" />
+    <Compile Include="Engine\EnumComboBox.cs" />
+    <Compile Include="Engine\EnumRun.cs" />
+    <Compile Include="Engine\GapTextControl.cs" />
+    <Compile Include="Engine\IDictionaryEventListener.cs" />
+    <Compile Include="Engine\DictionaryEventType.cs" />
+    <Compile Include="Engine\DictionaryEventArgs.cs" />
+    <Compile Include="Engine\LocalizeDictionary.cs" />
+    <Compile Include="Engine\LocBinding.cs" />
+    <Compile Include="Engine\LocProxy.cs" />
+    <Compile Include="Engine\MissingKeyEventArgs.cs" />
+    <Compile Include="Engine\ObjectDependencyManager.cs" />
+    <Compile Include="Engine\ParentNotifiers.cs" />
+    <Compile Include="Engine\SafeTargetInfo.cs" />
+    <None Include="GitVersionInformation.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

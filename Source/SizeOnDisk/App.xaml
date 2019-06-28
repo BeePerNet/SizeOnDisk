@@ -3,8 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml" Startup="Application_Startup">
     <Application.Resources>
-<!--ResourceDictionary Source="/PresentationFramework.Royale, Version=4.0.0.0,
-           Culture=neutral, PublicKeyToken=31bf3856ad364e35,
-           ProcessorArchitecture=MSIL;component/themes/Royale.normalcolor.xaml" /-->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--ResourceDictionary Source="/PresentationFramework.Royale, Version=4.0.0.0,
+                       Culture=neutral, PublicKeyToken=31bf3856ad364e35,
+                       ProcessorArchitecture=MSIL;component/themes/Royale.normalcolor.xaml" /-->
+                <ResourceDictionary Source="/PresentationFramework.Aero2, Version=4.0.0.0,
+                       Culture=neutral, PublicKeyToken=31bf3856ad364e35,
+                       ProcessorArchitecture=MSIL;component/themes/Aero2.normalcolor.xaml" />
+                <ResourceDictionary Source="Themes/Default.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SizeOnDisk.Utilities;
 using System.Windows.Threading;
 using System.Threading;
+using System.ComponentModel;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -28,6 +29,14 @@ namespace SizeOnDisk.ViewModel
             FileCount = null;
             FolderCount = null;
             _Dispatcher = dispatcher;
+        }
+
+        [DesignOnly(true)]
+        internal VMFolder(VMFolder parent, string name)
+            : base(parent, name, null)
+        {
+            FileCount = null;
+            FolderCount = null;
         }
 
         #endregion constructor
@@ -71,7 +80,7 @@ namespace SizeOnDisk.ViewModel
                 if (value != base.IsSelected)
                 {
                     base.IsSelected = value;
-                    if (value && this.Childs != null)
+                    if (value && this.Childs != null && Dispatcher != null)
                     {
                         new Thread(() =>
                         {
@@ -124,7 +133,7 @@ namespace SizeOnDisk.ViewModel
         [SuppressMessage("Microsoft.Design", "CA1031")]
         public override void Refresh(uint clusterSize, ParallelOptions parallelOptions)
         {
-            if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
+            if (Dispatcher == null || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
                 return;
             try
             {

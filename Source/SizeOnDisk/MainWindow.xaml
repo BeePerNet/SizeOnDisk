@@ -15,9 +15,9 @@
         ui:CreateCommandContext.Context="{Binding}"
         Title="{Binding Path=SelectedValue, StringFormat=SizeOnDisk - \{0\}, ElementName=treeView}"
         Height="500"
-        Width="800"
+        Width="850"
         ResizeMode="CanResizeWithGrip"
-        d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}}"
+        d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
         d:DesignHeight="150" 
@@ -38,8 +38,8 @@
                     Value="2,0" />
         </Style>
         <ContextMenu x:Key="VMContextMenu">
-            <MenuItem Command="vm:VMFile.OpenCommand" />
-            <MenuItem Command="vm:VMFile.EditCommand" />
+            <MenuItem Command="vm:VMFile.OpenCommand" Header="{lex:Loc Key=PresentationCore:ExceptionStringTable:OpenText}" InputGestureText="{lex:Loc Key=PresentationCore:ExceptionStringTable:OpenKey}" />
+            <MenuItem Command="vm:VMFile.EditCommand" Header="{lex:Loc EditText}" InputGestureText="{lex:Loc EditKey}" />
             <MenuItem Command="vm:VMFile.OpenAsCommand" />
             <MenuItem Command="Print">
                 <MenuItem.Icon>
@@ -59,14 +59,14 @@
             </MenuItem>
             <Separator />
             <!--MenuItem Command="vm:VMFile.RenameCommand" /-->
-            <MenuItem Command="Delete">
+            <MenuItem Command="Delete" Header="{lex:Loc Key=PresentationCore:ExceptionStringTable:DeleteText}" InputGestureText="{lex:Loc Key=PresentationCore:ExceptionStringTable:DeleteKey}">
                 <MenuItem.Icon>
                     <ui:AutoDisablingImage Width="16"
                                            Height="16"
                                            Source="/SizeOnDisk;component/Icons/DeleteHS.png" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Command="vm:VMFile.PermanentDeleteCommand">
+            <MenuItem Command="vm:VMFile.PermanentDeleteCommand" Header="{lex:Loc PermanentDelete}" InputGestureText="Shift DEL">
                 <MenuItem.Icon>
                     <ui:AutoDisablingImage Width="16"
                                            Height="16"
@@ -256,12 +256,17 @@
                                                 Property="Foreground"
                                                 Value="Red" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}"
-                                                 Value="True">
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition  Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=IsSelected}"
+                                                        Value="True" />
+                                            <Condition  Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}"
+                                                        Value="True" />
+                                        </MultiDataTrigger.Conditions>
                                         <Setter TargetName="Name"
                                                 Property="Foreground"
                                                 Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
-                                    </DataTrigger>
+                                    </MultiDataTrigger>
                                 </DataTemplate.Triggers>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
