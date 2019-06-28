@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizeOnDisk", "SizeOnDisk\Si
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SizeOnDiskSetup", "SizeOnDiskSetup\SizeOnDiskSetup.wixproj", "{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFLocalizeExtension", "..\References\WPFLocalizeExtension\WPFLocalizeExtension\WPFLocalizeExtension.csproj", "{97622B9A-D365-43C5-9D96-08B130CA391C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,10 +20,6 @@ Global
 		{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}.Release|Any CPU.ActiveCfg = Release|x86
 		{56987ED9-9AEE-4DCD-A5E2-F226E83978F8}.Release|Any CPU.Build.0 = Release|x86
-		{97622B9A-D365-43C5-9D96-08B130CA391C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97622B9A-D365-43C5-9D96-08B130CA391C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97622B9A-D365-43C5-9D96-08B130CA391C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97622B9A-D365-43C5-9D96-08B130CA391C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

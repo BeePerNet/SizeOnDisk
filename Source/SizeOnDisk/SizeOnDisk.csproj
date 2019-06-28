@@ -128,9 +128,13 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="XAMLMarkupExtensions, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c726e0262981a1eb, processorArchitecture=MSIL">
+    <Reference Include="WPFLocalizeExtension, Version=3.0.1.0, Culture=neutral, PublicKeyToken=da17a8a04a0e3b31, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\References\WPFLocalizeExtension\WPFLocalizeExtension\bin\Debug\XAMLMarkupExtensions.dll</HintPath>
+      <HintPath>..\..\References\WPFLocalizeExtension\WPFLocalizeExtension.dll</HintPath>
+    </Reference>
+    <Reference Include="XAMLMarkupExtensions, Version=1.2.2.0, Culture=neutral, PublicKeyToken=da17a8a04a0e3b31, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\References\XAMLMarkupExtensions\XAMLMarkupExtensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +151,7 @@
     <Compile Include="Converters\IsRunningConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Converters\UISizeFormatType.cs" />
+    <Compile Include="UI\CommandEx.cs" />
     <Compile Include="UI\DataGridRollbackOnUnfocusedBehaviour.cs" />
     <Compile Include="Localization.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -166,7 +171,6 @@
     <Compile Include="UI\CreateCommandContext.cs" />
     <Compile Include="UI\Helper.cs" />
     <Compile Include="UI\ICommandContext.cs" />
-    <Compile Include="UI\RoutedUICommandEx.cs" />
     <Compile Include="Utilities\ExceptionBox.xaml.cs">
       <DependentUpon>ExceptionBox.xaml</DependentUpon>
     </Compile>
@@ -319,12 +323,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\PrintHS.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\References\WPFLocalizeExtension\WPFLocalizeExtension\WPFLocalizeExtension.csproj">
-      <Project>{97622b9a-d365-43c5-9d96-08b130ca391c}</Project>
-      <Name>WPFLocalizeExtension</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
