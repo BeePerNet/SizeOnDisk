@@ -1,11 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using SizeOnDisk.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
-using SizeOnDisk.Converters;
-using SizeOnDisk.UI;
-using SizeOnDisk.Utilities;
-using SizeOnDisk.ViewModel;
 
 namespace SizeOnDisk
 {

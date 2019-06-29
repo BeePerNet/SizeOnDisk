@@ -6,6 +6,7 @@ using SizeOnDisk.Utilities;
 using System.Windows.Threading;
 using System.Windows;
 using System.ComponentModel;
+using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -81,6 +82,8 @@ namespace SizeOnDisk.ViewModel
             this.OnPropertyChanged("IsRunning");
         }
 
+        public static readonly CommandEx OpenFolderCommand = new CommandEx("openfolder", "ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "Insert")) { UseDisablingImage = false };
+        public static readonly CommandEx RefreshCommand = new CommandEx("refresh", "PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootHierarchy), new KeyGesture(Key.F5, ModifierKeys.None, "F5")) { UseDisablingImage = false };
         public static readonly RoutedCommand RefreshAllCommand = new RoutedCommand("RefreshAll", typeof(VMFile));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -88,12 +91,20 @@ namespace SizeOnDisk.ViewModel
             if (bindingCollection == null)
                 throw new ArgumentNullException("bindingCollection", "bindingCollection is null");
             base.AddCommandModels(bindingCollection);
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Open, CallOpenCommand));
+            bindingCollection.Add(new CommandBinding(OpenFolderCommand, CallOpenCommand));
             bindingCollection.Add(new CommandBinding(NavigationCommands.Refresh, CallRefreshCommand, CanCallRefreshCommand));
             bindingCollection.Add(new CommandBinding(RefreshAllCommand, CallRefreshCommand, CanCallCommand));
             bindingCollection.Add(new CommandBinding(ApplicationCommands.Stop, CallStopCommand, CanCallStopCommand));
             bindingCollection.Add(new CommandBinding(ApplicationCommands.Close, CallCloseCommand, CanCallCommand));
         }
+
+        /*public override void AddInputModels(InputBindingCollection bindingCollection)
+        {
+            if (bindingCollection == null)
+                throw new ArgumentNullException("bindingCollection", "bindingCollection is null");
+            base.AddInputModels(bindingCollection);
+            bindingCollection.Add(new InputBinding(RefreshCommand, RefreshCommand.KeyGesture));
+        }*/
 
         private void CallOpenCommand(object sender, ExecutedRoutedEventArgs e)
         {

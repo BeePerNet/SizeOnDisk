@@ -36,7 +36,7 @@ namespace SizeOnDisk.Utilities
                 verb = verbReplacementList[verb];
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = fileName;
-            return (processStartInfo.Verbs.Contains(verb));
+            return processStartInfo.Verbs.SingleOrDefault(T => T.ToLowerInvariant() == verb) != null;
         }
 
         public static void ShellExecute(string fileName, string verb, string parameters, IntPtr ownerWindow)

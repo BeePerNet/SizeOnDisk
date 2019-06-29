@@ -1,12 +1,11 @@
-﻿using System;
-using System.ComponentModel;
+﻿using SizeOnDisk.Utilities;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using SizeOnDisk.UI;
-using SizeOnDisk.Utilities;
+using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -223,16 +222,14 @@ namespace SizeOnDisk.ViewModel
 
         #region Commands
 
-        public static readonly RoutedCommand OpenCommand = new RoutedCommand("open", typeof(VMFile));
-        public static readonly RoutedCommand OpenAsCommand = new RoutedCommand("openas", typeof(VMFile));
-        public static readonly RoutedCommand EditCommand = new RoutedCommand("edit", typeof(VMFile));
+        public static readonly CommandEx OpenCommand = new CommandEx("Open", "PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
+        public static readonly RoutedCommand OpenAsCommand = new RoutedCommand("OpenAs", typeof(VMFile));
+        public static readonly RoutedCommand EditCommand = new RoutedCommand("Edit", typeof(VMFile));
         public static readonly RoutedCommand ExploreCommand = new RoutedCommand("explore", typeof(VMFile));
         public static readonly RoutedCommand PermanentDeleteCommand = new RoutedCommand("permanentdelete", typeof(VMFile));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
-            if (bindingCollection == null)
-                throw new ArgumentNullException("bindingCollection", "bindingCollection is null");
             bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(ExploreCommand, CallShellCommand, CanCallShellCommand));
@@ -246,8 +243,8 @@ namespace SizeOnDisk.ViewModel
 
         public override void AddInputModels(InputBindingCollection bindingCollection)
         {
-            bindingCollection.Add(new InputBinding(EditCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
-            bindingCollection.Add(new InputBinding(PermanentDeleteCommand, new KeyGesture(Key.Delete, ModifierKeys.Shift)));
+            /*bindingCollection.Add(new InputBinding(EditCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
+            bindingCollection.Add(new InputBinding(PermanentDeleteCommand, new KeyGesture(Key.Delete, ModifierKeys.Shift)));*/
         }
 
         private static void CallDeleteCommand(object sender, ExecutedRoutedEventArgs e)
