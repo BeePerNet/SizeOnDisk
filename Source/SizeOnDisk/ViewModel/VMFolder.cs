@@ -1,14 +1,14 @@
-﻿using System;
+﻿using SizeOnDisk.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using SizeOnDisk.Utilities;
-using System.Windows.Threading;
 using System.Threading;
-using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -85,7 +85,7 @@ namespace SizeOnDisk.ViewModel
                         new Thread(() =>
                         {
                             this.Childs.ToList().ForEach((T) => T.RefreshOnView());
-                            //Parallel.ForEach(_InternalChilds, (T) => T.RefreshOnView());
+                        //Parallel.ForEach(_InternalChilds, (T) => T.RefreshOnView());
                         }).Start();
                     }
                 }
@@ -116,7 +116,7 @@ namespace SizeOnDisk.ViewModel
         public void RefreshCount()
         {
             this.FileCount = this.Childs.Sum(T => T.FileCount);
-            this.FolderCount = this.Folders.Sum(T => T.FolderCount) + this.Folders.Count;
+            this.FolderCount = this.Folders?.Sum(T => T.FolderCount) + this.Folders.Count;
             this.DiskSize = this.Childs.Sum(T => T.DiskSize);
             this.FileSize = this.Childs.Sum(T => T.FileSize);
         }
@@ -152,6 +152,7 @@ namespace SizeOnDisk.ViewModel
                 }
 
                 Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
+                //this.Childs.ToList().ForEach((T) => T.Refresh(clusterSize, parallelOptions));
 
                 this.RefreshCount();
             }

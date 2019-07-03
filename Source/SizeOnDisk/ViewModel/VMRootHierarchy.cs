@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
+﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
-using System.Windows.Threading;
-using System.Windows;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Threading;
 using WPFByYourCommand;
+
 
 namespace SizeOnDisk.ViewModel
 {
@@ -109,18 +113,10 @@ namespace SizeOnDisk.ViewModel
         private void CallOpenCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
-            try
-            {
-                if (dialog.ShowDialog(new WrapperIWin32Window(System.Windows.Application.Current.MainWindow)) == System.Windows.Forms.DialogResult.OK)
-                {
-                    this.AddRootFolder(dialog.SelectedPath);
-                }
-            }
-            finally
-            {
-                dialog.Dispose();
-            }
+
+            OpenFolderDialog dialog = new OpenFolderDialog();
+            if (dialog.ShowDialog(new WrapperIWin32Window(System.Windows.Application.Current.MainWindow)))
+                this.AddRootFolder(dialog.Folder);
         }
 
         private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)

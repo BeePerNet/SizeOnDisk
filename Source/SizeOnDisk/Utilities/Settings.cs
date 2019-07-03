@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 
 namespace SizeOnDisk.Properties

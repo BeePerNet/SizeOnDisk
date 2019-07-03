@@ -16,15 +16,7 @@ namespace SizeOnDisk.Converters
 
             FileAttributes attributes = (FileAttributes)value;
 
-            if (targetType == typeof(Brush))
-            {
-                if ((attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted)
-                    return Brushes.LimeGreen;
-                if ((attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
-                    return Brushes.Blue;
-                return SystemColors.ControlTextBrush;
-            }
-            else if (targetType == typeof(string))
+            if (targetType == typeof(string))
             {
                 StringBuilder sb = new StringBuilder(15);
                 if (((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly))

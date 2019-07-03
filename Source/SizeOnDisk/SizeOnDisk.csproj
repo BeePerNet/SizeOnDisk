@@ -104,6 +104,12 @@
   <PropertyGroup />
   <PropertyGroup />
   <ItemGroup>
+    <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net47\MahApps.Metro.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="PresentationFramework.AeroLite" />
@@ -119,6 +125,9 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -160,6 +169,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Shell\OpenFolderDialog.cs" />
     <Compile Include="Utilities\ExceptionBox.xaml.cs">
       <DependentUpon>ExceptionBox.xaml</DependentUpon>
     </Compile>
@@ -167,10 +177,10 @@
     <Compile Include="Utilities\LittleFileInfo.cs" />
     <Compile Include="Utilities\ReparsePoint.cs" />
     <Compile Include="Utilities\Settings.cs" />
-    <Compile Include="Utilities\ShellHelper.cs" />
+    <Compile Include="Shell\ShellHelper.cs" />
     <Compile Include="Utilities\TextExceptionFormatter.cs" />
     <Compile Include="Utilities\UserAccessControlHelper.cs" />
-    <Compile Include="Utilities\IOHelper.cs" />
+    <Compile Include="Shell\IOHelper.cs" />
     <Compile Include="Utilities\WrapperIWin32Window.cs" />
     <Compile Include="ViewModel\NotifyCollection.cs" />
     <Compile Include="ViewModel\PropertyChangedBase.cs" />
@@ -204,7 +214,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Resource Include="Themes\default.xaml">
+    <Resource Include="Themes\Default.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
@@ -280,6 +290,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="key.snk" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

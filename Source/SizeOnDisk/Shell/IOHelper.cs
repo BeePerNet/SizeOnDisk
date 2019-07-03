@@ -9,7 +9,7 @@ using System.Security.Permissions;
 using System.Text;
 using System.Diagnostics;
 
-namespace SizeOnDisk.Utilities
+namespace SizeOnDisk.Shell
 {
     /// <summary>
     /// Profide all needed Win32Api to bypass the PathTooLongException.

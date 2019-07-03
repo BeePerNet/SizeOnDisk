@@ -1,7 +1,10 @@
-﻿using SizeOnDisk.Utilities;
+﻿using SizeOnDisk.Shell;
+using SizeOnDisk.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Security;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -182,6 +185,12 @@ namespace SizeOnDisk.ViewModel
             if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
                 return;
 
+            /*IShellProperty property = this.shellObject.Properties.System.Size;
+            this.FileSize = Convert.ToInt64(property.ValueAsObject);
+            property = this.shellObject.Properties.System.FileAllocationSize;
+            this.DiskSize = Convert.ToInt64(property.ValueAsObject);*/
+
+
             LittleFileInfo fileInfo = new Utilities.LittleFileInfo(this.Path);
             this.FileSize = fileInfo.Size;
             this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
@@ -193,23 +202,23 @@ namespace SizeOnDisk.ViewModel
 
         public VMFileAttributes Attributes
         {
-            get { return _Attributes; }
+            get
+            {
+                return _Attributes;
+            }
         }
 
         public void RefreshOnView()
         {
-            if (Attributes == null)
+            try
             {
-                try
-                {
-                    _Attributes = new VMFileAttributes(this);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    this.IsProtected = true;
-                }
-                this.OnPropertyChanged("Attributes");
+                _Attributes = new VMFileAttributes(this);
             }
+            catch (UnauthorizedAccessException)
+            {
+                this.IsProtected = true;
+            }
+            this.OnPropertyChanged("Attributes");
         }
 
         //For VisualStudio Watch
@@ -366,6 +375,5 @@ namespace SizeOnDisk.ViewModel
         }
 
         #endregion Commands
-
     }
 }

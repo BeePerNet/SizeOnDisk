@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Security;
 using System;
+using SizeOnDisk.Shell;
 
 namespace SizeOnDisk.Utilities
 {
