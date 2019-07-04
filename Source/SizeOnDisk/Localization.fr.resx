@@ -375,4 +375,13 @@
   <data name="PermanentDelete" xml:space="preserve">
     <value>_Supprimer définitivement</value>
   </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Modifier</value>
+  </data>
+  <data name="Explore" xml:space="preserve">
+    <value>Explorer</value>
+  </data>
+  <data name="OpenAs" xml:space="preserve">
+    <value>Ouvrir avec</value>
+  </data>
 </root>

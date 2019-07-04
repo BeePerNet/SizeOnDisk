@@ -1,4 +1,4 @@
-﻿<Application x:Class="SizeOnDisk.App"
+<Application x:Class="SizeOnDisk.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml" Startup="Application_Startup">
@@ -11,13 +11,6 @@
                 <!--ResourceDictionary Source="/PresentationFramework.Aero2, Version=4.0.0.0,
                        Culture=neutral, PublicKeyToken=31bf3856ad364e35,
                        ProcessorArchitecture=MSIL;component/themes/Aero2.normalcolor.xaml" /-->
-                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                <!--Accent and AppTheme setting -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 <ResourceDictionary Source="Themes/Default.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

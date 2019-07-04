@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace SizeOnDisk.Shell
 {
     //Copyright (c) 2011 Josip Medved <jmedved@jmedved.com>  http://www.jmedved.com
-         
+
     internal class OpenFolderDialog
     {
 
@@ -41,37 +40,37 @@ namespace SizeOnDisk.Shell
 
         private bool ShowVistaDialog(IWin32Window owner)
         {
-            var frm = (ShellHelper.IFileDialog)(new ShellHelper.FileOpenDialogRCW());
-            FileOpenOptions options;
+            var frm = (ShellHelper.SafeNativeMethods.IFileDialog)(new ShellHelper.SafeNativeMethods.FileOpenDialogRCW());
+            ShellHelper.SafeNativeMethods.FileOpenOptions options;
             frm.GetOptions(out options);
-            options |= FileOpenOptions.PickFolders | FileOpenOptions.ForceFilesystem | FileOpenOptions.NoValidate | FileOpenOptions.NoTestFileCreate | FileOpenOptions.DontAddToRecent;
+            options |= ShellHelper.SafeNativeMethods.FileOpenOptions.PickFolders | ShellHelper.SafeNativeMethods.FileOpenOptions.ForceFilesystem | ShellHelper.SafeNativeMethods.FileOpenOptions.NoValidate | ShellHelper.SafeNativeMethods.FileOpenOptions.NoTestFileCreate | ShellHelper.SafeNativeMethods.FileOpenOptions.DontAddToRecent;
             frm.SetOptions(options);
             if (this.InitialFolder != null)
             {
-                ShellHelper.IShellItem directoryShellItem;
+                ShellHelper.SafeNativeMethods.IShellItem directoryShellItem;
                 var riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
-                if (ShellHelper.SHCreateItemFromParsingName(this.InitialFolder, IntPtr.Zero, ref riid, out directoryShellItem) == (int)HResult.Ok)
+                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.InitialFolder, IntPtr.Zero, ref riid, out directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                 {
                     frm.SetFolder(directoryShellItem);
                 }
             }
             if (this.DefaultFolder != null)
             {
-                ShellHelper.IShellItem directoryShellItem;
+                ShellHelper.SafeNativeMethods.IShellItem directoryShellItem;
                 var riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
-                if (ShellHelper.SHCreateItemFromParsingName(this.DefaultFolder, IntPtr.Zero, ref riid, out directoryShellItem) == (int)HResult.Ok)
+                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.DefaultFolder, IntPtr.Zero, ref riid, out directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                 {
                     frm.SetDefaultFolder(directoryShellItem);
                 }
             }
 
-            if (frm.Show(owner.Handle) == (int)HResult.Ok)
+            if (frm.Show(owner.Handle) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
             {
-                ShellHelper.IShellItem shellItem;
-                if (frm.GetResult(out shellItem) == (int)HResult.Ok)
+                ShellHelper.SafeNativeMethods.IShellItem shellItem;
+                if (frm.GetResult(out shellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                 {
                     IntPtr pszString;
-                    if (shellItem.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out pszString) == (int)HResult.Ok)
+                    if (shellItem.GetDisplayName(ShellHelper.SafeNativeMethods.SIGDN.SIGDN_FILESYSPATH, out pszString) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                     {
                         if (pszString != IntPtr.Zero)
                         {

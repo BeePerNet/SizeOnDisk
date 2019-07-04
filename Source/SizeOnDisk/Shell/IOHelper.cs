@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
-using Microsoft.Win32.SafeHandles;
 using System.Security.Permissions;
 using System.Text;
-using System.Diagnostics;
 
 namespace SizeOnDisk.Shell
 {
@@ -77,10 +77,6 @@ namespace SizeOnDisk.Shell
                 return builder.ToString();
             }
 
-            private static string GetShellPath(string FullPath)
-            {
-                return GetShellPath(new string[] { FullPath });
-            }
 
             private static SHFILEOPSTRUCT GetShellOperationInfo(FileOperationType OperationType, FileOperationFlags OperationFlags, string[] SourcePaths, string TargetPath)
             {
@@ -162,7 +158,7 @@ namespace SizeOnDisk.Shell
                 }
                 throw new OperationCanceledException();
             }
-                                                         
+
             /// <summary>
             /// Send file to recycle bin
             /// </summary>
@@ -394,7 +390,7 @@ namespace SizeOnDisk.Shell
                 else if (num == 2)
                     return;
                 else if (num != 0) //throw new Win32Exception(num);
-                return;
+                    return;
             }
         }
 

@@ -382,7 +382,19 @@
   <data name="EditKey" xml:space="preserve">
     <value>Ctrl+E</value>
   </data>
-  <data name="EditText" xml:space="preserve">
-    <value>_Edit</value>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="OpenAs" xml:space="preserve">
+    <value>Open with</value>
+  </data>
+  <data name="Explore" xml:space="preserve">
+    <value>Explore</value>
+  </data>
+  <data name="ExploreKey" xml:space="preserve">
+    <value>Ctrl+N</value>
+  </data>
+  <data name="OpenAsKey" xml:space="preserve">
+    <value>Ctrl+Alt+O</value>
   </data>
 </root>

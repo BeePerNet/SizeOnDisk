@@ -9,11 +9,37 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
     public class VMFolder : VMFile
     {
+        //public static readonly RoutedCommand DoucleClickCommand = new RoutedCommand("DoubleClick", typeof(VMFolder), new InputGestureCollection(new InputGesture[] { new MouseGesture(MouseAction.LeftDoubleClick) }));
+
+        /*public override void AddInputModels(InputBindingCollection bindingCollection)
+        {
+            base.AddInputModels(bindingCollection);
+            bindingCollection.Add(new MouseBinding(DoucleClickCommand, new MouseGesture(MouseAction.LeftDoubleClick)));
+        }*/
+
+        /*public override void AddCommandModels(CommandBindingCollection bindingCollection)
+        {
+            base.AddCommandModels(bindingCollection);
+            bindingCollection.Add(new CommandBinding(DoucleClickCommand, CallDoucleClickCommand));
+        }
+
+        private static void CallDoucleClickCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            VMFolder folder = GetViewModelObject<VMFolder>(e.OriginalSource);
+            if (folder != null)
+            {
+                e.Handled = true;
+                folder.IsSelected = true;
+            }
+        }*/
+
+
         #region fields
 
         private readonly Dispatcher _Dispatcher;
@@ -84,8 +110,9 @@ namespace SizeOnDisk.ViewModel
                     {
                         new Thread(() =>
                         {
+                            //Parallel.ForEach(_InternalChilds, (T) => T.RefreshOnView());
                             this.Childs.ToList().ForEach((T) => T.RefreshOnView());
-                        //Parallel.ForEach(_InternalChilds, (T) => T.RefreshOnView());
+                            //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
                         }).Start();
                     }
                 }
@@ -130,6 +157,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+
         [SuppressMessage("Microsoft.Design", "CA1031")]
         public override void Refresh(uint clusterSize, ParallelOptions parallelOptions)
         {
@@ -149,6 +177,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     //Parallel.ForEach(_InternalChilds, parallelOptions, (T) => T.RefreshOnView());
                     this.Childs.ToList().ForEach((T) => T.RefreshOnView());
+                    //this.Childs.ToList().AsParallel().WithCancellation(parallelOptions.CancellationToken).ForAll((T) => T.RefreshOnView());
                 }
 
                 Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));

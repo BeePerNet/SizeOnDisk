@@ -1,15 +1,15 @@
-﻿using System.ComponentModel;
+﻿using SizeOnDisk.Shell;
+using SizeOnDisk.Utilities;
+using SizeOnDisk.ViewModel;
+using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using SizeOnDisk.Utilities;
-using SizeOnDisk.ViewModel;
-using System.IO;
-using SizeOnDisk.Shell;
+using WPFByYourCommand;
 
 namespace SizeOnDisk
 {
@@ -37,7 +37,7 @@ namespace SizeOnDisk
             this.RunAsAdmin.IsEnabled = !UserAccessControlHelper.IsProcessElevated;
             _RootHierarchy = this.DataContext as VMRootHierarchy;
 
-            
+
 
             //CanExecuteRoutedEventHandler _handler = new CanExecuteRoutedEventHandler(OnCanExecuteRoutedEventHandler);
 
@@ -65,17 +65,6 @@ namespace SizeOnDisk
         private VMRootHierarchy _RootHierarchy;
         private Legend _Legend;
 
-        private void _Datagrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            DataGrid datagrid = sender as DataGrid;
-            if (datagrid.SelectedItem != null && datagrid.SelectedItem is VMFolder)
-            {
-                VMFolder folder = (datagrid.SelectedItem as VMFolder);
-                folder.IsSelected = true;
-                e.Handled = true;
-            }
-        }
-
         /// <summary>
         /// When selection changed, scroll to the first item of the list
         /// </summary>
@@ -94,6 +83,25 @@ namespace SizeOnDisk
                 e.Handled = true;
             }
         }
+
+        private void Selector_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            VMFolder folder = CommandViewModel.GetViewModelObject<VMFolder>(sender);
+            if (folder != null)
+            {
+                folder.IsSelected = true;
+                e.Handled = true;
+            }
+
+            /*Selector selector = sender as Selector;
+            if (selector.SelectedItem != null && selector.SelectedItem is VMFolder)
+            {
+                VMFolder folder = (selector.SelectedItem as VMFolder);
+                folder.IsSelected = true;
+                e.Handled = true;
+            }*/
+        }
+
 
         private void RunAsAdmin_Click(object sender, RoutedEventArgs e)
         {
@@ -174,7 +182,7 @@ namespace SizeOnDisk
                 VMFile[] vmfiles = Listing.SelectedItems.OfType<VMFile>().ToArray();
                 VMFolder parent = vmfiles.First().Parent;
                 string[] files = vmfiles.Select(T => T.Path).ToArray();
-                
+
                 if (IOHelper.SafeNativeMethods.MoveToRecycleBin(files))
                 {
                     foreach (VMFile vmfile in vmfiles)

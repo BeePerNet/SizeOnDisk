@@ -78,13 +78,13 @@ namespace SizeOnDisk.ViewModel
             this.IsExpanded = true;
             this.IsSelected = true;
 
-            VMFolder newFolder = new VMFolder(this, "Folder 1");
+            VMFile newFolder = new VMFolder(this, "Folder 1");
             this.Childs.Add(newFolder);
             newFolder = new VMFolder(this, "Folder 2");
             this.Childs.Add(newFolder);
-            newFolder = new VMFolder(this, "Folder 3");
+            newFolder = new VMFile(this, "File 1");
             this.Childs.Add(newFolder);
-            this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
+            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
 
         }
 
@@ -158,6 +158,7 @@ namespace SizeOnDisk.ViewModel
                     try
                     {
                         _Timer.Start();
+                        this.RefreshOnView();
                         this.Refresh(parallelOptions);
                     }
                     finally

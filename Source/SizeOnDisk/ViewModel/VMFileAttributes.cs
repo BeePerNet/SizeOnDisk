@@ -1,17 +1,14 @@
 ﻿using Microsoft.Win32;
-using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
+using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFileAttributes
+    public class VMFileAttributes : ObservableObject
     {
         private readonly string _FileType;
         private readonly FileAttributes _Attributes;
@@ -84,7 +81,7 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return _Attributes.HasFlag(FileAttributes.Hidden);
+                return !(_vmFile is VMRootFolder) && _Attributes.HasFlag(FileAttributes.Hidden);
             }
         }
 
@@ -120,52 +117,12 @@ namespace SizeOnDisk.ViewModel
                         fileType = String.Format(CultureInfo.CurrentCulture, Localization.FileTypeUnkown, extension.Replace(".", ""));
                     }
                 }
-
-                // Cache the association so we don't traverse the registry again
-                associations.Add(extension, fileType);
+                if (!associations.ContainsKey(extension))
+                    // Cache the association so we don't traverse the registry again
+                    associations.Add(extension, fileType);
             }
 
             return associations[extension];
-        }
-
-
-        public BitmapSource Icon
-        {
-            get
-            {
-                // Create a native shellitem from our path
-                Guid guid = new Guid(ShellHelper.ShellIIDGuid.IShellItem);
-                int retCode = ShellHelper.SHCreateItemFromParsingName(this._vmFile.Path, IntPtr.Zero, ref guid, out ShellHelper.IShellItem nativeShellItem);
-
-                if (retCode < 0)
-                {
-                    throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
-                }
-
-                ShellHelper.Size nativeSIZE = new ShellHelper.Size();
-                nativeSIZE.Width = Convert.ToInt32(16);
-                nativeSIZE.Height = Convert.ToInt32(16);
-
-                int hr = ((ShellHelper.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, SIIGBF.IconOnly, out IntPtr hBitmap);
-                if (hr != (int)HResult.Ok)
-                    throw new ExternalException("HResult Exception", (int)hr);
-
-
-                // return a System.Media.Imaging.BitmapSource
-                // Use interop to create a BitmapSource from hBitmap.
-                BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
-                    hBitmap,
-                    IntPtr.Zero,
-                    System.Windows.Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-
-                // delete HBitmap to avoid memory leaks
-                ShellHelper.DeleteObject(hBitmap);
-
-                returnValue.Freeze();
-
-                return returnValue;
-            }
         }
 
 

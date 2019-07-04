@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SizeOnDisk.ViewModel;
+using System;
 using System.Windows.Data;
 using System.Windows.Shell;
-using SizeOnDisk.ViewModel;
 
 namespace SizeOnDisk.Converters
 {

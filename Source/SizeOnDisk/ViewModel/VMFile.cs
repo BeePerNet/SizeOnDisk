@@ -1,23 +1,47 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Security;
-using System.Security.Permissions;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
     public class VMFile : CommandViewModel
     {
+        public static readonly CommandEx OpenCommand = new CommandEx("open", "PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
+        public static readonly CommandEx OpenAsCommand = new CommandEx("openas", "OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "OpenAsKey"));
+        public static readonly CommandEx EditCommand = new CommandEx("edit", "Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "EditKey"));
+        public static readonly CommandEx ExploreCommand = new CommandEx("explore", "Explore", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
+        public static readonly RoutedCommand PermanentDeleteCommand = new RoutedCommand("permanentdelete", typeof(VMFile));
+        public static readonly CommandEx PrintCommand = new CommandEx("print", "PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
+
+        public override void AddCommandModels(CommandBindingCollection bindingCollection)
+        {
+            bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(ExploreCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(ApplicationCommands.Find, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(ApplicationCommands.Print, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(ApplicationCommands.Properties, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(ApplicationCommands.Delete, CallDeleteCommand, CanCallDeleteCommand));
+            bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
+        }
+
+        public override void AddInputModels(InputBindingCollection bindingCollection)
+        {
+            //bindingCollection.Add(new InputBinding(EditCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
+            //bindingCollection.Add(new InputBinding(PermanentDeleteCommand, new KeyGesture(Key.Delete, ModifierKeys.Shift)));*/
+        }
+
+
         #region fields
 
-        private VMFolder _Parent;
-        private string _Path;
         private string _Name;
 
         private long? _DiskSize = null;
@@ -33,26 +57,26 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
+        [DesignOnly(true)]
+        internal VMFile(VMFolder parent, string name) : this(parent, name, null)
+        {
+
+        }
+
         internal VMFile(VMFolder parent, string name, string path)
         {
             _Name = name;
-            _Path = path;
-            _Parent = parent;
+            Path = path;
+            Parent = parent;
         }
 
         #endregion constructor
 
         #region properties
 
-        public VMFolder Parent
-        {
-            get { return _Parent; }
-        }
+        public VMFolder Parent { get; }
 
-        public string Path
-        {
-            get { return _Path; }
-        }
+        public string Path { get; private set; }
 
         public string Name
         {
@@ -77,7 +101,7 @@ namespace SizeOnDisk.ViewModel
                     Directory.Move(this.Path, newPath);
                 }
                 _Name = newName;
-                _Path = newPath;
+                Path = newPath;
                 this.OnPropertyChanged("Name");
                 this.OnPropertyChanged("Path");
             }
@@ -153,6 +177,11 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        /*public virtual bool IsHidden
+        {
+            get { return Attributes?.IsHidden ?? false; }
+        }*/
+
         public virtual bool IsSelected
         {
             get { return _isSelected; }
@@ -163,7 +192,7 @@ namespace SizeOnDisk.ViewModel
                     _isSelected = value;
                     if (_isSelected && this.Parent != null)
                     {
-                        this._Parent.IsExpanded = true;
+                        this.Parent.IsExpanded = true;
                         this.SelectItem();
                     }
                     this.OnPropertyChanged("IsSelected");
@@ -177,19 +206,13 @@ namespace SizeOnDisk.ViewModel
 
         protected virtual void SelectItem()
         {
-            this._Parent.SelectItem();
+            this.Parent.SelectItem();
         }
 
         public virtual void Refresh(uint clusterSize, ParallelOptions parallelOptions)
         {
             if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
                 return;
-
-            /*IShellProperty property = this.shellObject.Properties.System.Size;
-            this.FileSize = Convert.ToInt64(property.ValueAsObject);
-            property = this.shellObject.Properties.System.FileAllocationSize;
-            this.DiskSize = Convert.ToInt64(property.ValueAsObject);*/
-
 
             LittleFileInfo fileInfo = new Utilities.LittleFileInfo(this.Path);
             this.FileSize = fileInfo.Size;
@@ -198,18 +221,21 @@ namespace SizeOnDisk.ViewModel
                 + clusterSize - 1) / clusterSize) * clusterSize;
         }
 
-        private VMFileAttributes _Attributes = null;
-
+        VMFileAttributes _Attributes;
         public VMFileAttributes Attributes
         {
             get
             {
+                if (_Attributes == null)
+                    RefreshOnView();
                 return _Attributes;
             }
         }
 
         public void RefreshOnView()
         {
+            if (this is VMRootHierarchy)
+                return;
             try
             {
                 _Attributes = new VMFileAttributes(this);
@@ -224,43 +250,19 @@ namespace SizeOnDisk.ViewModel
         //For VisualStudio Watch
         public override string ToString()
         {
-            return string.Concat(this.GetType().Name, ": ", _Path);
+            return string.Concat(this.GetType().Name, ": ", Path);
         }
 
         #endregion functions
 
         #region Commands
 
-        public static readonly CommandEx OpenCommand = new CommandEx("Open", "PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
-        public static readonly RoutedCommand OpenAsCommand = new RoutedCommand("OpenAs", typeof(VMFile));
-        public static readonly RoutedCommand EditCommand = new RoutedCommand("Edit", typeof(VMFile));
-        public static readonly RoutedCommand ExploreCommand = new RoutedCommand("explore", typeof(VMFile));
-        public static readonly RoutedCommand PermanentDeleteCommand = new RoutedCommand("permanentdelete", typeof(VMFile));
-
-        public override void AddCommandModels(CommandBindingCollection bindingCollection)
-        {
-            bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ExploreCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Find, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Print, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Properties, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Delete, CallDeleteCommand, CanCallDeleteCommand));
-            bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
-        }
-
-        public override void AddInputModels(InputBindingCollection bindingCollection)
-        {
-            /*bindingCollection.Add(new InputBinding(EditCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
-            bindingCollection.Add(new InputBinding(PermanentDeleteCommand, new KeyGesture(Key.Delete, ModifierKeys.Shift)));*/
-        }
 
         private static void CallDeleteCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
-            VMFile file = GetViewModelObject(e.OriginalSource);
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
@@ -271,7 +273,7 @@ namespace SizeOnDisk.ViewModel
         {
             e.Handled = true;
 
-            VMFile file = GetViewModelObject(e.OriginalSource);
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
@@ -309,12 +311,8 @@ namespace SizeOnDisk.ViewModel
             e.Handled = true;
             e.CanExecute = false;
 
-            VMFile file = GetViewModelObject(e.OriginalSource);
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
-                return;
-
-            RoutedCommand command = e.Command as RoutedCommand;
-            if (command == null)
                 return;
 
             e.CanExecute = !(file is VMRootFolder);
@@ -325,7 +323,7 @@ namespace SizeOnDisk.ViewModel
             e.Handled = true;
             e.CanExecute = false;
 
-            VMFile file = GetViewModelObject(e.OriginalSource);
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
                 return;
 
@@ -336,7 +334,8 @@ namespace SizeOnDisk.ViewModel
             if (command == ApplicationCommands.Properties
                 || (command == ExploreCommand && (file.IsFile || !file.IsProtected))
                 || (command == ApplicationCommands.Find && !file.IsFile && !file.IsProtected)
-                || (command == OpenAsCommand && file.IsFile))
+                || (command == OpenAsCommand && file.IsFile
+                || (command == OpenCommand && file is VMFolder && !(file is VMRootHierarchy) && !file.IsProtected)))
             {
                 e.CanExecute = true;
                 return;
@@ -346,11 +345,11 @@ namespace SizeOnDisk.ViewModel
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]
-        private static void CallShellCommand(object sender, ExecutedRoutedEventArgs e)
+        protected virtual void CallShellCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
-            VMFile file = GetViewModelObject(e.OriginalSource);
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
@@ -358,22 +357,72 @@ namespace SizeOnDisk.ViewModel
             if (command == null)
                 throw new ArgumentNullException("e", "Command is not RoutedCommand");
 
-            string path = file.Path;
-            if (e.Command == ExploreCommand && file.IsFile)
-                path = file.Parent.Path;
-
-            ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
+            if (file is VMFolder && command == OpenCommand)
+                ShellHelper.ShellExecute(file.Path, OpenCommand.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
+            else
+            {
+                string path = file.Path;
+                if (e.Command == ExploreCommand && file.IsFile)
+                    path = file.Parent.Path;
+                ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
+            }
         }
 
-        private static VMFile GetViewModelObject(object originalSource)
-        {
-            FrameworkElement element = originalSource as FrameworkElement;
-            if (element == null)
-                return null;
-
-            return element.DataContext as VMFile;
-        }
 
         #endregion Commands
+
+
+
+
+
+        BitmapSource _icon = null;
+        public BitmapSource Icon
+        {
+            get
+            {
+                if (_icon == null)
+                {
+                    _icon = ShellHelper.GetIcon(this.Path, 16, false);
+                }
+                return _icon;
+            }
+        }
+
+        private void RefreshThumbnail()
+        {
+            _thumbnail = ShellHelper.GetIcon(this.Path, 96, false);
+            OnPropertyChanged(nameof(Thumbnail));
+            Task.Run(() =>
+            {
+                BitmapSource tmp = null;
+                Task task = Task.Run(() =>
+                {
+                    tmp = ShellHelper.GetIcon(this.Path, 96, true);
+                });
+                if (task.Wait(2000))
+                {
+                    if (tmp != null)
+                    {
+                        _thumbnail = tmp;
+                        OnPropertyChanged(nameof(Thumbnail));
+                    }
+                }
+            });
+        }
+
+        BitmapSource _thumbnail = null;
+        //Seems to have problems with VOB
+        public BitmapSource Thumbnail
+        {
+            get
+            {
+                if (_thumbnail == null)
+                {
+                    RefreshThumbnail();
+                }
+                return _thumbnail;
+            }
+        }
+
     }
 }

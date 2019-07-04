@@ -1,7 +1,7 @@
 ﻿
 namespace SizeOnDisk.ViewModel
 {
-    public enum TaskExecutionState:int
+    public enum TaskExecutionState : int
     {
         Ready = 0,
         Running = 1,

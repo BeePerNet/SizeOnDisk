@@ -1,9 +1,7 @@
-﻿using System;
-using System.Windows;
-using MahApps.Metro;
-using Microsoft.Win32;
-using SizeOnDisk.Properties;
+﻿using SizeOnDisk.Properties;
 using SizeOnDisk.Utilities;
+using System;
+using System.Windows;
 
 namespace SizeOnDisk
 {
@@ -15,7 +13,7 @@ namespace SizeOnDisk
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            bool usingDarkTheme = false;
+            /*bool usingDarkTheme = false;
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
             {
                 if (key != null)
@@ -30,7 +28,7 @@ namespace SizeOnDisk
             ThemeManager.ChangeAppStyle(Application.Current,
                                         //appStyle.Item2,
                                         ThemeManager.GetAccent("Blue"),
-                                        ThemeManager.GetAppTheme(usingDarkTheme ? "BaseDark": "BaseLight"));
+                                        ThemeManager.GetAppTheme(usingDarkTheme ? "BaseDark": "BaseLight"));*/
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             this.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(App_DispatcherUnhandledException);

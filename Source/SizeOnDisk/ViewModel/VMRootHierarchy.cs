@@ -4,10 +4,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Threading;
 using WPFByYourCommand;
 
@@ -37,7 +35,7 @@ namespace SizeOnDisk.ViewModel
             {
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
                 this.Childs.Add(newFolder);
-                this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
+                this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
             }
         }
 
@@ -47,7 +45,7 @@ namespace SizeOnDisk.ViewModel
         {
             VMRootFolder newFolder = new VMRootFolder(this, path, path, this.Dispatcher);
             this.Childs.Add(newFolder);
-            this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
+            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
             this.OnPropertyChanged("Folders");
             newFolder.RefreshAsync();
         }
@@ -58,7 +56,7 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException("folder", "Can not remove null item");
             this.SelectedRootFolder = null;
             this.Childs.Remove(folder);
-            this.Folders = new Collection<VMFolder>(this.Childs.Cast<VMFolder>().ToList());
+            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
             this.OnPropertyChanged("Folders");
             folder.Dispose();
         }

@@ -26,29 +26,42 @@
         <vm:VMRootHierarchy />
     </Window.DataContext>
     <Window.Resources>
+        <Style x:Key="ColoredName" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Compressed">
+                    <Setter Property="Foreground" Value="Blue"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Encrypted">
+                    <Setter Property="Foreground" Value="LimeGreen"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsProtected}" Value="true">
+                    <Setter Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Attributes.IsHidden}" Value="true">
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="{x:Type StatusBarItem}" TargetType="StatusBarItem">
-            <Setter Property="Margin" Value="3,0,3,10" />
+            <Setter Property="Margin" Value="3,0,3,1" />
         </Style>
         <cmd:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <conv:IsRunningConverter x:Key="IsRunningConverter" />
         <conv:EnumValueConverter x:Key="EnumValueConverter" />
         <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
-        <ContextMenu x:Key="VMContextMenu">
-            <!--MenuItem Command="vm:VMFile.OpenCommand" Header="{lex:Loc Key=PresentationCore:ExceptionStringTable:OpenText}" InputGestureText="{lex:Loc Key=PresentationCore:ExceptionStringTable:OpenKey}" /-->
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.OpenCommand" />
-            <MenuItem Command="vm:VMFile.EditCommand" Header="{lex:Loc EditText}" InputGestureText="{lex:Loc EditKey}" />
-            <MenuItem Command="vm:VMFile.OpenAsCommand" />
-            <MenuItem Command="Print">
+        <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}">
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.OpenCommand">
                 <MenuItem.Icon>
-                    <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/PrintHS.png" />
+                    <Image Source="{Binding Icon}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.EditCommand" />
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.OpenAsCommand" />
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.PrintCommand" />
             <Separator />
-            <MenuItem Command="vm:VMFile.ExploreCommand" />
-            <MenuItem Command="Find">
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.ExploreCommand" />
+            <MenuItem cmd:CommandExLoc.Command="Find">
                 <MenuItem.Icon>
                     <cmd:AutoDisablingImage Width="16"
                                            Height="16"
@@ -81,7 +94,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ToolBarTray DockPanel.Dock="Top">
+        <ToolBarTray  Grid.Row="0">
             <ToolBar>
                 <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.OpenFolderCommand" Margin="2" />
                 <Button ToolTip="{lex:Loc Recalculate}"
@@ -145,6 +158,11 @@
                     Click="AboutButton_Click">
                     <TextBlock Text="?" />
                 </Button>
+                <Separator />
+                <ToggleButton IsChecked="True" Content="List" />
+                <ToggleButton IsChecked="True" Content="Details" />
+                <Separator />
+                <Button cmd:CommandExLoc.Command="vm:VMFile.OpenCommand" />
             </ToolBar>
         </ToolBarTray>
         <Grid Grid.Row="1">
@@ -155,7 +173,6 @@
             </Grid.ColumnDefinitions>
             <TreeView Name="treeView"
                       BorderThickness="1"
-                      BorderBrush="{DynamicResource GrayBrush8}"
                       ItemsSource="{Binding Folders}"
                       SelectedItemChanged="_TreeView_SelectedItemChanged"
                       VirtualizingStackPanel.IsVirtualizing="True"
@@ -175,8 +192,18 @@
                         <Setter Property="ItemsSource"
                                 Value="{Binding Folders}" />
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Compressed">
+                                <Setter Property="Foreground" Value="Blue"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Encrypted">
+                                <Setter Property="Foreground" Value="LimeGreen"/>
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding IsProtected}" Value="true">
                                 <Setter Property="IsEnabled" Value="False" />
+                                <Setter Property="Foreground" Value="Red"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Attributes.IsHidden}" Value="true">
+                                <Setter Property="Opacity" Value="0.5" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -188,20 +215,55 @@
                           Width="6"
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
-            <DataGrid Grid.Column="2"
+            <ListView Grid.Column="2"
+                       Visibility="Hidden"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ContextMenu="{StaticResource VMContextMenu}"
+                    ItemsSource="{Binding Childs}"
+                    DataContext="{Binding ElementName=treeView, Path=SelectedItem}"
+                      Grid.IsSharedSizeScope="True">
+                <ListView.Resources>
+                    <Style TargetType="ListViewItem">
+                        <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
+                    </Style>
+                </ListView.Resources>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="104" MaxHeight="160">
+                            <Grid.RowDefinitions>
+                                <RowDefinition SharedSizeGroup="Icons" />
+                                <RowDefinition SharedSizeGroup="Names" />
+                            </Grid.RowDefinitions>
+                            <cmd:AutoDisablingImage Source="{Binding Thumbnail}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
+                            <TextBlock Style="{StaticResource ColoredName}" Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListView>
+            <DataGrid 
+                    Grid.Column="2"
                       BorderThickness="1"
-                      BorderBrush="{DynamicResource GrayBrush8}"
                       Name="Listing"
                       DataContext="{Binding ElementName=treeView, Path=SelectedItem}"
                       ItemsSource="{Binding Childs}"
-                      MouseDoubleClick="_Datagrid_MouseDoubleClick"
                       AutoGenerateColumns="False"
                       HeadersVisibility="Column"
                       ContextMenu="{StaticResource VMContextMenu}"
-                      ClipboardCopyMode="IncludeHeader">
+                      HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                      VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                      ClipboardCopyMode="IncludeHeader"
+                >
                 <DataGrid.Resources>
                     <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
                         <Setter Property="TextAlignment" Value="Right" />
+                    </Style>
+                    <Style TargetType="DataGridRow">
+                        <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.CommandBindings>
@@ -214,29 +276,14 @@
                     <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <cmd:AutoDisablingImage Source="{Binding Attributes.Icon}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
+                                <cmd:AutoDisablingImage Source="{Binding Icon}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn SortMemberPath="Name"
                                         Header="{lex:Loc Name}"
-                                        Binding="{Binding Name}">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Compressed">
-                                        <Setter Property="Foreground" Value="Blue"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Encrypted">
-                                        <Setter Property="Foreground" Value="LimeGreen"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsProtected}" Value="true">
-                                        <Setter Property="Foreground" Value="Red"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                                        Binding="{Binding Name}"
+                                        ElementStyle="{StaticResource ColoredName}" />
                     <DataGridTextColumn SortMemberPath="Attributes.FileType"
                                         Header="{lex:Loc FileType}"
                                         IsReadOnly="True"

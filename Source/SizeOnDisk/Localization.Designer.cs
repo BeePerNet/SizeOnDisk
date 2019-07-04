@@ -151,6 +151,15 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit.
+        /// </summary>
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Ctrl+E.
         /// </summary>
         public static string EditKey {
@@ -160,11 +169,20 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à _Edit.
+        ///   Recherche une chaîne localisée semblable à Explore.
         /// </summary>
-        public static string EditText {
+        public static string Explore {
             get {
-                return ResourceManager.GetString("EditText", resourceCulture);
+                return ResourceManager.GetString("Explore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ctrl+N.
+        /// </summary>
+        public static string ExploreKey {
+            get {
+                return ResourceManager.GetString("ExploreKey", resourceCulture);
             }
         }
         
@@ -303,6 +321,24 @@ namespace SizeOnDisk {
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Open with.
+        /// </summary>
+        public static string OpenAs {
+            get {
+                return ResourceManager.GetString("OpenAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ctrl+Alt+O.
+        /// </summary>
+        public static string OpenAsKey {
+            get {
+                return ResourceManager.GetString("OpenAsKey", resourceCulture);
             }
         }
         
