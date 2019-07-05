@@ -1,8 +1,12 @@
 # SizeOnDisk
 
+## Downloads
+
 [Setup](https://github.com/BeePerNet/SizeOnDisk/releases/download/2.0.0.1/SizeOnDiskSetup.msi)
 
 [Portable](https://github.com/BeePerNet/SizeOnDisk/releases/download/2.0.0.1/SizeOnDiskPortable.zip)
+
+## Description
 
 A way to know where disk space is used.  
 The main goal of this software is to parse all files as fast as possible to get their size.
@@ -14,6 +18,10 @@ Le but principal du logiciel est de passer tous les fichiers du disque dur le pl
 
 Last known as: [SizeOnDisk on CodePlex](https://archive.codeplex.com/?p=sizeondisk)  
 Anciennement: [SizeOnDisk sur CodePlex](https://archive.codeplex.com/?p=sizeondisk)
+
+
+
+
 
 Ce projet vous est utile, offrez-moi un café :)  
 This project is helpful, give me a cup of coffee :)  
