@@ -61,7 +61,7 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Attr..
+        ///   Recherche une chaîne localisée semblable à Attributes.
         /// </summary>
         public static string Attributes {
             get {
@@ -219,15 +219,6 @@ namespace SizeOnDisk {
         public static string FileType {
             get {
                 return ResourceManager.GetString("FileType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à File Folder.
-        /// </summary>
-        public static string FileTypeFolder {
-            get {
-                return ResourceManager.GetString("FileTypeFolder", resourceCulture);
             }
         }
         
@@ -465,15 +456,6 @@ namespace SizeOnDisk {
         public static string TotalFolders {
             get {
                 return ResourceManager.GetString("TotalFolders", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à UISizeFormatType.
-        /// </summary>
-        public static string UISizeFormatType {
-            get {
-                return ResourceManager.GetString("UISizeFormatType", resourceCulture);
             }
         }
     }

@@ -189,15 +189,6 @@
   <data name="TotalFolders" xml:space="preserve">
     <value>تعداد کل فولدر‌ها در فولدر انتخاب شده</value>
   </data>
-  <data name="UISizeFormatType_Bytes" xml:space="preserve">
-    <value>بایت</value>
-  </data>
-  <data name="UISizeFormatType_FactorBy1024" xml:space="preserve">
-    <value>با 1024 فاکتور کن</value>
-  </data>
-  <data name="UISizeFormatType_KBytes" xml:space="preserve">
-    <value>کیلوبایت</value>
-  </data>
   <data name="Canceled" xml:space="preserve">
     <value>لغو شده</value>
   </data>

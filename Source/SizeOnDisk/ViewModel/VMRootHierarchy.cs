@@ -114,7 +114,9 @@ namespace SizeOnDisk.ViewModel
 
             OpenFolderDialog dialog = new OpenFolderDialog();
             if (dialog.ShowDialog(new WrapperIWin32Window(System.Windows.Application.Current.MainWindow)))
+            {
                 this.AddRootFolder(dialog.Folder);
+            }
         }
 
         private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)

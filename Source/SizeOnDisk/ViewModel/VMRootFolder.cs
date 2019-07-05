@@ -76,7 +76,7 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name)
         {
             this.IsExpanded = true;
-            this.IsSelected = true;
+            this.IsTreeSelected = true;
 
             VMFile newFolder = new VMFolder(this, "Folder 1");
             this.Childs.Add(newFolder);
@@ -91,9 +91,10 @@ namespace SizeOnDisk.ViewModel
         internal VMRootFolder(VMRootHierarchy parent, string name, string path, Dispatcher dispatcher)
             : base(parent, name, path, dispatcher)
         {
+            this.ExecutionState = TaskExecutionState.Running;
             _HardDrivePath = System.IO.Path.GetPathRoot(path);
             this.IsExpanded = true;
-            this.IsSelected = true;
+            this.IsTreeSelected = true;
         }
 
         #endregion creator
@@ -139,6 +140,7 @@ namespace SizeOnDisk.ViewModel
         [SuppressMessage("Microsoft.Design", "CA1031")]
         public void RefreshAsync()
         {
+            this.ExecutionState = TaskExecutionState.Running;
             if (_Timer == null)
             {
                 _Timer = new DispatcherTimer(DispatcherPriority.DataBind)

@@ -89,7 +89,7 @@ namespace SizeOnDisk
             VMFolder folder = CommandViewModel.GetViewModelObject<VMFolder>(sender);
             if (folder != null)
             {
-                folder.IsSelected = true;
+                folder.IsTreeSelected = true;
                 e.Handled = true;
             }
         }
@@ -167,39 +167,5 @@ namespace SizeOnDisk
             e.Handled = true;
         }
 
-        private void CommandBinding_DeleteExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (Listing.SelectedItems != null && Listing.SelectedItems.Count > 0)
-            {
-                VMFile[] vmfiles = Listing.SelectedItems.OfType<VMFile>().ToArray();
-                VMFolder parent = vmfiles.First().Parent;
-                string[] files = vmfiles.Select(T => T.Path).ToArray();
-
-                if (IOHelper.SafeNativeMethods.MoveToRecycleBin(files))
-                {
-                    foreach (VMFile vmfile in vmfiles)
-                    {
-                        if (!File.Exists(vmfile.Path) && !Directory.Exists(vmfile.Path))
-                        {
-                            parent.RemoveChild(vmfile);
-                        }
-                    }
-                    parent.RefreshCount();
-                    parent.RefreshParents();
-                }
-            }
-            e.Handled = true;
-        }
-
-        /*private void TreeView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            TreeViewItem treeViewItem = Helper.FindParentControl<TreeViewItem>(e.OriginalSource as DependencyObject);
-
-            if (treeViewItem != null)
-            {
-                treeViewItem.Focus();
-                e.Handled = true;
-            }
-        }*/
     }
 }

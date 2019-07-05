@@ -175,7 +175,7 @@
                         <Setter Property="IsExpanded"
                                 Value="{Binding IsExpanded, Mode=TwoWay}" />
                         <Setter Property="IsSelected"
-                                Value="{Binding IsSelected, Mode=TwoWay}" />
+                                Value="{Binding IsTreeSelected, Mode=TwoWay}" />
                         <Setter Property="ItemsSource"
                                 Value="{Binding Folders}" />
                         <Style.Triggers>
@@ -203,8 +203,8 @@
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
             <Border Grid.Column="2" Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
-                <!--Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}"-->
                 <ListView Grid.Column="2"
+                          SelectionMode="Extended"
                           cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                     SelectedItem="{Binding SelectedItem}"
                     BorderThickness="1"
@@ -215,6 +215,9 @@
                       Grid.IsSharedSizeScope="True">
                     <ListView.Resources>
                         <Style TargetType="ListViewItem">
+                            <Setter Property="IsSelected" 
+                                 Value="{Binding IsSelected, Mode=TwoWay, 
+                                 UpdateSourceTrigger=PropertyChanged}"/>
                             <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                         </Style>
                     </ListView.Resources>
@@ -227,10 +230,10 @@
                         <DataTemplate>
                             <Grid Width="104" MaxHeight="160">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition SharedSizeGroup="Icons" />
+                                    <RowDefinition SharedSizeGroup="Icons" MinHeight="96" />
                                     <RowDefinition SharedSizeGroup="Names" />
                                 </Grid.RowDefinitions>
-                                <cmd:AutoDisablingImage Source="{Binding Thumbnail}" Width="{Binding Thumbnail.PixelWidth}" Height="{Binding Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
+                                <cmd:AutoDisablingImage Source="{Binding Thumbnail}" Width="{Binding Thumbnail.PixelWidth}" Height="{Binding Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 <TextBlock Style="{StaticResource ColoredName}" Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
                             </Grid>
                         </DataTemplate>
@@ -238,9 +241,9 @@
                 </ListView>
             </Border>
             <Border Grid.Column="2" Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
-                <!--Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}"-->
                 <DataGrid 
-                          cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
+                    VirtualizingStackPanel.VirtualizationMode="Standard"
+                    cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                     BorderThickness="1"
                     SelectedItem="{Binding SelectedItem}"
                       Name="Listing"
@@ -257,15 +260,12 @@
                             <Setter Property="TextAlignment" Value="Right" />
                         </Style>
                         <Style TargetType="DataGridRow">
+                            <Setter Property="IsSelected" 
+                                 Value="{Binding IsSelected, Mode=TwoWay, 
+                                 UpdateSourceTrigger=PropertyChanged}"/>
                             <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                         </Style>
                     </DataGrid.Resources>
-                    <DataGrid.CommandBindings>
-                        <CommandBinding Command="Delete"
-                                    CanExecute="CommandBinding_DeleteCanExecute"
-                                    Executed="CommandBinding_DeleteExecuted"
-                                    />
-                    </DataGrid.CommandBindings>
                     <DataGrid.Columns>
                         <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>

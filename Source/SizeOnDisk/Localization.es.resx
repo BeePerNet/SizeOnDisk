@@ -144,9 +144,6 @@
   <data name="FileType" xml:space="preserve">
     <value>Tipo</value>
   </data>
-  <data name="FileTypeFolder" xml:space="preserve">
-    <value>Carpeta</value>
-  </data>
   <data name="FileTypeUnkown" xml:space="preserve">
     <value>{0} File</value>
     <comment>{0} gets replaced by extension (uppercase)</comment>
@@ -350,18 +347,5 @@
   </data>
   <data name="TotalFolders" xml:space="preserve">
     <value>Total de Carpetas en la Carpeta Seleccionada</value>
-  </data>
-  <data name="UISizeFormatType" xml:space="preserve">
-    <value>UISizeFormatType</value>
-    <comment>Do not localize this line</comment>
-  </data>
-  <data name="UISizeFormatType_Bytes" xml:space="preserve">
-    <value>Bytes</value>
-  </data>
-  <data name="UISizeFormatType_FactorBy1024" xml:space="preserve">
-    <value>Factor de 1024</value>
-  </data>
-  <data name="UISizeFormatType_KBytes" xml:space="preserve">
-    <value>KBytes</value>
   </data>
 </root>

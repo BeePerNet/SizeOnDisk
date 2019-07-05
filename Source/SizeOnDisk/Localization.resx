@@ -335,10 +335,6 @@
   <data name="TotalFolders" xml:space="preserve">
     <value>Total number of folders in the selected folder</value>
   </data>
-  <data name="UISizeFormatType" xml:space="preserve">
-    <value>UISizeFormatType</value>
-    <comment>Do not localize this line</comment>
-  </data>
   <data name="Bytes" xml:space="preserve">
     <value>Bytes</value>
   </data>
@@ -352,13 +348,10 @@
     <value>Canceled</value>
   </data>
   <data name="Attributes" xml:space="preserve">
-    <value>Attr.</value>
+    <value>Attributes</value>
   </data>
   <data name="FileType" xml:space="preserve">
     <value>File Type</value>
-  </data>
-  <data name="FileTypeFolder" xml:space="preserve">
-    <value>File Folder</value>
   </data>
   <data name="FileTypeUnkown" xml:space="preserve">
     <value>{0} File</value>

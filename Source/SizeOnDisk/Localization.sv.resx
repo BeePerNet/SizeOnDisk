@@ -335,19 +335,6 @@
   <data name="TotalFolders" xml:space="preserve">
     <value>Totalt antal mappar i den markerade mappen</value>
   </data>
-  <data name="UISizeFormatType" xml:space="preserve">
-    <value>UISizeFormatType</value>
-    <comment>Do not localize this line</comment>
-  </data>
-  <data name="UISizeFormatType_Bytes" xml:space="preserve">
-    <value>Byte</value>
-  </data>
-  <data name="UISizeFormatType_FactorBy1024" xml:space="preserve">
-    <value>Faktor av 1024</value>
-  </data>
-  <data name="UISizeFormatType_KBytes" xml:space="preserve">
-    <value>KByte</value>
-  </data>
   <data name="Canceled" xml:space="preserve">
     <value>Avbryten</value>
   </data>

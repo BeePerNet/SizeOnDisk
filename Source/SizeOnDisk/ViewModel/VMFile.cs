@@ -56,7 +56,7 @@ namespace SizeOnDisk.ViewModel
 
         private bool _IsProtected = false;
 
-        private bool _isSelected;
+        private bool _isTreeSelected;
 
         #endregion fields
 
@@ -182,25 +182,28 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        /*public virtual bool IsHidden
-        {
-            get { return Attributes?.IsHidden ?? false; }
-        }*/
 
+        private bool _isSelected = false;
         public virtual bool IsSelected
         {
             get { return _isSelected; }
+            set { SetProperty(ref _isSelected, value); }
+        }
+
+        public virtual bool IsTreeSelected
+        {
+            get { return _isTreeSelected; }
             set
             {
-                if (value != _isSelected)
+                if (value != _isTreeSelected)
                 {
-                    _isSelected = value;
-                    if (_isSelected && this.Parent != null)
+                    _isTreeSelected = value;
+                    if (_isTreeSelected && this.Parent != null)
                     {
                         this.Parent.IsExpanded = true;
                         this.SelectItem();
                     }
-                    this.OnPropertyChanged("IsSelected");
+                    this.OnPropertyChanged("IsTreeSelected");
                 }
             }
         }
@@ -213,6 +216,7 @@ namespace SizeOnDisk.ViewModel
         {
             this.Parent.SelectItem();
         }
+
 
         public virtual void Refresh(uint clusterSize, ParallelOptions parallelOptions)
         {
@@ -273,7 +277,7 @@ namespace SizeOnDisk.ViewModel
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
-            file.Delete();
+            file.Parent.DeleteAllSelectedFiles();
         }
 
         private static void CallPermanentDeleteCommand(object sender, ExecutedRoutedEventArgs e)
@@ -284,33 +288,7 @@ namespace SizeOnDisk.ViewModel
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
-            file.PermanentDelete();
-        }
-
-        public void PermanentDelete()
-        {
-            if (IOHelper.SafeNativeMethods.PermanentDelete(new string[] { this.Path }))
-            {
-                if (!File.Exists(this.Path) && !Directory.Exists(this.Path))
-                {
-                    this.Parent.RemoveChild(this);
-                    this.Parent.RefreshCount();
-                    this.Parent.RefreshParents();
-                }
-            }
-        }
-
-        public void Delete()
-        {
-            if (IOHelper.SafeNativeMethods.MoveToRecycleBin(new string[] { this.Path }))
-            {
-                if (!File.Exists(this.Path) && !Directory.Exists(this.Path))
-                {
-                    this.Parent.RemoveChild(this);
-                    this.Parent.RefreshCount();
-                    this.Parent.RefreshParents();
-                }
-            }
+            file.Parent.PermanentDeleteAllSelectedFiles();
         }
 
         private static void CanCallDeleteCommand(object sender, CanExecuteRoutedEventArgs e)

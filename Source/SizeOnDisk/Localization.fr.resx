@@ -367,7 +367,7 @@
     <value>Dernière modification</value>
   </data>
   <data name="FileType" xml:space="preserve">
-    <value>Type</value>
+    <value>Type de fichier</value>
   </data>
   <data name="HardDriveFree" xml:space="preserve">
     <value>Espace disque disponible</value>
@@ -386,5 +386,8 @@
   </data>
   <data name="PermanentDeleteKey" xml:space="preserve">
     <value>Maj+Suppr</value>
+  </data>
+  <data name="Attributes" xml:space="preserve">
+    <value>Attributs</value>
   </data>
 </root>

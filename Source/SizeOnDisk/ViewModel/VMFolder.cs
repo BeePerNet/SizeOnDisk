@@ -15,29 +15,54 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMFolder : VMFile
     {
-        //public static readonly RoutedCommand DoucleClickCommand = new RoutedCommand("DoubleClick", typeof(VMFolder), new InputGestureCollection(new InputGesture[] { new MouseGesture(MouseAction.LeftDoubleClick) }));
 
-        /*public override void AddInputModels(InputBindingCollection bindingCollection)
+        public void PermanentDeleteAllSelectedFiles()
         {
-            base.AddInputModels(bindingCollection);
-            bindingCollection.Add(new MouseBinding(DoucleClickCommand, new MouseGesture(MouseAction.LeftDoubleClick)));
-        }*/
+            VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
+            string[] filenames = files.Select(T => T.Path).ToArray();
 
-        /*public override void AddCommandModels(CommandBindingCollection bindingCollection)
-        {
-            base.AddCommandModels(bindingCollection);
-            bindingCollection.Add(new CommandBinding(DoucleClickCommand, CallDoucleClickCommand));
+            if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(filenames))
+            {
+                List<VMFile> deletedfiles = new List<VMFile>();
+                foreach (VMFile file in files)
+                {
+                    bool exists = false;
+                    if (file is VMFolder)
+                        exists = Directory.Exists(file.Path);
+                    else
+                        exists = File.Exists(file.Path);
+                    if (!exists)
+                        deletedfiles.Add(file);
+                }
+                this.RemoveChilds(deletedfiles.ToArray());
+                this.RefreshCount();
+                this.RefreshParents();
+            }
         }
 
-        private static void CallDoucleClickCommand(object sender, ExecutedRoutedEventArgs e)
+        public void DeleteAllSelectedFiles()
         {
-            VMFolder folder = GetViewModelObject<VMFolder>(e.OriginalSource);
-            if (folder != null)
+            VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
+            string[] filenames = files.Select(T => T.Path).ToArray();
+
+            if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(filenames))
             {
-                e.Handled = true;
-                folder.IsSelected = true;
+                List<VMFile> deletedfiles = new List<VMFile>();
+                foreach (VMFile file in files)
+                {
+                    bool exists = false;
+                    if (file is VMFolder)
+                        exists = Directory.Exists(file.Path);
+                    else
+                        exists = File.Exists(file.Path);
+                    if (!exists)
+                        deletedfiles.Add(file);
+                }
+                this.RemoveChilds(deletedfiles.ToArray());
+                this.RefreshCount();
+                this.RefreshParents();
             }
-        }*/
+        }
 
 
         #region fields
@@ -98,14 +123,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public override bool IsSelected
+        public override bool IsTreeSelected
         {
-            get { return base.IsSelected; }
+            get { return base.IsTreeSelected; }
             set
             {
-                if (value != base.IsSelected)
+                if (value != base.IsTreeSelected)
                 {
-                    base.IsSelected = value;
+                    base.IsTreeSelected = value;
                     if (value && this.Childs != null && Dispatcher != null)
                     {
                         new Thread(() =>
@@ -127,9 +152,12 @@ namespace SizeOnDisk.ViewModel
 
         #region functions
 
-        internal void RemoveChild(VMFile file)
+        internal void RemoveChilds(VMFile[] files)
         {
-            this.Childs.Remove(file);
+            foreach(VMFile file in files)
+                this.Childs.Remove(file);
+            this.OnPropertyChanged("Childs");
+            this.Childs.OnCollectionChanged();
 
             this.RefreshLists();
         }
@@ -177,7 +205,7 @@ namespace SizeOnDisk.ViewModel
 
                 this.RefreshLists();
 
-                if (this.IsSelected)
+                if (this.IsTreeSelected)
                 {
                     //Parallel.ForEach(_InternalChilds, parallelOptions, (T) => T.RefreshOnView());
                     this.Childs.ToList().ForEach((T) => T.RefreshOnView());
