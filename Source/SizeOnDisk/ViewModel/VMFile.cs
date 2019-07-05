@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -390,24 +391,28 @@ namespace SizeOnDisk.ViewModel
 
         private void RefreshThumbnail()
         {
-            _thumbnail = ShellHelper.GetIcon(this.Path, 96, false);
-            OnPropertyChanged(nameof(Thumbnail));
-            Task.Run(() =>
+            _thumbnail = ShellHelper.GetIcon(this.Path, 96, true, true);
+            if (_thumbnail == null)
             {
-                BitmapSource tmp = null;
-                Task task = Task.Run(() =>
+                _thumbnail = ShellHelper.GetIcon(this.Path, 96, false);
+                OnPropertyChanged(nameof(Thumbnail));
+                Task.Run(() =>
                 {
-                    tmp = ShellHelper.GetIcon(this.Path, 96, true);
-                });
-                if (task.Wait(2000))
-                {
-                    if (tmp != null)
+                    BitmapSource tmp = null;
+                    Thread thread = new Thread(() =>
                     {
-                        _thumbnail = tmp;
-                        OnPropertyChanged(nameof(Thumbnail));
-                    }
-                }
-            });
+                        tmp = ShellHelper.GetIcon(this.Path, 96, true);
+                    });
+                    thread.Start();
+                    thread.Join(10000);
+                    if (thread.ThreadState == ThreadState.Running)
+                        thread.Abort();
+                });
+            }
+            else
+            {
+                OnPropertyChanged(nameof(Thumbnail));
+            }
         }
 
         BitmapSource _thumbnail = null;

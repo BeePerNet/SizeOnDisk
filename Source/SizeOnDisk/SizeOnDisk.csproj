@@ -183,6 +183,7 @@
     <Compile Include="ViewModel\VMRootHierarchy.cs" />
     <Compile Include="ViewModel\VMFile.cs" />
     <Compile Include="ViewModel\VMFolder.cs" />
+    <Compile Include="ViewModel\VMViewMode.cs" />
     <Compile Include="WindowOptions.xaml.cs">
       <DependentUpon>WindowOptions.xaml</DependentUpon>
     </Compile>
@@ -325,6 +326,10 @@
       <Project>{97622b9a-d365-43c5-9d96-08b130ca391c}</Project>
       <Name>WPFLocalizeExtension</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Detail.png" />
+    <Resource Include="Icons\List.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

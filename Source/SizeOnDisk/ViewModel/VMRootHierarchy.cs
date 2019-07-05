@@ -163,5 +163,7 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Commands
 
+        private VMViewMode viewMode = VMViewMode.Details;
+        public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
     }
 }

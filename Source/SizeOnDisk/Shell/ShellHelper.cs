@@ -80,40 +80,57 @@ namespace SizeOnDisk.Shell
         }*/
 
 
-        public static BitmapSource GetIcon(string path, int size = 16, bool thumbnail = false)
+        public static BitmapSource GetIcon(string path, int size = 16, bool thumbnail = false, bool cache = false)
         {
             // Create a native shellitem from our path
             Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
             int retCode = SafeNativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem nativeShellItem);
-
             if (retCode < 0)
-            {
                 throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
-            }
+
 
             SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size();
             nativeSIZE.Width = Convert.ToInt32(size);
             nativeSIZE.Height = Convert.ToInt32(size);
 
-            int hr = ((SafeNativeMethods.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, (thumbnail ? SafeNativeMethods.SIIGBF.ResizeToFit : SafeNativeMethods.SIIGBF.IconOnly), out IntPtr hBitmap);
-            if (hr != (int)SafeNativeMethods.HResult.Ok)
-                throw new ExternalException("HResult Exception", (int)hr);
+            SafeNativeMethods.SIIGBF options = SafeNativeMethods.SIIGBF.ResizeToFit;
+            if (!thumbnail)
+                options = SafeNativeMethods.SIIGBF.IconOnly;
+            if (cache)
+                options |= SafeNativeMethods.SIIGBF.InCacheOnly;
 
+            IntPtr hBitmap = IntPtr.Zero;
+            try
+            {
+                retCode = ((SafeNativeMethods.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, options, out hBitmap);
+                if (retCode < 0)
+                    return null;
+                    //throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(nativeShellItem);
+            }
 
-            // return a System.Media.Imaging.BitmapSource
-            // Use interop to create a BitmapSource from hBitmap.
-            BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
-                hBitmap,
-                IntPtr.Zero,
-                System.Windows.Int32Rect.Empty,
-                BitmapSizeOptions.FromEmptyOptions());
+            try
+            {
+                // return a System.Media.Imaging.BitmapSource
+                // Use interop to create a BitmapSource from hBitmap.
+                BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
+                    hBitmap,
+                    IntPtr.Zero,
+                    System.Windows.Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
 
-            returnValue.Freeze();
+                returnValue.Freeze();
 
-            // delete HBitmap to avoid memory leaks
-            SafeNativeMethods.DeleteObject(hBitmap);
-
-            return returnValue;
+                return returnValue;
+            }
+            finally
+            {
+                // delete HBitmap to avoid memory leaks
+                SafeNativeMethods.DeleteObject(hBitmap);
+            }
         }
 
 

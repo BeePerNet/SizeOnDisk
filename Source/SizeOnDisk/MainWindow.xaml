@@ -46,6 +46,7 @@
             <Setter Property="Margin" Value="3,0,3,1" />
         </Style>
         <cmd:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <cmd:IsEqualConverter x:Key="IsEqualConverter" />
         <conv:IsRunningConverter x:Key="IsRunningConverter" />
         <conv:EnumValueConverter x:Key="EnumValueConverter" />
         <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
@@ -124,6 +125,18 @@
                                            Source="/SizeOnDisk;component/Icons/DeleteHS.png" />
                     </Button.Content>
                 </Button>
+                <Separator />
+                <ToggleButton ToolTip="Details view"
+                              Margin="2"
+                    IsChecked="{Binding ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                    <Image Source="Icons/Detail.png" />
+                </ToggleButton>
+                <ToggleButton ToolTip="List view"
+                              Margin="2"
+                    IsChecked="{Binding ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Tile}}">
+                    <Image Source="Icons/List.png" />
+                </ToggleButton>
+                <Separator />
                 <Button ToolTip="{lex:Loc Legend}"
                     Click="ButtonLegend_Click"
                     Margin="2">
@@ -159,9 +172,6 @@
                     <TextBlock Text="?" />
                 </Button>
                 <Separator />
-                <ToggleButton IsChecked="True" Content="List" />
-                <ToggleButton IsChecked="True" Content="Details" />
-                <Separator />
                 <Button cmd:CommandExLoc.Command="vm:VMFile.OpenCommand" />
             </ToolBar>
         </ToolBarTray>
@@ -183,6 +193,7 @@
                       cmd:ItemsControlExtender.FocusPreviewMouseRightButtonDown="True">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="cmd:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
                         <Setter Property="Padding"
                                 Value="3,0,3,1" />
                         <Setter Property="IsExpanded"
@@ -215,39 +226,45 @@
                           Width="6"
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
-            <ListView Grid.Column="2"
-                       Visibility="Hidden"
+            <Border Grid.Column="2" Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
+                <ListView Grid.Column="2"
+                          cmd:SelectorScrollItemIntoViewBehavior.IsBroughtIntoViewWhenSelected="True"
+                    SelectedItem="{Binding SelectedItem}"
+                    BorderThickness="1"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ContextMenu="{StaticResource VMContextMenu}"
                     ItemsSource="{Binding Childs}"
                     DataContext="{Binding ElementName=treeView, Path=SelectedItem}"
                       Grid.IsSharedSizeScope="True">
-                <ListView.Resources>
-                    <Style TargetType="ListViewItem">
-                        <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
-                    </Style>
-                </ListView.Resources>
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Width="104" MaxHeight="160">
-                            <Grid.RowDefinitions>
-                                <RowDefinition SharedSizeGroup="Icons" />
-                                <RowDefinition SharedSizeGroup="Names" />
-                            </Grid.RowDefinitions>
-                            <cmd:AutoDisablingImage Source="{Binding Thumbnail}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
-                            <TextBlock Style="{StaticResource ColoredName}" Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListView>
-            <DataGrid 
-                    Grid.Column="2"
-                      BorderThickness="1"
+                    <ListView.Resources>
+                        <Style TargetType="ListViewItem">
+                            <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="104" MaxHeight="160">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition SharedSizeGroup="Icons" />
+                                    <RowDefinition SharedSizeGroup="Names" />
+                                </Grid.RowDefinitions>
+                                <cmd:AutoDisablingImage Source="{Binding Thumbnail}" Width="{Binding Thumbnail.PixelWidth}" Height="{Binding Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
+                                <TextBlock Style="{StaticResource ColoredName}" Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListView>
+            </Border>
+            <Border Grid.Column="2" Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                <DataGrid 
+                          cmd:SelectorScrollItemIntoViewBehavior.IsBroughtIntoViewWhenSelected="True"
+                    BorderThickness="1"
+                    SelectedItem="{Binding SelectedItem}"
                       Name="Listing"
                       DataContext="{Binding ElementName=treeView, Path=SelectedItem}"
                       ItemsSource="{Binding Childs}"
@@ -256,75 +273,75 @@
                       ContextMenu="{StaticResource VMContextMenu}"
                       HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                       VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                      ClipboardCopyMode="IncludeHeader"
-                >
-                <DataGrid.Resources>
-                    <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
-                        <Setter Property="TextAlignment" Value="Right" />
-                    </Style>
-                    <Style TargetType="DataGridRow">
-                        <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
-                    </Style>
-                </DataGrid.Resources>
-                <DataGrid.CommandBindings>
-                    <CommandBinding Command="Delete"
+                      ClipboardCopyMode="IncludeHeader">
+                    <DataGrid.Resources>
+                        <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
+                            <Setter Property="TextAlignment" Value="Right" />
+                        </Style>
+                        <Style TargetType="DataGridRow">
+                            <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.CommandBindings>
+                        <CommandBinding Command="Delete"
                                     CanExecute="CommandBinding_DeleteCanExecute"
                                     Executed="CommandBinding_DeleteExecuted"
                                     />
-                </DataGrid.CommandBindings>
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <cmd:AutoDisablingImage Source="{Binding Icon}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn SortMemberPath="Name"
+                    </DataGrid.CommandBindings>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <cmd:AutoDisablingImage Source="{Binding Icon}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn SortMemberPath="Name"
                                         Header="{lex:Loc Name}"
                                         Binding="{Binding Name}"
                                         ElementStyle="{StaticResource ColoredName}" />
-                    <DataGridTextColumn SortMemberPath="Attributes.FileType"
+                        <DataGridTextColumn SortMemberPath="Attributes.FileType"
                                         Header="{lex:Loc FileType}"
                                         IsReadOnly="True"
                                         Binding="{Binding Attributes.FileType}" />
-                    <DataGridTextColumn Binding="{Binding Attributes.Attributes,Converter={StaticResource FileAttributesConverter}}"
+                        <DataGridTextColumn Binding="{Binding Attributes.Attributes,Converter={StaticResource FileAttributesConverter}}"
                                         Header="{lex:Loc Attributes}"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:Loc FolderCount}"
+                        <DataGridTextColumn Header="{lex:Loc FolderCount}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FolderCount,StringFormat=N0}"
                                         SortMemberPath="FolderCount"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:Loc FileCount}"
+                        <DataGridTextColumn Header="{lex:Loc FileCount}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FileCount,StringFormat=N0}"
                                         SortMemberPath="FileCount"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:Loc FileSize}"
+                        <DataGridTextColumn Header="{lex:Loc FileSize}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FileSize,Converter={StaticResource SizeConverter}}"
                                         SortMemberPath="FileSize"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:Loc DiskSize}"
+                        <DataGridTextColumn Header="{lex:Loc DiskSize}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding DiskSize,Converter={StaticResource SizeConverter}}"
                                         SortMemberPath="DiskSize"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding Attributes.CreationTime}"
+                        <DataGridTextColumn Binding="{Binding Attributes.CreationTime}"
                                         Header="{lex:Loc DateCreation}"
                                         SortMemberPath="DateCreation"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding Attributes.LastAccessTime}"
+                        <DataGridTextColumn Binding="{Binding Attributes.LastAccessTime}"
                                         Header="{lex:Loc DateLastAccess}"
                                         SortMemberPath="DateLastAccess"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding Attributes.LastWriteTime}"
+                        <DataGridTextColumn Binding="{Binding Attributes.LastWriteTime}"
                                         Header="{lex:Loc DateLastWrite}"
                                         SortMemberPath="DateLastWrite"
                                         IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
         </Grid>
         <StatusBar Name="StatusBar"
                    Grid.Row="2">

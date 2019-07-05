@@ -92,14 +92,6 @@ namespace SizeOnDisk
                 folder.IsSelected = true;
                 e.Handled = true;
             }
-
-            /*Selector selector = sender as Selector;
-            if (selector.SelectedItem != null && selector.SelectedItem is VMFolder)
-            {
-                VMFolder folder = (selector.SelectedItem as VMFolder);
-                folder.IsSelected = true;
-                e.Handled = true;
-            }*/
         }
 
 

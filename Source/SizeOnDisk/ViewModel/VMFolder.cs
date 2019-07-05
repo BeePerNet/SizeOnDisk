@@ -119,6 +119,10 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+
+        private VMFile selectedItem;
+        public VMFile SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
+
         #endregion properties
 
         #region functions
