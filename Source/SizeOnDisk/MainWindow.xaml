@@ -185,8 +185,6 @@
                       BorderThickness="1"
                       ItemsSource="{Binding Folders}"
                       SelectedItemChanged="_TreeView_SelectedItemChanged"
-                      VirtualizingStackPanel.IsVirtualizing="True"
-                      VirtualizingStackPanel.VirtualizationMode="Recycling"
                       ContextMenu="{StaticResource VMContextMenu}"
                       DisplayMemberPath="Name"
                       SelectedValuePath="Path"
@@ -226,9 +224,10 @@
                           Width="6"
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
-            <Border Grid.Column="2" Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
+            <Border Grid.Column="2" Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
+                <!--Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}"-->
                 <ListView Grid.Column="2"
-                          cmd:SelectorScrollItemIntoViewBehavior.IsBroughtIntoViewWhenSelected="True"
+                          cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                     SelectedItem="{Binding SelectedItem}"
                     BorderThickness="1"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -260,9 +259,10 @@
                     </ListBox.ItemTemplate>
                 </ListView>
             </Border>
-            <Border Grid.Column="2" Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+            <Border Grid.Column="2" Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                <!--Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}"-->
                 <DataGrid 
-                          cmd:SelectorScrollItemIntoViewBehavior.IsBroughtIntoViewWhenSelected="True"
+                          cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                     BorderThickness="1"
                     SelectedItem="{Binding SelectedItem}"
                       Name="Listing"
