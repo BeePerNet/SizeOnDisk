@@ -4,8 +4,8 @@
 
 [Portable](https://github.com/BeePerNet/SizeOnDisk/releases/download/2.0.0.1/SizeOnDiskPortable.zip)
 
-A way to know folder and file size and where disk space is used.  
-The main goal of this software is to pass throught all files as fast as possible to get their size.  
+A way to know where disk space is used.  
+The main goal of this software is to parse all files as fast as possible to get their size.
 [Softpedia review](https://www.softpedia.com/get/PORTABLE-SOFTWARE/System/File-management/SizeOnDisk-Portable.shtml)
 
 Connaître l'utilisation de l'espace disque utilisé par les fichiers.  
