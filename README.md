@@ -2,8 +2,8 @@
 
 ## Downloads
 
+Version 2.0.1
 [Setup](https://github.com/BeePerNet/SizeOnDisk/releases/download/2.0.0.1/SizeOnDiskSetup.msi)
-
 [Portable](https://github.com/BeePerNet/SizeOnDisk/releases/download/2.0.0.1/SizeOnDiskPortable.zip)
 
 ## Description
