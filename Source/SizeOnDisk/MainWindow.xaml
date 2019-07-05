@@ -48,7 +48,6 @@
         <cmd:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <cmd:IsEqualConverter x:Key="IsEqualConverter" />
         <conv:IsRunningConverter x:Key="IsRunningConverter" />
-        <conv:EnumValueConverter x:Key="EnumValueConverter" />
         <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}">

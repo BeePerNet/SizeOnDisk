@@ -1,183 +1,153 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-
-  <Product Id="*"
-           Name="SizeOnDisk !(bind.FileVersion.ApplicationFile)"
-           Language="!(loc.LANG)"
-           Codepage='unicode'
-           Version="!(bind.FileVersion.ApplicationFile)"
-           Manufacturer="Galadhon"
-           UpgradeCode="{9d3f227e-e788-4982-a15a-056152359ef6}">
-    <Package Description="SizeOnDisk !(bind.FileVersion.ApplicationFile)"
-      InstallerVersion="200"
-             Compressed="yes"
-             Languages="!(loc.LANG)" />
-
-    <Media Id="1" Cabinet="SizeOnDiskInstaller.cab" EmbedCab="yes" />
-
-    <MajorUpgrade DowngradeErrorMessage="!(loc.HigherVersionDetectedError)" />
-
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLDIR" Name="SizeOnDisk" />
-      </Directory>
-      <Directory Id="ProgramMenuFolder" />
-    </Directory>
-
-    <DirectoryRef Id="INSTALLDIR">
-      <Component Id="ApplicationFileComponent" Guid="*">
-        <CreateFolder />
-        <RemoveFile Id="AllFiles" Name="*.*" On="both"/>
-        <File Id="ApplicationFile" Name="$(var.SizeOnDisk.TargetFileName)" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/SizeOnDisk.exe" KeyPath="yes" Vital="yes" />
-      </Component>
-      <Component Id="XAMLMarkupComponent" Guid="*">
-        <File Id="XAMLMarkupFile" Name="XAMLMarkupExtensions.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/XAMLMarkupExtensions.dll" KeyPath="yes" Vital="yes" />
-      </Component>
-      <Component Id="WPFLocalizeComponent" Guid="*">
-        <File Id="WPFLocalizeFile" Name="WPFLocalizeExtension.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/WPFLocalizeExtension.dll" KeyPath="yes" Vital="yes" />
-      </Component>
-    </DirectoryRef>
-
-    <DirectoryRef Id="INSTALLDIR">
-      <Directory Id="de" Name="de">
-        <Component Id="LanguageDEFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllDEFiles" Name="*.*" On="both"/>
-          <File Id="LanguageDEFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/de/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-      <Directory Id="es" Name="es">
-        <Component Id="LanguageESFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllESFiles" Name="*.*" On="both"/>
-          <File Id="LanguageESFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/es/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-      <Directory Id="fa" Name="fa">
-        <Component Id="LanguageFAFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllFAFiles" Name="*.*" On="both"/>
-          <File Id="LanguageFAFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/fa/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-      <Directory Id="fr" Name="fr">
-        <Component Id="LanguageFRFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllFrFiles" Name="*.*" On="both"/>
-          <File Id="LanguageFRFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/fr/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-      <Directory Id="it" Name="it">
-        <Component Id="LanguageITFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllITFiles" Name="*.*" On="both"/>
-          <File Id="LanguageITFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/it/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-      <Directory Id="pt" Name="pt">
-        <Component Id="LanguagePTFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllPTFiles" Name="*.*" On="both"/>
-          <File Id="LanguagePTFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/pt/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-      <Directory Id="ru" Name="ru">
-        <Component Id="LanguageRUFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllRUFiles" Name="*.*" On="both"/>
-          <File Id="LanguageRUFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/ru/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-      <Directory Id="sv" Name="sv">
-        <Component Id="LanguageSVFileComponent" Guid="*">
-          <CreateFolder />
-          <RemoveFile Id="AllSVFiles" Name="*.*" On="both"/>
-          <File Id="LanguageSVFile" Name="SizeOnDisk.resources.dll" DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/sv/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
-        </Component>
-      </Directory>
-    </DirectoryRef>
-
-    <DirectoryRef Id="ProgramMenuFolder">
-      <Component Id="ApplicationFileShortcutComponent" Guid="*">
-        <Shortcut Id="ApplicationFileShortcut" Name="SizeOnDisk"
-                 Description="Shortcut To SizeOnDisk"
-                 Target="[INSTALLDIR]SizeOnDisk.exe" IconIndex="0" />
-        <RegistryValue Root="HKCU" Key="Software\SOD"
-                  Name="SizeOnDiskShortcutInstalled" Type="integer"
-                  Value="1" KeyPath="yes"/>
-      </Component>
-    </DirectoryRef>
-
-    <Feature Id="ProductFeature" Title="SizeOnDisk required files" Level="1" ConfigurableDirectory="INSTALLDIR">
-      <ComponentRef Id="ApplicationFileComponent" />
-      <ComponentRef Id="XAMLMarkupComponent" />
-      <ComponentRef Id="WPFLocalizeComponent" />
-      <ComponentRef Id="ApplicationFileShortcutComponent" />
-    </Feature>
-    <Feature Id="LanguagesFeature" Title="Languages" Level="1">
-      <Feature Id="LanguageDEFeature" Title="Deutsch" Level="2">
-        <ComponentRef Id="LanguageDEFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1031 OR SystemLanguageID = 3079 OR SystemLanguageID = 5127 OR SystemLanguageID = 4103 OR SystemLanguageID = 2055</Condition>
-      </Feature>
-      <Feature Id="LanguageESFeature" Title="!(loc.Espanol)" Level="2">
-        <ComponentRef Id="LanguageESFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1034 OR SystemLanguageID = 3082 OR SystemLanguageID = 11274 OR SystemLanguageID = 16394 OR SystemLanguageID = 13322 OR SystemLanguageID = 9226 OR SystemLanguageID = 5130 OR SystemLanguageID = 7178 OR SystemLanguageID = 12298 OR SystemLanguageID = 17418 OR SystemLanguageID = 4106 OR SystemLanguageID = 18442 OR SystemLanguageID = 22538 OR SystemLanguageID = 2058 OR SystemLanguageID = 19466 OR SystemLanguageID = 6154 OR SystemLanguageID = 15370 OR SystemLanguageID = 10250 OR SystemLanguageID = 20490 OR SystemLanguageID = 21514 OR SystemLanguageID = 14346 OR SystemLanguageID = 8202</Condition>
-      </Feature>
-      <Feature Id="LanguageFAFeature" Title="Farsi" Level="2">
-        <ComponentRef Id="LanguageFAFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1065</Condition>
-      </Feature>
-      <Feature Id="LanguageFRFeature" Title="!(loc.Francais)" Level="2">
-        <ComponentRef Id="LanguageFRFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1036 OR SystemLanguageID = 2060 OR SystemLanguageID = 11276 OR SystemLanguageID = 3084 OR SystemLanguageID = 9228 OR SystemLanguageID = 12300 OR SystemLanguageID = 15372 OR SystemLanguageID = 5132 OR SystemLanguageID = 13324 OR SystemLanguageID = 6156 OR SystemLanguageID = 14348 OR SystemLanguageID = 58380 OR SystemLanguageID = 8204 OR SystemLanguageID = 10252 OR SystemLanguageID = 4108 OR SystemLanguageID = 7180</Condition>
-      </Feature>
-      <Feature Id="LanguageITFeature" Title="Italiano" Level="2">
-        <ComponentRef Id="LanguageITFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1040 OR SystemLanguageID = 2064</Condition>
-      </Feature>
-      <Feature Id="LanguagePTFeature" Title="!(loc.Portugues)" Level="2">
-        <ComponentRef Id="LanguagePTFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1046 OR SystemLanguageID = 2070</Condition>
-      </Feature>
-      <Feature Id="LanguageRUFeature" Title="Russian" Level="2">
-        <ComponentRef Id="LanguageRUFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1049 OR SystemLanguageID = 2073</Condition>
-      </Feature>
-      <Feature Id="LanguageSVFeature" Title="Svenska" Level="2">
-        <ComponentRef Id="LanguageSVFileComponent" />
-        <Condition Level="1">SystemLanguageID = 1053 OR SystemLanguageID = 2077</Condition>
-      </Feature>
-    </Feature>
-
-    <Icon Id="SizeOnDiskIcon" SourceFile="Hard_Drive.ico" />
-    <Property Id="ARPPRODUCTICON" Value="SizeOnDiskIcon" />
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-    <Property Id="ARPHELPLINK" Value="http://SizeOnDisk.codeplex.com" />
-    <Property Id="ALLUSERS">1</Property>
-    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
-    <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
-    <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
-
-    <UIRef Id="WixUI_FeatureTree" />
-    <UIRef Id="WixUI_ErrorProgressText" />
-
-    <Condition Message="This application is only supported on Windows XP, or higher.">
-      Installed OR (VersionNT >= 501)
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*" Name="SizeOnDisk !(bind.FileVersion.ApplicationFile)" Language="!(loc.LANG)" Codepage="unicode" Version="!(bind.FileVersion.ApplicationFile)" Manufacturer="Galadhon" UpgradeCode="{9d3f227e-e788-4982-a15a-056152359ef6}">
+        <Package Description="SizeOnDisk !(bind.FileVersion.ApplicationFile)" InstallerVersion="200" Compressed="yes" Languages="!(loc.LANG)" />
+        <Media Id="1" Cabinet="SizeOnDiskInstaller.cab" EmbedCab="yes" />
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="INSTALLDIR" Name="SizeOnDisk" />
+            </Directory>
+            <Directory Id="ProgramMenuFolder" />
+        </Directory>
+        <DirectoryRef Id="INSTALLDIR">
+            <Component Id="ApplicationFileComponent" Guid="*">
+                <CreateFolder />
+                <RemoveFile Id="AllFiles" Name="*.*" On="both" />
+                <File Id="ApplicationFile" Name="$(var.SizeOnDisk.TargetFileName)" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/SizeOnDisk.exe" KeyPath="yes" Vital="yes" />
+            </Component>
+            <Component Id="XAMLMarkupComponent" Guid="*">
+                <File Id="XAMLMarkupFile" Name="XAMLMarkupExtensions.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/XAMLMarkupExtensions.dll" KeyPath="yes" Vital="yes" />
+            </Component>
+            <Component Id="WPFLocalizeComponent" Guid="*">
+                <File Id="WPFLocalizeFile" Name="WPFLocalizeExtension.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/WPFLocalizeExtension.dll" KeyPath="yes" Vital="yes" />
+            </Component>
+            <Component Id="ByYourCommandComponent" Guid="*">
+                <File Name="WPFByYourCommand.dll" Id="WPFByYourCommandFile" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/WPFByYourCommand.dll" Vital="yes" KeyPath="yes">
+                </File>
+            </Component>
+        </DirectoryRef>
+        <DirectoryRef Id="INSTALLDIR">
+            <Directory Id="de" Name="de">
+                <Component Id="LanguageDEFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllDEFiles" Name="*.*" On="both" />
+                    <File Id="LanguageDEFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/de/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+            <Directory Id="es" Name="es">
+                <Component Id="LanguageESFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllESFiles" Name="*.*" On="both" />
+                    <File Id="LanguageESFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/es/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+            <Directory Id="fa" Name="fa">
+                <Component Id="LanguageFAFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllFAFiles" Name="*.*" On="both" />
+                    <File Id="LanguageFAFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/fa/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+            <Directory Id="fr" Name="fr">
+                <Component Id="LanguageFRFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllFrFiles" Name="*.*" On="both" />
+                    <File Id="LanguageFRFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/fr/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+            <Directory Id="it" Name="it">
+                <Component Id="LanguageITFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllITFiles" Name="*.*" On="both" />
+                    <File Id="LanguageITFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/it/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+            <Directory Id="pt" Name="pt">
+                <Component Id="LanguagePTFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllPTFiles" Name="*.*" On="both" />
+                    <File Id="LanguagePTFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/pt/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+            <Directory Id="ru" Name="ru">
+                <Component Id="LanguageRUFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllRUFiles" Name="*.*" On="both" />
+                    <File Id="LanguageRUFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/ru/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+            <Directory Id="sv" Name="sv">
+                <Component Id="LanguageSVFileComponent" Guid="*">
+                    <CreateFolder />
+                    <RemoveFile Id="AllSVFiles" Name="*.*" On="both" />
+                    <File Id="LanguageSVFile" Name="SizeOnDisk.resources.dll" DiskId="1" Source="$(var.SizeOnDisk.TargetDir)/sv/SizeOnDisk.resources.dll" KeyPath="yes" Vital="no" />
+                </Component>
+            </Directory>
+        </DirectoryRef>
+        <DirectoryRef Id="ProgramMenuFolder">
+            <Component Id="ApplicationFileShortcutComponent" Guid="*">
+                <Shortcut Id="ApplicationFileShortcut" Name="SizeOnDisk" Description="Shortcut To SizeOnDisk" Target="[INSTALLDIR]SizeOnDisk.exe" IconIndex="0" />
+                <RegistryValue Root="HKCU" Key="Software\SOD" Name="SizeOnDiskShortcutInstalled" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+        <Feature Id="ProductFeature" Title="SizeOnDisk required files" Level="1" ConfigurableDirectory="INSTALLDIR">
+            <ComponentRef Id="ApplicationFileComponent" />
+            <ComponentRef Id="XAMLMarkupComponent" />
+            <ComponentRef Id="WPFLocalizeComponent" />
+            <ComponentRef Id="ApplicationFileShortcutComponent" />
+            <ComponentRef Id="ByYourCommandComponent" />
+        </Feature>
+        <Feature Id="LanguagesFeature" Title="Languages" Level="1">
+            <Feature Id="LanguageDEFeature" Title="Deutsch" Level="2">
+                <ComponentRef Id="LanguageDEFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1031 OR SystemLanguageID = 3079 OR SystemLanguageID = 5127 OR SystemLanguageID = 4103 OR SystemLanguageID = 2055</Condition>
+            </Feature>
+            <Feature Id="LanguageESFeature" Title="!(loc.Espanol)" Level="2">
+                <ComponentRef Id="LanguageESFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1034 OR SystemLanguageID = 3082 OR SystemLanguageID = 11274 OR SystemLanguageID = 16394 OR SystemLanguageID = 13322 OR SystemLanguageID = 9226 OR SystemLanguageID = 5130 OR SystemLanguageID = 7178 OR SystemLanguageID = 12298 OR SystemLanguageID = 17418 OR SystemLanguageID = 4106 OR SystemLanguageID = 18442 OR SystemLanguageID = 22538 OR SystemLanguageID = 2058 OR SystemLanguageID = 19466 OR SystemLanguageID = 6154 OR SystemLanguageID = 15370 OR SystemLanguageID = 10250 OR SystemLanguageID = 20490 OR SystemLanguageID = 21514 OR SystemLanguageID = 14346 OR SystemLanguageID = 8202</Condition>
+            </Feature>
+            <Feature Id="LanguageFAFeature" Title="Farsi" Level="2">
+                <ComponentRef Id="LanguageFAFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1065</Condition>
+            </Feature>
+            <Feature Id="LanguageFRFeature" Title="!(loc.Francais)" Level="2">
+                <ComponentRef Id="LanguageFRFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1036 OR SystemLanguageID = 2060 OR SystemLanguageID = 11276 OR SystemLanguageID = 3084 OR SystemLanguageID = 9228 OR SystemLanguageID = 12300 OR SystemLanguageID = 15372 OR SystemLanguageID = 5132 OR SystemLanguageID = 13324 OR SystemLanguageID = 6156 OR SystemLanguageID = 14348 OR SystemLanguageID = 58380 OR SystemLanguageID = 8204 OR SystemLanguageID = 10252 OR SystemLanguageID = 4108 OR SystemLanguageID = 7180</Condition>
+            </Feature>
+            <Feature Id="LanguageITFeature" Title="Italiano" Level="2">
+                <ComponentRef Id="LanguageITFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1040 OR SystemLanguageID = 2064</Condition>
+            </Feature>
+            <Feature Id="LanguagePTFeature" Title="!(loc.Portugues)" Level="2">
+                <ComponentRef Id="LanguagePTFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1046 OR SystemLanguageID = 2070</Condition>
+            </Feature>
+            <Feature Id="LanguageRUFeature" Title="Russian" Level="2">
+                <ComponentRef Id="LanguageRUFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1049 OR SystemLanguageID = 2073</Condition>
+            </Feature>
+            <Feature Id="LanguageSVFeature" Title="Svenska" Level="2">
+                <ComponentRef Id="LanguageSVFileComponent" />
+                <Condition Level="1">SystemLanguageID = 1053 OR SystemLanguageID = 2077</Condition>
+            </Feature>
+        </Feature>
+        <Icon Id="SizeOnDiskIcon" SourceFile="Hard_Drive.ico" />
+        <Property Id="ARPPRODUCTICON" Value="SizeOnDiskIcon" />
+        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+        <Property Id="ARPHELPLINK" Value="https://github.com/BeePerNet/SizeOnDisk" />
+        <Property Id="ALLUSERS">1</Property>
+        <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+        <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
+        <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
+        <UIRef Id="WixUI_FeatureTree" />
+        <UIRef Id="WixUI_ErrorProgressText" />
+        <Condition Message="This application is only supported on Windows 7-Vista or higher.">
+      Installed OR (VersionNT &gt;= 600)
     </Condition>
-    <PropertyRef Id="NETFRAMEWORK40CLIENT"/>
-    <Condition Message="This application requires .NET Framework 4.0 Client Profile or greater.">
-      Installed OR (NETFRAMEWORK40CLIENT AND NETFRAMEWORK40CLIENT >= "#1")
+        <PropertyRef Id="NETFRAMEWORK40CLIENT" />
+        <Condition Message="This application requires .NET Framework 4.0 Client Profile or greater.">
+      Installed OR (NETFRAMEWORK40CLIENT AND NETFRAMEWORK40CLIENT &gt;= "#1")
     </Condition>
-
-
-  </Product>
+        <UI />
+    </Product>
 </Wix>

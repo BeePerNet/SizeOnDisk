@@ -144,7 +144,6 @@
     <Compile Include="AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\EnumValueConverter.cs" />
     <Compile Include="Converters\FileAttributesConverter.cs" />
     <Compile Include="Converters\FlowDocumentConverter.cs" />
     <Compile Include="Converters\IsRunningConverter.cs" />
