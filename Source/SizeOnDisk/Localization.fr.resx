@@ -384,4 +384,7 @@
   <data name="OpenAs" xml:space="preserve">
     <value>Ouvrir avec</value>
   </data>
+  <data name="PermanentDeleteKey" xml:space="preserve">
+    <value>Maj+Suppr</value>
+  </data>
 </root>

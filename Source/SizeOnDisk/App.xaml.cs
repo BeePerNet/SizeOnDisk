@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.Properties;
 using SizeOnDisk.Utilities;
 using System;
+using System.Threading;
 using System.Windows;
 
 namespace SizeOnDisk
@@ -33,6 +34,12 @@ namespace SizeOnDisk
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             this.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(App_DispatcherUnhandledException);
             Settings.CheckUpgrade();
+
+            ThreadPool.GetMinThreads(out int minWork, out int mincompletion);
+            ThreadPool.SetMinThreads(minWork * 8, mincompletion * 8);
+
+
+
 #if DEBUG
             //TextWriterTraceListener tr1 = new TextWriterTraceListener(System.Console.Out);
             //Debug.Listeners.Clear();

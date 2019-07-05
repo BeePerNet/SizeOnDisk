@@ -397,4 +397,7 @@
   <data name="OpenAsKey" xml:space="preserve">
     <value>Ctrl+Alt+O</value>
   </data>
+  <data name="PermanentDeleteKey" xml:space="preserve">
+    <value>Shift+Delete</value>
+  </data>
 </root>

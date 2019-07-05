@@ -361,6 +361,15 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Shift+Delete.
+        /// </summary>
+        public static string PermanentDeleteKey {
+            get {
+                return ResourceManager.GetString("PermanentDeleteKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Ready.
         /// </summary>
         public static string Ready {

@@ -97,7 +97,7 @@ namespace SizeOnDisk.Shell
             if (!thumbnail)
                 options = SafeNativeMethods.SIIGBF.IconOnly;
             if (cache)
-                options |= SafeNativeMethods.SIIGBF.InCacheOnly;
+                options |= SafeNativeMethods.SIIGBF.MemoryOnly;
 
             IntPtr hBitmap = IntPtr.Zero;
             try

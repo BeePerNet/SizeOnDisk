@@ -62,31 +62,12 @@
             <MenuItem cmd:CommandExLoc.Command="vm:VMFile.PrintCommand" />
             <Separator />
             <MenuItem cmd:CommandExLoc.Command="vm:VMFile.ExploreCommand" />
-            <MenuItem cmd:CommandExLoc.Command="Find">
-                <MenuItem.Icon>
-                    <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/SearchFolderHS.png" />
-                </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.FindCommand" />
             <Separator />
-            <!--MenuItem Command="vm:VMFile.RenameCommand" /-->
-            <MenuItem Command="Delete" Header="{lex:Loc Key=PresentationCore:ExceptionStringTable:DeleteText}" InputGestureText="{lex:Loc Key=PresentationCore:ExceptionStringTable:DeleteKey}">
-                <MenuItem.Icon>
-                    <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/DeleteHS.png" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Command="vm:VMFile.PermanentDeleteCommand" Header="{lex:Loc PermanentDelete}" InputGestureText="Shift DEL">
-                <MenuItem.Icon>
-                    <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/DeleteHS.png" />
-                </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.DeleteCommand" />
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.PermanentDeleteCommand" />
             <Separator />
-            <MenuItem Command="Properties" />
+            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.PropertiesCommand" />
         </ContextMenu>
     </Window.Resources>
     <Grid>
@@ -171,8 +152,6 @@
                     Click="AboutButton_Click">
                     <TextBlock Text="?" />
                 </Button>
-                <Separator />
-                <Button cmd:CommandExLoc.Command="vm:VMFile.OpenCommand" />
             </ToolBar>
         </ToolBarTray>
         <Grid Grid.Row="1">

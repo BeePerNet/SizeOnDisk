@@ -15,23 +15,27 @@ namespace SizeOnDisk.ViewModel
     public class VMFile : CommandViewModel
     {
         public static readonly CommandEx OpenCommand = new CommandEx("open", "PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
-        public static readonly CommandEx OpenAsCommand = new CommandEx("openas", "OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "OpenAsKey"));
         public static readonly CommandEx EditCommand = new CommandEx("edit", "Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "EditKey"));
-        public static readonly CommandEx ExploreCommand = new CommandEx("explore", "Explore", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
-        public static readonly RoutedCommand PermanentDeleteCommand = new RoutedCommand("permanentdelete", typeof(VMFile));
+        public static readonly CommandEx OpenAsCommand = new CommandEx("openas", "OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "OpenAsKey"));
         public static readonly CommandEx PrintCommand = new CommandEx("print", "PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
+        public static readonly CommandEx ExploreCommand = new CommandEx("explore", "Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Folder.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
+        public static readonly CommandEx FindCommand = new CommandEx("find", "PresentationCore:ExceptionStringTable:FindText", "pack://application:,,,/SizeOnDisk;component/Icons/SearchFolderHS.png", typeof(VMFile), new KeyGesture(Key.F, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:FindKeyDisplayString"));
+        public static readonly CommandEx DeleteCommand = new CommandEx("delete", "PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin_Empty.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
+        public static readonly CommandEx PermanentDeleteCommand = new CommandEx("permanentdelete", "PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "PermanentDeleteKey"));
+        public static readonly CommandEx PropertiesCommand = new CommandEx("properties", "PresentationCore:ExceptionStringTable:PropertiesText", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
+
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
             bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ExploreCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Find, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Print, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Properties, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Delete, CallDeleteCommand, CanCallDeleteCommand));
+            bindingCollection.Add(new CommandBinding(PrintCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(ExploreCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(FindCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(DeleteCommand, CallDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
+            bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand, CanCallShellCommand));
         }
 
         public override void AddInputModels(InputBindingCollection bindingCollection)
@@ -245,7 +249,9 @@ namespace SizeOnDisk.ViewModel
             {
                 this.IsProtected = true;
             }
-            this.OnPropertyChanged("Attributes");
+            this.OnPropertyChanged(nameof(Attributes));
+            this._thumbnail = null;
+            this.OnPropertyChanged(nameof(Thumbnail));
         }
 
         //For VisualStudio Watch
@@ -331,10 +337,9 @@ namespace SizeOnDisk.ViewModel
             RoutedCommand command = e.Command as RoutedCommand;
             if (command == null)
                 return;
-
-            if (command == ApplicationCommands.Properties
+            if (command == PropertiesCommand
                 || (command == ExploreCommand && (file.IsFile || !file.IsProtected))
-                || (command == ApplicationCommands.Find && !file.IsFile && !file.IsProtected)
+                || (command == FindCommand && !file.IsFile && !file.IsProtected)
                 || (command == OpenAsCommand && file.IsFile
                 || (command == OpenCommand && file is VMFolder && !(file is VMRootHierarchy) && !file.IsProtected)))
             {
@@ -391,27 +396,24 @@ namespace SizeOnDisk.ViewModel
 
         private void RefreshThumbnail()
         {
-            _thumbnail = ShellHelper.GetIcon(this.Path, 96, true, true);
             if (_thumbnail == null)
             {
                 _thumbnail = ShellHelper.GetIcon(this.Path, 96, false);
-                OnPropertyChanged(nameof(Thumbnail));
                 Task.Run(() =>
                 {
                     BitmapSource tmp = null;
                     Thread thread = new Thread(() =>
                     {
                         tmp = ShellHelper.GetIcon(this.Path, 96, true);
+                        if (tmp != null)
+                            _thumbnail = tmp;
+                        OnPropertyChanged(nameof(Thumbnail));
                     });
                     thread.Start();
-                    thread.Join(10000);
+                    thread.Join(5000);
                     if (thread.ThreadState == ThreadState.Running)
                         thread.Abort();
                 });
-            }
-            else
-            {
-                OnPropertyChanged(nameof(Thumbnail));
             }
         }
 
