@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="*" Name="SizeOnDisk !(bind.FileVersion.ApplicationFile)" Language="!(loc.LANG)" Codepage="unicode" Version="!(bind.FileVersion.ApplicationFile)" Manufacturer="Galadhon" UpgradeCode="{9d3f227e-e788-4982-a15a-056152359ef6}">
+    <Product Id="*" Name="SizeOnDisk !(bind.FileVersion.ApplicationFile)" Language="!(loc.LANG)" Codepage="unicode" Version="!(bind.FileVersion.ApplicationFile)" Manufacturer="Galadhon" UpgradeCode="9d3f227e-e788-4982-a15a-056152359ef6">
         <Package Description="SizeOnDisk !(bind.FileVersion.ApplicationFile)" InstallerVersion="200" Compressed="yes" Languages="!(loc.LANG)" />
         <Media Id="1" Cabinet="SizeOnDiskInstaller.cab" EmbedCab="yes" />
-        <Directory Id="TARGETDIR" Name="SourceDir">
+      <MajorUpgrade Schedule="afterInstallInitialize"
+        DowngradeErrorMessage="!(loc.HigherVersionDetectedError)" />
+      <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder">
                 <Directory Id="INSTALLDIR" Name="SizeOnDisk" />
             </Directory>
