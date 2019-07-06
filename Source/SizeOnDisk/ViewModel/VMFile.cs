@@ -40,8 +40,6 @@ namespace SizeOnDisk.ViewModel
 
         public override void AddInputModels(InputBindingCollection bindingCollection)
         {
-            //bindingCollection.Add(new InputBinding(EditCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
-            //bindingCollection.Add(new InputBinding(PermanentDeleteCommand, new KeyGesture(Key.Delete, ModifierKeys.Shift)));*/
         }
 
 
@@ -97,7 +95,7 @@ namespace SizeOnDisk.ViewModel
             if (this.Name != newName)
             {
                 string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Path), newName);
-                if (this.IsFile)
+                if (this is VMFolder)
                 {
                     File.Move(this.Path, newPath);
                 }
@@ -107,79 +105,39 @@ namespace SizeOnDisk.ViewModel
                 }
                 _Name = newName;
                 Path = newPath;
-                this.OnPropertyChanged("Name");
-                this.OnPropertyChanged("Path");
+                this.OnPropertyChanged(nameof(Name));
+                this.OnPropertyChanged(nameof(Path));
             }
-        }
-
-        public virtual bool IsFile
-        {
-            get { return true; }
         }
 
         public long? FileCount
         {
             get { return _FileCount; }
-            protected set
-            {
-                if (value != _FileCount)
-                {
-                    _FileCount = value;
-                    this.OnPropertyChanged("FileCount");
-                }
-            }
+            protected set { SetProperty(ref _FileCount, value); }
         }
 
         public long? FolderCount
         {
             get { return _FolderCount; }
-            protected set
-            {
-                if (value != _FolderCount)
-                {
-                    _FolderCount = value;
-                    this.OnPropertyChanged("FolderCount");
-                }
-            }
+            protected set { SetProperty(ref _FolderCount, value); }
         }
 
         public long? DiskSize
         {
             get { return _DiskSize; }
-            protected set
-            {
-                if (value != _DiskSize)
-                {
-                    _DiskSize = value;
-                    this.OnPropertyChanged("DiskSize");
-                }
-            }
+            protected set { SetProperty(ref _DiskSize, value); }
         }
 
         public long? FileSize
         {
             get { return _FileSize; }
-            protected set
-            {
-                if (value != _FileSize)
-                {
-                    _FileSize = value;
-                    this.OnPropertyChanged("FileSize");
-                }
-            }
+            protected set { SetProperty(ref _FileSize, value); }
         }
 
         public bool IsProtected
         {
             get { return _IsProtected; }
-            protected set
-            {
-                if (value != _IsProtected)
-                {
-                    _IsProtected = value;
-                    this.OnPropertyChanged("IsProtected");
-                }
-            }
+            protected set { SetProperty(ref _IsProtected, value); }
         }
 
 
@@ -203,7 +161,7 @@ namespace SizeOnDisk.ViewModel
                         this.Parent.IsExpanded = true;
                         this.SelectItem();
                     }
-                    this.OnPropertyChanged("IsTreeSelected");
+                    this.OnPropertyChanged(nameof(IsTreeSelected));
                 }
             }
         }
@@ -315,11 +273,12 @@ namespace SizeOnDisk.ViewModel
             RoutedCommand command = e.Command as RoutedCommand;
             if (command == null)
                 return;
+            bool isFolder = file is VMFolder;
             if (command == PropertiesCommand
-                || (command == ExploreCommand && (file.IsFile || !file.IsProtected))
-                || (command == FindCommand && !file.IsFile && !file.IsProtected)
-                || (command == OpenAsCommand && file.IsFile
-                || (command == OpenCommand && file is VMFolder && !(file is VMRootHierarchy) && !file.IsProtected)))
+                || (command == ExploreCommand && (!isFolder || !file.IsProtected))
+                || (command == FindCommand && isFolder && !file.IsProtected)
+                || (command == OpenAsCommand && !isFolder
+                || (command == OpenCommand && isFolder && !(file is VMRootHierarchy) && !file.IsProtected)))
             {
                 e.CanExecute = true;
                 return;
@@ -346,7 +305,7 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 string path = file.Path;
-                if (e.Command == ExploreCommand && file.IsFile)
+                if (e.Command == ExploreCommand && !(file is VMFolder))
                     path = file.Parent.Path;
                 ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
             }
@@ -379,18 +338,10 @@ namespace SizeOnDisk.ViewModel
                 _thumbnail = ShellHelper.GetIcon(this.Path, 96, false);
                 Task.Run(() =>
                 {
-                    BitmapSource tmp = null;
-                    Thread thread = new Thread(() =>
-                    {
-                        tmp = ShellHelper.GetIcon(this.Path, 96, true);
-                        if (tmp != null)
-                            _thumbnail = tmp;
-                        OnPropertyChanged(nameof(Thumbnail));
-                    });
-                    thread.Start();
-                    thread.Join(5000);
-                    if (thread.ThreadState == ThreadState.Running)
-                        thread.Abort();
+                    BitmapSource tmp = ShellHelper.GetIcon(this.Path, 96, true);
+                    if (tmp != null)
+                        _thumbnail = tmp;
+                    this.OnPropertyChanged(nameof(Thumbnail));
                 });
             }
         }

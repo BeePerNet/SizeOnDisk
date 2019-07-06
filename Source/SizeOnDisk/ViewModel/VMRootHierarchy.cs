@@ -3,7 +3,9 @@ using SizeOnDisk.Utilities;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -14,20 +16,29 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMRootHierarchy : VMFolder
     {
+
+        void _timer_Tick(object sender, EventArgs e)
+        {
+            RunningThreads = Process.GetCurrentProcess().Threads.Count;
+        }
+
+
+        private int _RunningThreads = 0;
+        public int RunningThreads
+        {
+            get { return _RunningThreads; }
+            set { SetProperty(ref _RunningThreads, value); }
+        }
+
         VMRootFolder _SelectedRootFolder;
 
         public VMRootFolder SelectedRootFolder
         {
             get { return _SelectedRootFolder; }
-            set
-            {
-                if (_SelectedRootFolder != value)
-                {
-                    _SelectedRootFolder = value;
-                    this.OnPropertyChanged("SelectedRootFolder");
-                }
-            }
+            set { SetProperty(ref _SelectedRootFolder, value); }
         }
+
+        private DispatcherTimer _Timer;
 
         public VMRootHierarchy() : base(null, string.Empty, string.Empty, Dispatcher.CurrentDispatcher)
         {
@@ -36,6 +47,15 @@ namespace SizeOnDisk.ViewModel
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
                 this.Childs.Add(newFolder);
                 this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
+            }
+            else
+            {
+                _Timer = new DispatcherTimer(DispatcherPriority.DataBind)
+                {
+                    Interval = new TimeSpan(0, 0, 1)
+                };
+                _Timer.Tick += new EventHandler(_timer_Tick);
+                _Timer.Start();
             }
         }
 
@@ -46,7 +66,7 @@ namespace SizeOnDisk.ViewModel
             VMRootFolder newFolder = new VMRootFolder(this, path, path, this.Dispatcher);
             this.Childs.Add(newFolder);
             this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
-            this.OnPropertyChanged("Folders");
+            this.OnPropertyChanged(nameof(Folders));
             newFolder.RefreshAsync();
         }
 
@@ -57,7 +77,7 @@ namespace SizeOnDisk.ViewModel
             this.SelectedRootFolder = null;
             this.Childs.Remove(folder);
             this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
-            this.OnPropertyChanged("Folders");
+            this.OnPropertyChanged(nameof(Folders));
             folder.Dispose();
         }
 
@@ -81,7 +101,7 @@ namespace SizeOnDisk.ViewModel
 
         internal void RefreshIsRunning()
         {
-            this.OnPropertyChanged("IsRunning");
+            this.OnPropertyChanged(nameof(IsRunning));
         }
 
         public static readonly CommandEx OpenFolderCommand = new CommandEx("openfolder", "ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "Insert")) { UseDisablingImage = false };

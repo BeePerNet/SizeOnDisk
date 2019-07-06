@@ -35,8 +35,8 @@ namespace SizeOnDisk
             this.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(App_DispatcherUnhandledException);
             Settings.CheckUpgrade();
 
-            ThreadPool.GetMinThreads(out int minWork, out int mincompletion);
-            ThreadPool.SetMinThreads(minWork * 8, mincompletion * 8);
+            //ThreadPool.GetMinThreads(out int minWork, out int mincompletion);
+            //ThreadPool.SetMinThreads(minWork * 4, mincompletion * 4);
 
 
 

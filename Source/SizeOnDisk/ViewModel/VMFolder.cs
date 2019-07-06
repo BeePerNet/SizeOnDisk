@@ -98,11 +98,6 @@ namespace SizeOnDisk.ViewModel
 
         public Collection<VMFolder> Folders { get; protected set; }
 
-        public override bool IsFile
-        {
-            get { return false; }
-        }
-
         private bool _isExpanded;
 
         public bool IsExpanded
@@ -118,7 +113,7 @@ namespace SizeOnDisk.ViewModel
                     if (_isExpanded && this.Parent != null)
                         this.Parent.IsExpanded = true;
 
-                    this.OnPropertyChanged("IsExpanded");
+                    this.OnPropertyChanged(nameof(IsExpanded));
                 }
             }
         }
@@ -133,12 +128,12 @@ namespace SizeOnDisk.ViewModel
                     base.IsTreeSelected = value;
                     if (value && this.Childs != null && Dispatcher != null)
                     {
-                        new Thread(() =>
+                        Task.Run(() =>
                         {
                             //Parallel.ForEach(_InternalChilds, (T) => T.RefreshOnView());
                             this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                             //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
-                        }).Start();
+                        });
                     }
                 }
             }
@@ -156,7 +151,7 @@ namespace SizeOnDisk.ViewModel
         {
             foreach(VMFile file in files)
                 this.Childs.Remove(file);
-            this.OnPropertyChanged("Childs");
+            this.OnPropertyChanged(nameof(Childs));
             this.Childs.OnCollectionChanged();
 
             this.RefreshLists();
@@ -169,7 +164,7 @@ namespace SizeOnDisk.ViewModel
                 this.Childs.OnCollectionChanged();
             }));
             this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().OrderBy(T => T.Name).ToList());
-            this.OnPropertyChanged("Folders");
+            this.OnPropertyChanged(nameof(Folders));
         }
 
         public void RefreshCount()
@@ -212,8 +207,16 @@ namespace SizeOnDisk.ViewModel
                     //this.Childs.ToList().AsParallel().WithCancellation(parallelOptions.CancellationToken).ForAll((T) => T.RefreshOnView());
                 }
 
-                Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
+                Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
                 //this.Childs.ToList().ForEach((T) => T.Refresh(clusterSize, parallelOptions));
+
+                /*this.Childs.ToList().ForEach((T) =>
+                {
+                    new Task(() =>
+                    {
+                        T.Refresh(clusterSize, parallelOptions);
+                    }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning).Start();
+                });*/
 
                 this.RefreshCount();
             }

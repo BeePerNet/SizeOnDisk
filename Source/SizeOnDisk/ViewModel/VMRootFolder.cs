@@ -21,7 +21,7 @@ namespace SizeOnDisk.ViewModel
         private Stopwatch _Runwatch = new Stopwatch();
         long _HardDriveUsage;
         long _HardDriveFree;
-        TaskExecutionState _ExecutionState = TaskExecutionState.Ready;
+        TaskExecutionState _ExecutionState = TaskExecutionState.Running;
         private readonly string _HardDrivePath;
 
         #endregion fields
@@ -33,7 +33,7 @@ namespace SizeOnDisk.ViewModel
             get { return _HardDrivePath; }
         }
 
-        public TimeSpan Runtime
+        public TimeSpan RunTime
         {
             get
             {
@@ -44,27 +44,13 @@ namespace SizeOnDisk.ViewModel
         public long HardDriveUsage
         {
             get { return _HardDriveUsage; }
-            protected set
-            {
-                if (_HardDriveUsage != value)
-                {
-                    _HardDriveUsage = value;
-                    this.OnPropertyChanged("HardDriveUsage");
-                }
-            }
+            protected set { SetProperty(ref _HardDriveUsage, value); }
         }
 
         public long HardDriveFree
         {
             get { return _HardDriveFree; }
-            protected set
-            {
-                if (_HardDriveFree != value)
-                {
-                    _HardDriveFree = value;
-                    this.OnPropertyChanged("HardDriveFree");
-                }
-            }
+            protected set { SetProperty(ref _HardDriveFree, value); }
         }
 
         #endregion properties
@@ -112,18 +98,18 @@ namespace SizeOnDisk.ViewModel
             {
                 this.ExecutionState = TaskExecutionState.Running;
                 _Runwatch.Restart();
-                this.OnPropertyChanged("RunTime");
+                this.OnPropertyChanged(nameof(RunTime)); 
 
-                DriveInfo info = new DriveInfo(_HardDrivePath);
+                 DriveInfo info = new DriveInfo(_HardDrivePath);
                 this.HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
                 this.HardDriveFree = info.AvailableFreeSpace;
 
-                base.Refresh(IOHelper.GetClusterSize(this.Path), parallelOptions);
+                this.Refresh(IOHelper.GetClusterSize(this.Path), parallelOptions);
             }
             finally
             {
                 _Runwatch.Stop();
-                this.OnPropertyChanged("RunTime");
+                this.OnPropertyChanged(nameof(RunTime));
 
                 this.ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
             }
@@ -153,7 +139,7 @@ namespace SizeOnDisk.ViewModel
             ParallelOptions parallelOptions = new ParallelOptions();
             _CancellationTokenSource = new CancellationTokenSource();
             parallelOptions.CancellationToken = _CancellationTokenSource.Token;
-            Action action = new Action(delegate ()
+            new Task(() =>
             {
                 try
                 {
@@ -180,14 +166,12 @@ namespace SizeOnDisk.ViewModel
                         ExceptionBox.ShowException(ex);
                     });
                 }
-            });
-            _Task = new Task(action, parallelOptions.CancellationToken);
-            _Task.Start();
+            }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning).Start();
         }
 
         void _timer_Tick(object sender, EventArgs e)
         {
-            this.OnPropertyChanged("RunTime");
+            this.OnPropertyChanged(nameof(RunTime));
             this.RefreshCount();
         }
 
@@ -223,7 +207,7 @@ namespace SizeOnDisk.ViewModel
                 if (_ExecutionState != value)
                 {
                     _ExecutionState = value;
-                    this.OnPropertyChanged("ExecutionState");
+                    this.OnPropertyChanged(nameof(ExecutionState));
                     (this.Parent as VMRootHierarchy).RefreshIsRunning();
                     CommandManager.InvalidateRequerySuggested();
                 }
