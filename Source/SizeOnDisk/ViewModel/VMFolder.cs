@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using WPFByYourCommand;
@@ -155,7 +154,7 @@ namespace SizeOnDisk.ViewModel
 
         #region functions
 
-        internal void RemoveChilds(VMFile[] files)
+        internal void RemoveChilds(params VMFile[] files)
         {
             foreach(VMFile file in files)
                 this.Childs.Remove(file);

@@ -210,7 +210,18 @@ namespace SizeOnDisk.ViewModel
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
-            file.Parent.DeleteAllSelectedFiles();
+            if (file.IsSelected)
+            {
+                file.Parent.DeleteAllSelectedFiles();
+            } else
+            {
+                if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
+                {
+                    file.Parent.RemoveChilds(file);
+                    file.Parent.RefreshCount();
+                    file.Parent.RefreshParents();
+                }
+            }
         }
 
         private static void CallPermanentDeleteCommand(object sender, ExecutedRoutedEventArgs e)
@@ -221,7 +232,19 @@ namespace SizeOnDisk.ViewModel
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
-            file.Parent.PermanentDeleteAllSelectedFiles();
+            if (file.IsSelected)
+            {
+                file.Parent.PermanentDeleteAllSelectedFiles();
+            }
+            else
+            {
+                if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
+                {
+                    file.Parent.RemoveChilds(file);
+                    file.Parent.RefreshCount();
+                    file.Parent.RefreshParents();
+                }
+            }
         }
 
         private static void CanCallDeleteCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -233,7 +256,7 @@ namespace SizeOnDisk.ViewModel
             if (file == null)
                 return;
 
-            e.CanExecute = !(file is VMRootFolder);
+            e.CanExecute = !file.IsProtected && !(file is VMRootFolder);
         }
 
         private static void CanCallShellCommand(object sender, CanExecuteRoutedEventArgs e)

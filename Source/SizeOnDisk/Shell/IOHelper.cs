@@ -164,7 +164,7 @@ namespace SizeOnDisk.Shell
             /// </summary>
             /// <param name="path">Location of directory or file to recycle</param>
             /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-            public static bool MoveToRecycleBin(string[] path)
+            public static bool MoveToRecycleBin(params string[] path)
             {
                 return ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, path);
             }
@@ -175,7 +175,7 @@ namespace SizeOnDisk.Shell
             /// </summary>
             /// <param name="path">Location of directory or file to recycle</param>
             /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-            public static bool PermanentDelete(string[] path)
+            public static bool PermanentDelete(params string[] path)
             {
                 return ShellDeleteOperation(0, path);
             }
