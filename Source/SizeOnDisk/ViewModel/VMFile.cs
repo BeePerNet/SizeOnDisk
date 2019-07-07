@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WPFByYourCommand;
+using System.Linq;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -300,13 +301,16 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
 
-            if (command == OpenCommand && !string.IsNullOrWhiteSpace(System.IO.Path.GetExtension(file.Path)))
+            if (command == OpenCommand && string.IsNullOrWhiteSpace(System.IO.Path.GetExtension(file.Path)))
             {
-                e.CanExecute = true;
+                e.CanExecute = false;
                 return;
             }
 
-            e.CanExecute = ShellHelper.CanCallShellCommand(file.Path, command.Name);
+            e.CanExecute = ShellHelper.GetVerbs(file.Path).Any(T => T.verb == command.Name);
+
+
+            //e.CanExecute = ShellHelper.CanCallShellCommand(file.Path, command.Name);
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]

@@ -1,10 +1,12 @@
-﻿using SizeOnDisk.Utilities;
+﻿using Microsoft.Win32;
+using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -18,6 +20,59 @@ namespace SizeOnDisk.Shell
 {
     public static class ShellHelper
     {
+        public static IEnumerable<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> GetVerbs(string path)
+        {
+            List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> verbs = new List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)>();
+            RegistryKey key = Registry.ClassesRoot.OpenSubKey(Path.GetExtension(path));
+            string defaultApp = key.GetValue(string.Empty, string.Empty).ToString();
+            key = key.OpenSubKey("OpenWithProgids");
+            string[] subvalues = new string[] { };
+            if (key == null)
+                subvalues = new string[] { defaultApp };
+            else
+                subvalues = key.GetValueNames();
+            foreach (string subkey in subvalues)
+            {
+                RegistryKey appkey = Registry.ClassesRoot.OpenSubKey(subkey);
+                if (appkey != null)
+                {
+                    string application = appkey.GetValue(string.Empty, string.Empty).ToString();
+                    if (application == string.Empty)
+                    {
+                        RegistryKey applicationkey = appkey.OpenSubKey("Application");
+                        if (applicationkey != null)
+                        {
+                            application = applicationkey.GetValue("AppUserModelID", string.Empty).ToString();
+                            if (application.Contains('!'))
+                            {
+                                string[] splits = application.Split('!');
+                                application = splits.Last();
+                            }
+                        }
+                    }
+                    appkey = appkey.OpenSubKey("Shell");
+                    if (appkey != null)
+                    {
+                        string defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
+                        if (appkey != null)
+                        {
+                            defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
+                            string[] appverbs = appkey.GetSubKeyNames();
+                            foreach (string appverb in appverbs)
+                            {
+                                verbs.Add((appverb, subkey, application, defaultApp == subkey, defaultverb == appverb));
+                            }
+                        }
+                    }
+                }
+            }
+            return verbs;
+        }
+
+
+
+
+
         private readonly static Dictionary<string, string> verbReplacementList;
 
         [SuppressMessage("Microsoft.Performance", "CA1810")]
@@ -109,7 +164,7 @@ namespace SizeOnDisk.Shell
                 retCode = ((SafeNativeMethods.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, options, out hBitmap);
                 if (retCode < 0)
                     return null;
-                    //throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
+                //throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
             }
             finally
             {
