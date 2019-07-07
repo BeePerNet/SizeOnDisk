@@ -144,10 +144,6 @@
   <data name="FileType" xml:space="preserve">
     <value>Tipo</value>
   </data>
-  <data name="FileTypeUnkown" xml:space="preserve">
-    <value>{0} arquivo</value>
-    <comment>{0} gets replaced by extension (uppercase)</comment>
-  </data>
   <data name="Finished" xml:space="preserve">
     <value>Finalizado</value>
   </data>
@@ -317,9 +313,6 @@
   </data>
   <data name="Ready" xml:space="preserve">
     <value>Pronto</value>
-  </data>
-  <data name="Recalculate" xml:space="preserve">
-    <value>Recalcular</value>
   </data>
   <data name="RunAsAdministrator" xml:space="preserve">
     <value>Executar como Administrador</value>

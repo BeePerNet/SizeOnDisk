@@ -305,9 +305,6 @@
   <data name="Ready" xml:space="preserve">
     <value>Готово</value>
   </data>
-  <data name="Recalculate" xml:space="preserve">
-    <value>Пересчитывается</value>
-  </data>
   <data name="RunAsAdministrator" xml:space="preserve">
     <value>Запуск от имени администратора</value>
   </data>

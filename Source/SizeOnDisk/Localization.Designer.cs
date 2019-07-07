@@ -241,7 +241,7 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Hard drive free.
+        ///   Recherche une chaîne localisée semblable à Hard drive free space.
         /// </summary>
         public static string HardDriveFree {
             get {

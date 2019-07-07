@@ -360,7 +360,7 @@
     <value>Last write</value>
   </data>
   <data name="HardDriveFree" xml:space="preserve">
-    <value>Hard drive free</value>
+    <value>Hard drive free space</value>
   </data>
   <data name="PermanentDelete" xml:space="preserve">
     <value>_Permanent Delete</value>

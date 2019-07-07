@@ -159,9 +159,6 @@
   <data name="Ready" xml:space="preserve">
     <value>آماده</value>
   </data>
-  <data name="Recalculate" xml:space="preserve">
-    <value>محاسبه مجدد</value>
-  </data>
   <data name="RunAsAdministrator" xml:space="preserve">
     <value>اجرا به عنوان مدیر</value>
   </data>

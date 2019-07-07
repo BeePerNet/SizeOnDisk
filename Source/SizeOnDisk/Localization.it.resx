@@ -305,9 +305,6 @@
   <data name="Ready" xml:space="preserve">
     <value>Pronto</value>
   </data>
-  <data name="Recalculate" xml:space="preserve">
-    <value>Ricalcola</value>
-  </data>
   <data name="RunAsAdministrator" xml:space="preserve">
     <value>Esegui come amministratore</value>
   </data>

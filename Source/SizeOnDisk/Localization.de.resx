@@ -159,9 +159,6 @@
   <data name="Ready" xml:space="preserve">
     <value>Bereit</value>
   </data>
-  <data name="Recalculate" xml:space="preserve">
-    <value>Wiederberechnen</value>
-  </data>
   <data name="RunAsAdministrator" xml:space="preserve">
     <value>Als Administrator ausführen</value>
   </data>
