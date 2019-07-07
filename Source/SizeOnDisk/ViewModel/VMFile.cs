@@ -213,7 +213,8 @@ namespace SizeOnDisk.ViewModel
             if (file.IsSelected)
             {
                 file.Parent.DeleteAllSelectedFiles();
-            } else
+            }
+            else
             {
                 if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
                 {
@@ -271,12 +272,35 @@ namespace SizeOnDisk.ViewModel
             RoutedCommand command = e.Command as RoutedCommand;
             if (command == null)
                 return;
+
             bool isFolder = file is VMFolder;
-            if (command == PropertiesCommand
-                || (command == ExploreCommand && (!isFolder || !file.IsProtected))
-                || (command == FindCommand && isFolder && !file.IsProtected)
-                || (command == OpenAsCommand && !isFolder
-                || (command == OpenCommand && isFolder && !(file is VMRootHierarchy) && !file.IsProtected)))
+            if (command == PropertiesCommand)
+            {
+                e.CanExecute = true;
+                return;
+            }
+            if (isFolder && file.IsProtected)
+            {
+                e.CanExecute = false;
+                return;
+            }
+            if (command == ExploreCommand || command == FindCommand)
+            {
+                e.CanExecute = true;
+                return;
+            }
+            if (file.IsProtected)
+            {
+                e.CanExecute = false;
+                return;
+            }
+            if (command == OpenAsCommand)
+            {
+                e.CanExecute = true;
+                return;
+            }
+
+            if (command == OpenCommand && !string.IsNullOrWhiteSpace(System.IO.Path.GetExtension(file.Path)))
             {
                 e.CanExecute = true;
                 return;

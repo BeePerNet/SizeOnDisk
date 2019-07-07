@@ -36,11 +36,15 @@ namespace SizeOnDisk.Shell
             if (string.IsNullOrWhiteSpace(verb))
                 return false;
             verb = verb.ToLowerInvariant();
-            if (verbReplacementList.ContainsKey(verb))
-                verb = verbReplacementList[verb];
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = fileName;
-            return processStartInfo.Verbs.SingleOrDefault(T => T.ToLowerInvariant() == verb) != null;
+            bool result = processStartInfo.Verbs.SingleOrDefault(T => T.ToLowerInvariant() == verb) != null;
+            if (!result && verbReplacementList.ContainsKey(verb))
+            {
+                verb = verbReplacementList[verb];
+                result = processStartInfo.Verbs.SingleOrDefault(T => T.ToLowerInvariant() == verb) != null;
+            }
+            return result;
         }
 
         public static void ShellExecute(string fileName, string verb, string parameters, IntPtr ownerWindow)
