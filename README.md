@@ -1,12 +1,6 @@
 # SizeOnDisk
 
-## Downloads
-
-Version 2.0.1  
-[Setup](https://github.com/BeePerNet/SizeOnDisk/releases/download/2.0.0.1/SizeOnDiskSetup.msi)  
-[Portable](https://github.com/BeePerNet/SizeOnDisk/releases/download/2.0.0.1/SizeOnDiskPortable.zip)
-
-## Description
+[Releases](https://github.com/BeePerNet/SizeOnDisk/releases)
 
 A way to know where disk space is used.  
 The main goal of this software is to parse all files as fast as possible to get their size.
