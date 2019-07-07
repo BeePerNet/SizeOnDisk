@@ -118,22 +118,30 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public override bool IsTreeSelected
+        private bool _isTreeSelected;
+
+        public bool IsTreeSelected
         {
-            get { return base.IsTreeSelected; }
+            get { return _isTreeSelected; }
             set
             {
-                if (value != base.IsTreeSelected)
+                if (value != _isTreeSelected)
                 {
-                    base.IsTreeSelected = value;
+                    _isTreeSelected = value;
+                    this.OnPropertyChanged(nameof(IsTreeSelected));
+                    if (_isTreeSelected && this.Parent != null)
+                    {
+                        this.Parent.IsExpanded = true;
+                        this.SelectItem();
+                    }
                     if (value && this.Childs != null && Dispatcher != null)
                     {
-                        Task.Run(() =>
+                        new Task(() =>
                         {
-                            //Parallel.ForEach(_InternalChilds, (T) => T.RefreshOnView());
-                            this.Childs.ToList().ForEach((T) => T.RefreshOnView());
+                            Parallel.ForEach(this.Childs, (T) => T.RefreshOnView());
+                            //this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                             //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
-                        });
+                        }, TaskCreationOptions.LongRunning).Start();
                     }
                 }
             }
@@ -155,6 +163,7 @@ namespace SizeOnDisk.ViewModel
             this.Childs.OnCollectionChanged();
 
             this.RefreshLists();
+            this.OnPropertyChanged(nameof(Folders));
         }
 
         private void RefreshLists()
@@ -164,7 +173,6 @@ namespace SizeOnDisk.ViewModel
                 this.Childs.OnCollectionChanged();
             }));
             this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().OrderBy(T => T.Name).ToList());
-            this.OnPropertyChanged(nameof(Folders));
         }
 
         public void RefreshCount()
@@ -197,26 +205,56 @@ namespace SizeOnDisk.ViewModel
                 VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.Dispatcher));
                 childs = Directory.GetFiles(this.Path);
                 VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));
-
                 this.RefreshLists();
 
                 if (this.IsTreeSelected)
                 {
-                    //Parallel.ForEach(_InternalChilds, parallelOptions, (T) => T.RefreshOnView());
-                    this.Childs.ToList().ForEach((T) => T.RefreshOnView());
+                    Parallel.ForEach(this.Childs, parallelOptions, (T) => T.RefreshOnView());
+                    //this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                     //this.Childs.ToList().AsParallel().WithCancellation(parallelOptions.CancellationToken).ForAll((T) => T.RefreshOnView());
                 }
 
-                Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
+                this.OnPropertyChanged(nameof(Folders));
+                //this.OnPropertyChanged(nameof(Childs));
+
+                Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
                 //this.Childs.ToList().ForEach((T) => T.Refresh(clusterSize, parallelOptions));
 
                 /*this.Childs.ToList().ForEach((T) =>
                 {
-                    new Task(() =>
+                    Task task = new Task(() =>
                     {
                         T.Refresh(clusterSize, parallelOptions);
-                    }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning).Start();
+                    }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning);
+                    task.Start();
+                    task.Wait();
                 });*/
+
+                /*this.Childs.AsParallel().WithCancellation(parallelOptions.CancellationToken)
+                    .WithMergeOptions(ParallelMergeOptions.NotBuffered).ForAll((T) =>
+                    {
+                        T.Refresh(clusterSize, parallelOptions);
+                    });*/
+
+                /*Task task = new Task(() =>
+                {
+                    try
+                    {
+                            this.Childs.ToList().ForEach((T) => T.Refresh(clusterSize, parallelOptions));
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+                    catch (Exception ex)
+                    {
+                        Dispatcher.Invoke((ThreadStart)delegate
+                        {
+                            ExceptionBox.ShowException(ex);
+                        });
+                    }
+                }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning);
+                task.Start();
+                task.Wait();*/
 
                 this.RefreshCount();
             }
@@ -227,7 +265,7 @@ namespace SizeOnDisk.ViewModel
             catch (OperationCanceledException)
             {
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
                 this.IsProtected = true;
             }

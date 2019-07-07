@@ -26,34 +26,35 @@
         <vm:VMRootHierarchy />
     </Window.DataContext>
     <Window.Resources>
+        <cmd:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <cmd:IsEqualConverter x:Key="IsEqualConverter" />
+        <cmd:IsNotEqualConverter x:Key="IsNotEqualConverter" />
+        <conv:IsRunningConverter x:Key="IsRunningConverter" />
+        <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
+        <conv:SizeConverter x:Key="SizeConverter" /> 
         <Style x:Key="ColoredName" TargetType="TextBlock">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Compressed">
-                    <Setter Property="Foreground" Value="Blue"/>
+                <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Compressed}" Value="True">
+                    <Setter Property="Foreground" Value="#3299CA" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Encrypted">
+                <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Encrypted}" Value="True">
                     <Setter Property="Foreground" Value="LimeGreen"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsProtected}" Value="true">
                     <Setter Property="Foreground" Value="Red"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Attributes.IsHidden}" Value="true">
-                    <Setter Property="Opacity" Value="0.5" />
+                <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Hidden}" Value="True">
+                    <Setter Property="Opacity" Value="0.6" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="{x:Type StatusBarItem}" TargetType="StatusBarItem">
             <Setter Property="Margin" Value="3,0,3,1" />
         </Style>
-        <cmd:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <cmd:IsEqualConverter x:Key="IsEqualConverter" />
-        <conv:IsRunningConverter x:Key="IsRunningConverter" />
-        <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
-        <conv:SizeConverter x:Key="SizeConverter" />
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}">
             <MenuItem cmd:CommandExLoc.Command="vm:VMFile.OpenCommand">
                 <MenuItem.Icon>
-                    <Image Source="{Binding Icon}" />
+                    <Image Source="{Binding Details.Icon}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem cmd:CommandExLoc.Command="vm:VMFile.EditCommand" />
@@ -78,33 +79,9 @@
         <ToolBarTray  Grid.Row="0">
             <ToolBar>
                 <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.OpenFolderCommand" Margin="2" />
-                <Button ToolTip="{lex:Loc Recalculate}"
-                    Command="NavigationCommands.Refresh"
-                    Margin="2">
-                    <Button.Content>
-                        <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/Refresh.png" />
-                    </Button.Content>
-                </Button>
-                <Button ToolTip="{lex:Loc Stop}"
-                    Command="Stop"
-                    Margin="2">
-                    <Button.Content>
-                        <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/StopHS.png" />
-                    </Button.Content>
-                </Button>
-                <Button ToolTip="{lex:Loc Close}"
-                    Command="Close"
-                    Margin="2">
-                    <Button.Content>
-                        <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/DeleteHS.png" />
-                    </Button.Content>
-                </Button>
+                <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.RefreshCommand" Margin="2" />
+                <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.StopCommand" Margin="2" />
+                <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.CloseCommand" Margin="2" />
                 <Separator />
                 <ToggleButton ToolTip="Details view"
                               Margin="2"
@@ -178,21 +155,13 @@
                                 Value="{Binding IsTreeSelected, Mode=TwoWay}" />
                         <Setter Property="ItemsSource"
                                 Value="{Binding Folders}" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Compressed">
-                                <Setter Property="Foreground" Value="Blue"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Attributes.Attributes}" Value="Encrypted">
-                                <Setter Property="Foreground" Value="LimeGreen"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsProtected}" Value="true">
-                                <Setter Property="IsEnabled" Value="False" />
-                                <Setter Property="Foreground" Value="Red"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Attributes.IsHidden}" Value="true">
-                                <Setter Property="Opacity" Value="0.5" />
-                            </DataTrigger>
-                        </Style.Triggers>
+                        <Setter Property="HeaderTemplate">
+                            <Setter.Value>
+                                <DataTemplate >
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource ColoredName}" />
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </TreeView.ItemContainerStyle>
             </TreeView>
@@ -232,7 +201,7 @@
                                 <RowDefinition SharedSizeGroup="Icons" MinHeight="96" />
                                 <RowDefinition SharedSizeGroup="Names" />
                             </Grid.RowDefinitions>
-                            <cmd:AutoDisablingImage Source="{Binding Thumbnail}" Width="{Binding Thumbnail.PixelWidth}" Height="{Binding Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <TextBlock Style="{StaticResource ColoredName}" Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
                         </Grid>
                     </DataTemplate>
@@ -268,7 +237,7 @@
                     <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <cmd:AutoDisablingImage Source="{Binding Icon}" IsEnabled="{Binding Attributes.IsHidden, Converter={StaticResource InverseBooleanConverter}}" />
+                                <cmd:AutoDisablingImage Source="{Binding Details.Icon}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -276,11 +245,11 @@
                                         Header="{lex:Loc Name}"
                                         Binding="{Binding Name}"
                                         ElementStyle="{StaticResource ColoredName}" />
-                    <DataGridTextColumn SortMemberPath="Attributes.FileType"
+                    <DataGridTextColumn SortMemberPath="Details.FileType"
                                         Header="{lex:Loc FileType}"
                                         IsReadOnly="True"
-                                        Binding="{Binding Attributes.FileType}" />
-                    <DataGridTextColumn Binding="{Binding Attributes.Attributes,Converter={StaticResource FileAttributesConverter}}"
+                                        Binding="{Binding Details.FileType}" />
+                    <DataGridTextColumn Binding="{Binding Attributes,Converter={StaticResource FileAttributesConverter}}"
                                         Header="{lex:Loc Attributes}"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Header="{lex:Loc FolderCount}"
@@ -303,17 +272,17 @@
                                         Binding="{Binding DiskSize,Converter={StaticResource SizeConverter}}"
                                         SortMemberPath="DiskSize"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding Attributes.CreationTime}"
+                    <DataGridTextColumn Binding="{Binding Details.CreationTime}"
                                         Header="{lex:Loc DateCreation}"
-                                        SortMemberPath="DateCreation"
+                                        SortMemberPath="Details.DateCreation"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding Attributes.LastAccessTime}"
+                    <DataGridTextColumn Binding="{Binding Details.LastAccessTime}"
                                         Header="{lex:Loc DateLastAccess}"
-                                        SortMemberPath="DateLastAccess"
+                                        SortMemberPath="Details.DateLastAccess"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding Attributes.LastWriteTime}"
+                    <DataGridTextColumn Binding="{Binding Details.LastWriteTime}"
                                         Header="{lex:Loc DateLastWrite}"
-                                        SortMemberPath="DateLastWrite"
+                                        SortMemberPath="Details.DateLastWrite"
                                         IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
@@ -351,7 +320,7 @@
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            <StatusBarItem Content="{Binding SelectedRootFolder.ExecutionState, Converter={StaticResource IsRunningConverter}, FallbackValue='Choose a folder...'}" />
+            <StatusBarItem Content="{Binding SelectedRootFolder.ExecutionState, Converter={StaticResource IsRunningConverter}, FallbackValue=...}" />
             <Separator Grid.Column="1" />
             <StatusBarItem Grid.Column="2"
                            Content="{Binding SelectedRootFolder.RunTime}" />

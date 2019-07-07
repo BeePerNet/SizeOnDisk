@@ -1,40 +1,54 @@
 ﻿using Microsoft.Win32;
+using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Windows.Media.Imaging;
 using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFileAttributes : ObservableObject
+    public class VMFileDetails : ObservableObject
     {
-        private readonly string _FileType;
-        private readonly FileAttributes _Attributes;
+        private string _FileType;
+        private FileAttributes _Attributes;
 
         private DateTime? _CreationTime;
         private DateTime? _LastAccessTime;
         private DateTime? _LastWriteTime;
         VMFile _vmFile;
 
-        public VMFileAttributes(VMFile vmFile)
+        public VMFileDetails(VMFile vmFile)
         {
             _vmFile = vmFile;
-            LittleFileInfo fileInfo = new LittleFileInfo(vmFile.Path);
-            this._Attributes = fileInfo.Attributes;
-            this._CreationTime = fileInfo.CreationTime;
-            this._LastAccessTime = fileInfo.LastAccessTime;
-            this._LastWriteTime = fileInfo.LastWriteTime;
+        }
 
-            if (vmFile is VMFolder)
+        public void Load()
+        {
+            if (_vmFile is VMFolder)
             {
                 _FileType = string.Empty;
             }
             else
             {
-                _FileType = GetFriendlyName(System.IO.Path.GetExtension(vmFile.Name));
+                _FileType = GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
             }
+
+            LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Path);
+            this._Attributes = fileInfo.Attributes;
+            this._CreationTime = fileInfo.CreationTime;
+            this._LastAccessTime = fileInfo.LastAccessTime;
+            this._LastWriteTime = fileInfo.LastWriteTime;
+
+            this._icon = ShellHelper.GetIcon(_vmFile.Path, 16);
+            this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+        }
+
+        public FileAttributes Attributes
+        {
+            get { return _Attributes; }
         }
 
 
@@ -43,14 +57,6 @@ namespace SizeOnDisk.ViewModel
             get
             {
                 return _FileType;
-            }
-        }
-
-        public FileAttributes Attributes
-        {
-            get
-            {
-                return _Attributes;
             }
         }
 
@@ -77,18 +83,12 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public bool IsHidden
-        {
-            get
-            {
-                return !(_vmFile is VMRootFolder) && _Attributes.HasFlag(FileAttributes.Hidden);
-            }
-        }
-
         private static Dictionary<string, string> associations = new Dictionary<string, string>();
 
         public static string GetFriendlyName(string extension)
         {
+            if (string.IsNullOrWhiteSpace(extension))
+                return string.Empty;
             if (!associations.ContainsKey(extension))
             {
                 string fileType = String.Empty;
@@ -114,7 +114,7 @@ namespace SizeOnDisk.ViewModel
                     // Couldn't find the file type in the registry. Display some default.
                     if (string.IsNullOrEmpty(fileType))
                     {
-                        fileType = String.Format(CultureInfo.CurrentCulture, Localization.FileTypeUnkown, extension.Replace(".", ""));
+                        fileType = extension.Replace(".", "");
                     }
                 }
                 if (!associations.ContainsKey(extension))
@@ -123,6 +123,30 @@ namespace SizeOnDisk.ViewModel
             }
 
             return associations[extension];
+        }
+
+
+
+
+
+        BitmapSource _icon = null;
+        public BitmapSource Icon
+        {
+            get
+            {
+                return _icon;
+            }
+        }
+
+
+        BitmapSource _thumbnail = null;
+        //Seems to have problems with VOB
+        public BitmapSource Thumbnail
+        {
+            get
+            {
+                return _thumbnail;
+            }
         }
 
 

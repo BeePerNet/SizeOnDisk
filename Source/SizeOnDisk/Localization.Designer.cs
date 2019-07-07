@@ -97,7 +97,7 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Add folder....
+        ///   Recherche une chaîne localisée semblable à Add a folder....
         /// </summary>
         public static string ChooseFolder {
             get {
@@ -219,15 +219,6 @@ namespace SizeOnDisk {
         public static string FileType {
             get {
                 return ResourceManager.GetString("FileType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à {0} File.
-        /// </summary>
-        public static string FileTypeUnkown {
-            get {
-                return ResourceManager.GetString("FileTypeUnkown", resourceCulture);
             }
         }
         
@@ -366,15 +357,6 @@ namespace SizeOnDisk {
         public static string Ready {
             get {
                 return ResourceManager.GetString("Ready", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Recalculate.
-        /// </summary>
-        public static string Recalculate {
-            get {
-                return ResourceManager.GetString("Recalculate", resourceCulture);
             }
         }
         

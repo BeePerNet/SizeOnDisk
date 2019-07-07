@@ -176,7 +176,7 @@
     <Compile Include="Shell\IOHelper.cs" />
     <Compile Include="Utilities\WrapperIWin32Window.cs" />
     <Compile Include="ViewModel\TaskExecutionState.cs" />
-    <Compile Include="ViewModel\VMFileAttributes.cs" />
+    <Compile Include="ViewModel\VMFileDetails.cs" />
     <Compile Include="ViewModel\VMOptions.cs" />
     <Compile Include="ViewModel\VMRootFolder.cs" />
     <Compile Include="ViewModel\VMRootHierarchy.cs" />

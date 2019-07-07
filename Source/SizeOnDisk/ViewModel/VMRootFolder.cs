@@ -92,6 +92,7 @@ namespace SizeOnDisk.ViewModel
             (this.Parent as VMRootHierarchy).SelectedRootFolder = this;
         }
 
+
         private void Refresh(ParallelOptions parallelOptions)
         {
             try
@@ -139,7 +140,7 @@ namespace SizeOnDisk.ViewModel
             ParallelOptions parallelOptions = new ParallelOptions();
             _CancellationTokenSource = new CancellationTokenSource();
             parallelOptions.CancellationToken = _CancellationTokenSource.Token;
-            new Task(() =>
+            _Task = new Task(() =>
             {
                 try
                 {
@@ -166,7 +167,8 @@ namespace SizeOnDisk.ViewModel
                         ExceptionBox.ShowException(ex);
                     });
                 }
-            }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning).Start();
+            }, parallelOptions.CancellationToken, TaskCreationOptions. LongRunning);
+            _Task.Start();
         }
 
         void _timer_Tick(object sender, EventArgs e)
@@ -189,11 +191,14 @@ namespace SizeOnDisk.ViewModel
 
         public void StopAsync()
         {
-            if (_CancellationTokenSource != null && !_CancellationTokenSource.IsCancellationRequested)
+            if (_Task != null && _Task.Status == TaskStatus.Running)
             {
-                _CancellationTokenSource.Cancel();
+                if (_CancellationTokenSource != null && !_CancellationTokenSource.IsCancellationRequested)
+                {
+                    _CancellationTokenSource.Cancel();
+                }
+                this.ExecutionState = TaskExecutionState.Canceled;
             }
-            this.ExecutionState = TaskExecutionState.Canceled;
         }
 
         public TaskExecutionState ExecutionState
@@ -209,7 +214,6 @@ namespace SizeOnDisk.ViewModel
                     _ExecutionState = value;
                     this.OnPropertyChanged(nameof(ExecutionState));
                     (this.Parent as VMRootHierarchy).RefreshIsRunning();
-                    CommandManager.InvalidateRequerySuggested();
                 }
             }
         }

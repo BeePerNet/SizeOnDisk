@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -70,24 +71,18 @@ namespace SizeOnDisk
         /// </summary>
         private void _TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            ICollectionView view = CollectionViewSource.GetDefaultView(this.Listing.ItemsSource);
-            IEditableCollectionView collection = view as IEditableCollectionView;
+            /*IEditableCollectionView collection = CollectionViewSource.GetDefaultView(this.Listing.ItemsSource) as IEditableCollectionView;
 
             if (collection != null && collection.IsEditingItem)
             {
                 collection.CancelEdit();
-            }
-            if (view != null)
-            {
-                view.MoveCurrentToFirst();
-                e.Handled = true;
-            }
+            }*/
         }
 
         private void Selector_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             VMFolder folder = CommandViewModel.GetViewModelObject<VMFolder>(sender);
-            if (folder != null)
+            if (folder != null && !folder.IsProtected)
             {
                 folder.IsTreeSelected = true;
                 e.Handled = true;

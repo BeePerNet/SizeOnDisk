@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -104,8 +103,10 @@ namespace SizeOnDisk.ViewModel
             this.OnPropertyChanged(nameof(IsRunning));
         }
 
-        public static readonly CommandEx OpenFolderCommand = new CommandEx("openfolder", "ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "Insert")) { UseDisablingImage = false };
-        public static readonly CommandEx RefreshCommand = new CommandEx("refresh", "PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootHierarchy), new KeyGesture(Key.F5, ModifierKeys.None, "F5")) { UseDisablingImage = false };
+        public static readonly CommandEx OpenFolderCommand = new CommandEx("openfolder", "ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "Insert"));
+        public static readonly CommandEx RefreshCommand = new CommandEx("refresh", "PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootHierarchy), new KeyGesture(Key.F5, ModifierKeys.None, "PresentationCore:ExceptionStringTable:RefreshKeyDisplayString"));
+        public static readonly CommandEx StopCommand = new CommandEx("stop", "PresentationCore:ExceptionStringTable:StopText", "pack://application:,,,/SizeOnDisk;component/Icons/StopHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Escape, ModifierKeys.None, "PresentationCore:ExceptionStringTable:StopKeyDisplayString"));
+        public static readonly CommandEx CloseCommand = new CommandEx("close", "PresentationCore:ExceptionStringTable:CloseText", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMRootHierarchy));
         public static readonly RoutedCommand RefreshAllCommand = new RoutedCommand("RefreshAll", typeof(VMFile));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -114,10 +115,10 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException("bindingCollection", "bindingCollection is null");
             base.AddCommandModels(bindingCollection);
             bindingCollection.Add(new CommandBinding(OpenFolderCommand, CallOpenCommand));
-            bindingCollection.Add(new CommandBinding(NavigationCommands.Refresh, CallRefreshCommand, CanCallRefreshCommand));
+            bindingCollection.Add(new CommandBinding(RefreshCommand, CallRefreshCommand, CanCallRefreshCommand));
             bindingCollection.Add(new CommandBinding(RefreshAllCommand, CallRefreshCommand, CanCallCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Stop, CallStopCommand, CanCallStopCommand));
-            bindingCollection.Add(new CommandBinding(ApplicationCommands.Close, CallCloseCommand, CanCallCommand));
+            bindingCollection.Add(new CommandBinding(StopCommand, CallStopCommand, CanCallStopCommand));
+            bindingCollection.Add(new CommandBinding(CloseCommand, CallCloseCommand, CanCallCommand));
         }
 
         /*public override void AddInputModels(InputBindingCollection bindingCollection)

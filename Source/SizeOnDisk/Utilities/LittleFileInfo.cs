@@ -1,5 +1,8 @@
-﻿using SizeOnDisk.Shell;
+﻿using Microsoft.Win32;
+using SizeOnDisk.Shell;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security;
 
@@ -19,7 +22,7 @@ namespace SizeOnDisk.Utilities
         public LittleFileInfo(string fileName)
         {
             _Filename = string.Concat("\\\\?\\", fileName);
-            IOHelper.FillAttributeInfo(fileName, ref _data, false);
+            IOHelper.FillAttributeInfo(fileName, ref _data);
         }
 
         public long Size
@@ -74,7 +77,6 @@ namespace SizeOnDisk.Utilities
                 return DateTime.FromFileTime(((long)_data.ftLastWriteTimeHigh << 32) + _data.ftLastWriteTimeLow);
             }
         }
-
 
     }
 }

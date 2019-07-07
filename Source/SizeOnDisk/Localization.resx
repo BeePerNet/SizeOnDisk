@@ -121,7 +121,7 @@
     <value>Calculating</value>
   </data>
   <data name="ChooseFolder" xml:space="preserve">
-    <value>Add folder...</value>
+    <value>Add a folder...</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Close</value>
@@ -305,9 +305,6 @@
   <data name="Ready" xml:space="preserve">
     <value>Ready</value>
   </data>
-  <data name="Recalculate" xml:space="preserve">
-    <value>Recalculate</value>
-  </data>
   <data name="RunAsAdministrator" xml:space="preserve">
     <value>Run as administrator</value>
   </data>
@@ -352,10 +349,6 @@
   </data>
   <data name="FileType" xml:space="preserve">
     <value>File Type</value>
-  </data>
-  <data name="FileTypeUnkown" xml:space="preserve">
-    <value>{0} File</value>
-    <comment>{0} gets replaced by extension (uppercase)</comment>
   </data>
   <data name="DateCreation" xml:space="preserve">
     <value>Creation</value>

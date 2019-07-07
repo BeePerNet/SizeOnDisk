@@ -4,10 +4,8 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
@@ -53,8 +51,6 @@ namespace SizeOnDisk.ViewModel
         private long? _FolderCount = null;
 
         private bool _IsProtected = false;
-
-        private bool _isTreeSelected;
 
         #endregion fields
 
@@ -148,24 +144,6 @@ namespace SizeOnDisk.ViewModel
             set { SetProperty(ref _isSelected, value); }
         }
 
-        public virtual bool IsTreeSelected
-        {
-            get { return _isTreeSelected; }
-            set
-            {
-                if (value != _isTreeSelected)
-                {
-                    _isTreeSelected = value;
-                    if (_isTreeSelected && this.Parent != null)
-                    {
-                        this.Parent.IsExpanded = true;
-                        this.SelectItem();
-                    }
-                    this.OnPropertyChanged(nameof(IsTreeSelected));
-                }
-            }
-        }
-
         #endregion properties
 
         #region functions
@@ -178,42 +156,39 @@ namespace SizeOnDisk.ViewModel
 
         public virtual void Refresh(uint clusterSize, ParallelOptions parallelOptions)
         {
-            if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
-                return;
-
-            LittleFileInfo fileInfo = new Utilities.LittleFileInfo(this.Path);
+            LittleFileInfo fileInfo = new LittleFileInfo(this.Path);
+            this.Attributes = fileInfo.Attributes;
             this.FileSize = fileInfo.Size;
             this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
                 fileInfo.CompressedSize : this.FileSize)
                 + clusterSize - 1) / clusterSize) * clusterSize;
         }
 
-        VMFileAttributes _Attributes;
-        public VMFileAttributes Attributes
+        private FileAttributes _Attributes = FileAttributes.Normal;
+        public FileAttributes Attributes
+        {
+            get { return _Attributes; }
+            private set
+            {
+                SetProperty(ref _Attributes, value);
+            }
+        }
+
+        VMFileDetails _Details;
+        public VMFileDetails Details
         {
             get
             {
-                if (_Attributes == null)
-                    RefreshOnView();
-                return _Attributes;
+                return _Details;
             }
         }
 
         public void RefreshOnView()
         {
-            if (this is VMRootHierarchy)
-                return;
-            try
-            {
-                _Attributes = new VMFileAttributes(this);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                this.IsProtected = true;
-            }
-            this.OnPropertyChanged(nameof(Attributes));
-            this._thumbnail = null;
-            this.OnPropertyChanged(nameof(Thumbnail));
+            _Details = new VMFileDetails(this);
+            _Details.Load();
+            OnPropertyChanged(nameof(Details));
+            Attributes = _Details.Attributes;
         }
 
         //For VisualStudio Watch
@@ -318,47 +293,6 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        BitmapSource _icon = null;
-        public BitmapSource Icon
-        {
-            get
-            {
-                if (_icon == null)
-                {
-                    _icon = ShellHelper.GetIcon(this.Path, 16, false);
-                }
-                return _icon;
-            }
-        }
-
-        private void RefreshThumbnail()
-        {
-            if (_thumbnail == null)
-            {
-                _thumbnail = ShellHelper.GetIcon(this.Path, 96, false);
-                Task.Run(() =>
-                {
-                    BitmapSource tmp = ShellHelper.GetIcon(this.Path, 96, true);
-                    if (tmp != null)
-                        _thumbnail = tmp;
-                    this.OnPropertyChanged(nameof(Thumbnail));
-                });
-            }
-        }
-
-        BitmapSource _thumbnail = null;
-        //Seems to have problems with VOB
-        public BitmapSource Thumbnail
-        {
-            get
-            {
-                if (_thumbnail == null)
-                {
-                    RefreshThumbnail();
-                }
-                return _thumbnail;
-            }
-        }
 
     }
 }

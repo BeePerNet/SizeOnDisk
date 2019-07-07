@@ -337,7 +337,7 @@ namespace SizeOnDisk.Shell
         /// <param name="path">Path to file or folder</param>
         /// <param name="data">The file attribute structure to fill</param>
         /// <param name="tryagain">If false try get file attributes with GetFileAttributesEx function. If true try with the FindFirstFile function.</param>
-        public static void FillAttributeInfo(string path, ref IOHelper.WIN32_FILE_ATTRIBUTE_DATA data, bool tryagain)
+        public static void FillAttributeInfo(string path, ref IOHelper.WIN32_FILE_ATTRIBUTE_DATA data, bool tryagain = false)
         {
             int num = 0;
             if (tryagain)
