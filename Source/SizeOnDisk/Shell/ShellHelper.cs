@@ -446,6 +446,13 @@ namespace SizeOnDisk.Shell
 
             #endregion
 
+            [DllImport("shell32.dll", EntryPoint = "ExtractIconW",
+                CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
+            private static extern IntPtr ExtractIcon(int hInst, string lpszExeFileName, uint nIconIndex);
+
+            [DllImport("shell32.dll", EntryPoint = "DestroyIcon",
+                CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
+            private static extern bool DestroyIcon(IntPtr hIcon);
 
             [ComImport()]
             [Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b")]
