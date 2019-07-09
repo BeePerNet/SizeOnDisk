@@ -1,36 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="SizeOnDisk.ViewModel.NotifyCollection&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="6.25" Y="0.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAABAAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\NotifyCollection.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
   <Class Name="SizeOnDisk.ViewModel.VMRootHierarchy" Collapsed="true">
-    <Position X="4.25" Y="0.5" Width="1.5" />
+    <Position X="5.5" Y="1.5" Width="1.5" />
+    <InheritanceLine Type="SizeOnDisk.ViewModel.VMFolder" ManuallyRouted="true">
+      <Path>
+        <Point X="5.25" Y="3.25" />
+        <Point X="5.25" Y="2.691" />
+        <Point X="6.25" Y="2.691" />
+        <Point X="6.25" Y="2.191" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>gAACAAAAAAAAAQABAAgA1BIAAAAAAACBAAAgACAAAIA=</HashCode>
+      <HashCode>gAACAAAAAAgAAQABgAgQ1FIAEAAAAACBABAiACAAQMA=</HashCode>
       <FileName>ViewModel\VMRootHierarchy.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ViewMode" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="SizeOnDisk.ViewModel.VMFile" Collapsed="true">
-    <Position X="3.25" Y="3.75" Width="1.5" />
+    <Position X="4.5" Y="4.75" Width="1.5" />
+    <AssociationLine Name="Details" Type="SizeOnDisk.ViewModel.VMFileDetails" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6" Y="5.126" />
+        <Point X="6.375" Y="5.126" />
+        <Point X="6.375" Y="4.062" />
+        <Point X="7.5" Y="4.062" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Attributes" Type="System.IO.FileAttributes" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6" Y="5.125" />
+        <Point X="6.375" Y="5.125" />
+        <Point X="6.375" Y="5.031" />
+        <Point X="7.5" Y="5.031" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AADQAAAAAABAUAJsAAAEYBSRhEGFAAECAEQAAAI4oQA=</HashCode>
+      <HashCode>AADQgAAEAABBWANsAAAEYFSRhEAlAAFCAEQAAAAIoQA=</HashCode>
       <FileName>ViewModel\VMFile.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="SizeOnDisk.ViewModel.VMFileAttributes" Collapsed="true">
-    <Position X="6.25" Y="1.5" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAxAgAAIAAAAAEACBAAAAAQEAAAAAACAAAAgAAAAAA=</HashCode>
-      <FileName>ViewModel\VMFileAttributes.cs</FileName>
-    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Details" />
+      <Property Name="Attributes" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="SizeOnDisk.ViewModel.VMFolder" Collapsed="true">
-    <Position X="3.25" Y="2.25" Width="1.5" />
+    <Position X="4.5" Y="3.25" Width="1.5" />
     <AssociationLine Name="Childs" Type="SizeOnDisk.ViewModel.VMFile">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.327" Y="0.341" />
@@ -38,18 +54,18 @@
     </AssociationLine>
     <AssociationLine Name="Folders" Type="SizeOnDisk.ViewModel.VMFolder" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.625" Y="2.25" />
-        <Point X="3.625" Y="1.899" />
-        <Point X="2.875" Y="1.899" />
-        <Point X="2.875" Y="2.701" />
-        <Point X="3.25" Y="2.701" />
+        <Point X="4.875" Y="3.25" />
+        <Point X="4.875" Y="2.899" />
+        <Point X="4.125" Y="2.899" />
+        <Point X="4.125" Y="3.701" />
+        <Point X="4.5" Y="3.701" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.11" Y="0.393" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AQAAAQAAAIBAEIIIAAAAAAAAAgKEAAAASAAAAAAAAAA=</HashCode>
+      <HashCode>AQAAAQQAAIBAAIIAAAAAAAAAAgaEAAAAQBAAAAEQAAA=</HashCode>
       <FileName>ViewModel\VMFolder.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -58,19 +74,48 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="SizeOnDisk.ViewModel.VMRootFolder" Collapsed="true">
-    <Position X="2.25" Y="0.5" Width="1.5" />
+    <Position X="3.5" Y="1.5" Width="1.5" />
+    <InheritanceLine Type="SizeOnDisk.ViewModel.VMFolder" ManuallyRouted="true">
+      <Path>
+        <Point X="5.25" Y="3.25" />
+        <Point X="5.25" Y="2.691" />
+        <Point X="4.25" Y="2.691" />
+        <Point X="4.25" Y="2.191" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAIACCAABCBIAAAACAgAAICAAAAACAAAIAQAASAAAEQ=</HashCode>
+      <HashCode>AAIACCAABCBIAoAAAAgAAIiAAAAACAAAIAQAASAAAEQ=</HashCode>
       <FileName>ViewModel\VMRootFolder.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ExecutionState" />
+    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="SizeOnDisk.ViewModel.VMFileDetails" Collapsed="true">
+    <Position X="7.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgigAAIAAAAAFACBAACAAQEAAAAACCAAAAgAEAAAA=</HashCode>
+      <FileName>ViewModel\VMFileDetails.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Enum Name="SizeOnDisk.ViewModel.TaskExecutionState" Collapsed="true">
-    <Position X="6.25" Y="2.5" Width="1.75" />
+    <Position X="0.5" Y="1.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAEAgAQAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\TaskExecutionState.cs</FileName>
     </TypeIdentifier>
+  </Enum>
+  <Enum Name="SizeOnDisk.ViewModel.VMViewMode" Collapsed="true">
+    <Position X="8" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>ViewModel\VMViewMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="System.IO.FileAttributes" Collapsed="true">
+    <Position X="7.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier />
   </Enum>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
