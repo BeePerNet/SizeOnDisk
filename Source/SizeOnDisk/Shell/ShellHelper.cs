@@ -20,6 +20,49 @@ namespace SizeOnDisk.Shell
 {
     public static class ShellHelper
     {
+        private static Dictionary<string, string> associations = new Dictionary<string, string>();
+
+        public static string GetFriendlyName(string extension)
+        {
+            if (string.IsNullOrWhiteSpace(extension))
+                return string.Empty;
+            if (!associations.ContainsKey(extension))
+            {
+                string fileType = String.Empty;
+
+                using (RegistryKey rk = Registry.ClassesRoot.OpenSubKey("\\" + extension))
+                {
+                    if (rk != null)
+                    {
+                        string applicationType = rk.GetValue(String.Empty, String.Empty).ToString();
+
+                        if (!string.IsNullOrEmpty(applicationType))
+                        {
+                            using (RegistryKey appTypeKey = Registry.ClassesRoot.OpenSubKey("\\" + applicationType))
+                            {
+                                if (appTypeKey != null)
+                                {
+                                    fileType = appTypeKey.GetValue(String.Empty, String.Empty).ToString();
+                                }
+                            }
+                        }
+                    }
+
+                    // Couldn't find the file type in the registry. Display some default.
+                    if (string.IsNullOrEmpty(fileType))
+                    {
+                        fileType = extension.Replace(".", String.Empty);
+                    }
+                }
+                if (!associations.ContainsKey(extension))
+                    // Cache the association so we don't traverse the registry again
+                    associations.Add(extension, fileType);
+            }
+
+            return associations[extension];
+        }
+
+
         public static IEnumerable<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> GetVerbs(string path)
         {
             List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> verbs = new List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)>();

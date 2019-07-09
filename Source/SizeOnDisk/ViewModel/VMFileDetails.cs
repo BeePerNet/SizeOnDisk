@@ -1,16 +1,12 @@
-﻿using Microsoft.Win32;
-using SizeOnDisk.Shell;
+﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
-using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFileDetails : ObservableObject
+    public class VMFileDetails
     {
         private string _FileType;
         private FileAttributes _Attributes;
@@ -33,7 +29,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                _FileType = GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
+                _FileType = ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
             }
 
             LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Path);
@@ -82,52 +78,6 @@ namespace SizeOnDisk.ViewModel
                 return _LastWriteTime;
             }
         }
-
-        private static Dictionary<string, string> associations = new Dictionary<string, string>();
-
-        public static string GetFriendlyName(string extension)
-        {
-            if (string.IsNullOrWhiteSpace(extension))
-                return string.Empty;
-            if (!associations.ContainsKey(extension))
-            {
-                string fileType = String.Empty;
-
-                using (RegistryKey rk = Registry.ClassesRoot.OpenSubKey("\\" + extension))
-                {
-                    if (rk != null)
-                    {
-                        string applicationType = rk.GetValue("", String.Empty).ToString();
-
-                        if (!string.IsNullOrEmpty(applicationType))
-                        {
-                            using (RegistryKey appTypeKey = Registry.ClassesRoot.OpenSubKey("\\" + applicationType))
-                            {
-                                if (appTypeKey != null)
-                                {
-                                    fileType = appTypeKey.GetValue("", String.Empty).ToString();
-                                }
-                            }
-                        }
-                    }
-
-                    // Couldn't find the file type in the registry. Display some default.
-                    if (string.IsNullOrEmpty(fileType))
-                    {
-                        fileType = extension.Replace(".", "");
-                    }
-                }
-                if (!associations.ContainsKey(extension))
-                    // Cache the association so we don't traverse the registry again
-                    associations.Add(extension, fileType);
-            }
-
-            return associations[extension];
-        }
-
-
-
-
 
         BitmapSource _icon = null;
         public BitmapSource Icon
