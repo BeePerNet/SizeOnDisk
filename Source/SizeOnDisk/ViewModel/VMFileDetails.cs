@@ -21,7 +21,7 @@ namespace SizeOnDisk.ViewModel
             _vmFile = vmFile;
         }
 
-        public void Load()
+        public LittleFileInfo Load()
         {
             if (_vmFile is VMFolder)
             {
@@ -40,13 +40,9 @@ namespace SizeOnDisk.ViewModel
 
             this._icon = ShellHelper.GetIcon(_vmFile.Path, 16);
             this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
-        }
 
-        public FileAttributes Attributes
-        {
-            get { return _Attributes; }
+            return fileInfo;
         }
-
 
         public string FileType
         {

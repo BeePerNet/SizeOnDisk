@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using WPFByYourCommand;
@@ -14,6 +15,7 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMFolder : VMFile
     {
+        private uint clusterSize;
 
         public void PermanentDeleteAllSelectedFiles()
         {
@@ -33,7 +35,7 @@ namespace SizeOnDisk.ViewModel
                     if (!exists)
                         deletedfiles.Add(file);
                 }
-                this.RemoveChilds(deletedfiles.ToArray());
+                this.FillChildList();
                 this.RefreshCount();
                 this.RefreshParents();
             }
@@ -57,7 +59,7 @@ namespace SizeOnDisk.ViewModel
                     if (!exists)
                         deletedfiles.Add(file);
                 }
-                this.RemoveChilds(deletedfiles.ToArray());
+                this.FillChildList();
                 this.RefreshCount();
                 this.RefreshParents();
             }
@@ -73,9 +75,10 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        protected VMFolder(VMFolder parent, string name, string path, Dispatcher dispatcher)
+        protected VMFolder(VMFolder parent, string name, string path, uint clusterSize, Dispatcher dispatcher)
             : base(parent, name, path)
         {
+            this.clusterSize = clusterSize;
             FileCount = null;
             FolderCount = null;
             _Dispatcher = dispatcher;
@@ -83,7 +86,7 @@ namespace SizeOnDisk.ViewModel
 
         [DesignOnly(true)]
         internal VMFolder(VMFolder parent, string name)
-            : base(parent, name, null)
+            : base(parent, name)
         {
             FileCount = null;
             FolderCount = null;
@@ -93,9 +96,9 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public NotifyCollection<VMFile> Childs { get; } = new NotifyCollection<VMFile>();
+        public Collection<VMFile> Childs { get; protected set; }
 
-        public Collection<VMFolder> Folders { get; protected set; }
+        public VMFolder[] Folders { get; protected set; }
 
         private bool _isExpanded;
 
@@ -133,14 +136,17 @@ namespace SizeOnDisk.ViewModel
                         this.Parent.IsExpanded = true;
                         this.SelectItem();
                     }
-                    if (value && this.Childs != null && Dispatcher != null)
+                    if (value && this.Path != null)
                     {
-                        new Task(() =>
+                        new Thread(() =>
                         {
+                            if (this.Childs == null)
+                                this.FillChildList();
+
                             Parallel.ForEach(this.Childs, (T) => T.RefreshOnView());
                             //this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                             //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
-                        }, TaskCreationOptions.LongRunning).Start();
+                        }).Start();
                     }
                 }
             }
@@ -149,37 +155,21 @@ namespace SizeOnDisk.ViewModel
 
         private VMFile selectedItem;
         public VMFile SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
+        public uint ClusterSize { get => clusterSize; }
 
         #endregion properties
 
         #region functions
 
-        internal void RemoveChilds(params VMFile[] files)
-        {
-            foreach(VMFile file in files)
-                this.Childs.Remove(file);
-            this.OnPropertyChanged(nameof(Childs));
-            this.Childs.OnCollectionChanged();
-
-            this.RefreshLists();
-            this.OnPropertyChanged(nameof(Folders));
-        }
-
-        private void RefreshLists()
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                this.Childs.OnCollectionChanged();
-            }));
-            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().OrderBy(T => T.Name).ToList());
-        }
-
         public void RefreshCount()
         {
-            this.FileCount = this.Childs.Sum(T => T.FileCount);
-            this.FolderCount = this.Folders?.Sum(T => T.FolderCount) + this.Folders.Count;
-            this.DiskSize = this.Childs.Sum(T => T.DiskSize);
-            this.FileSize = this.Childs.Sum(T => T.FileSize);
+            if (Childs != null && Folders != null && !this.IsProtected)
+            {
+                this.FileCount = this.Childs.Sum(T => T.FileCount);
+                this.FolderCount = this.Folders.Sum(T => T.FolderCount) + this.Folders.Length;
+                this.DiskSize = this.Childs.Sum(T => T.DiskSize);
+                this.FileSize = this.Childs.Sum(T => T.FileSize);
+            }
         }
 
         public void RefreshParents()
@@ -191,20 +181,43 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        public void FillChildList()
+        {
+            if (this.Childs == null)
+                this.Childs = new Collection<VMFile>();
+            try
+            {
+                string[] childs;
+                childs = Directory.GetDirectories(this.Path);
+                VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.clusterSize, this.Dispatcher));
+                childs = Directory.GetFiles(this.Path);
+                VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));
+            }
+            catch (DirectoryNotFoundException)
+            {
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                this.IsProtected = true;
+            }
+            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
+            this.OnPropertyChanged(nameof(Childs));
+            this.OnPropertyChanged(nameof(Folders));
+        }
+
 
         [SuppressMessage("Microsoft.Design", "CA1031")]
-        public override void Refresh(uint clusterSize, ParallelOptions parallelOptions)
+        public override void Refresh(ParallelOptions parallelOptions)
         {
             if (Dispatcher == null || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
                 return;
             try
             {
-                string[] childs;
-                childs = Directory.GetDirectories(this.Path);
-                VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.Dispatcher));
-                childs = Directory.GetFiles(this.Path);
-                VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));
-                this.RefreshLists();
+                //Parallel.ForEach(this.Childs, (T) => T.RefreshOnView());
+                //this.Childs.ToList().ForEach((T) => T.RefreshOnView());
+                //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
+                this.FillChildList();
 
                 if (this.IsTreeSelected)
                 {
@@ -213,11 +226,15 @@ namespace SizeOnDisk.ViewModel
                     //this.Childs.ToList().AsParallel().WithCancellation(parallelOptions.CancellationToken).ForAll((T) => T.RefreshOnView());
                 }
 
-                this.OnPropertyChanged(nameof(Folders));
+                //this.OnPropertyChanged(nameof(Folders));
                 //this.OnPropertyChanged(nameof(Childs));
-
-                Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(clusterSize, parallelOptions));
+                //Parallel.ForEach(this.Folders, parallelOptions, (T) => T.Refresh(parallelOptions));
+                Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(parallelOptions));
                 //this.Childs.ToList().ForEach((T) => T.Refresh(clusterSize, parallelOptions));
+                /*foreach(VMFile vm in this.Childs)
+                {
+                    vm.Refresh(parallelOptions);
+                }*/
 
                 /*this.Childs.ToList().ForEach((T) =>
                 {
@@ -254,24 +271,16 @@ namespace SizeOnDisk.ViewModel
                 }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning);
                 task.Start();
                 task.Wait();*/
-
-                this.RefreshCount();
-            }
-            catch (DirectoryNotFoundException)
-            {
-
             }
             catch (OperationCanceledException)
             {
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                this.IsProtected = true;
-            }
             catch (Exception ex)
             {
-                ExceptionBox.ShowException(this.Path, ex);
+                ExceptionBox.ShowException(ex);
             }
+            this.RefreshCount();
+            //this.RefreshLists();
         }
 
         //TODO: This code was used before to detect if it was a reparse point

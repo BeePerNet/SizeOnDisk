@@ -20,14 +20,6 @@
   </Class>
   <Class Name="SizeOnDisk.ViewModel.VMFile" Collapsed="true">
     <Position X="4.5" Y="4.75" Width="1.5" />
-    <AssociationLine Name="Details" Type="SizeOnDisk.ViewModel.VMFileDetails" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="6" Y="5.126" />
-        <Point X="6.375" Y="5.126" />
-        <Point X="6.375" Y="4.062" />
-        <Point X="7.5" Y="4.062" />
-      </Path>
-    </AssociationLine>
     <AssociationLine Name="Attributes" Type="System.IO.FileAttributes" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="6" Y="5.125" />
@@ -36,13 +28,21 @@
         <Point X="7.5" Y="5.031" />
       </Path>
     </AssociationLine>
+    <AssociationLine Name="Details" Type="SizeOnDisk.ViewModel.VMFileDetails" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6" Y="5.126" />
+        <Point X="6.375" Y="5.126" />
+        <Point X="6.375" Y="4.004" />
+        <Point X="7.5" Y="4.004" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AADQgAAEAABBWANsAAAEYFSRhEAlAAFCAEQAAAAIoQA=</HashCode>
       <FileName>ViewModel\VMFile.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Details" />
       <Property Name="Attributes" />
+      <Property Name="Details" />
     </ShowAsAssociation>
   </Class>
   <Class Name="SizeOnDisk.ViewModel.VMFolder" Collapsed="true">

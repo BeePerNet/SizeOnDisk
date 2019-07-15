@@ -61,21 +61,21 @@ namespace SizeOnDisk.ViewModel
         internal VMRootFolder(VMRootHierarchy parent, string name)
             : base(parent, name)
         {
-            this.IsExpanded = true;
-            this.IsTreeSelected = true;
-
+            this.Childs = new Collection<VMFile>();
             VMFile newFolder = new VMFolder(this, "Folder 1");
             this.Childs.Add(newFolder);
             newFolder = new VMFolder(this, "Folder 2");
             this.Childs.Add(newFolder);
             newFolder = new VMFile(this, "File 1");
             this.Childs.Add(newFolder);
-            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
+            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
 
+            this.IsExpanded = true;
+            this.IsTreeSelected = true;
         }
 
         internal VMRootFolder(VMRootHierarchy parent, string name, string path, Dispatcher dispatcher)
-            : base(parent, name, path, dispatcher)
+            : base(parent, name, path, IOHelper.GetClusterSize(path), dispatcher)
         {
             this.ExecutionState = TaskExecutionState.Running;
             _HardDrivePath = System.IO.Path.GetPathRoot(path);
@@ -93,25 +93,24 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        private void Refresh(ParallelOptions parallelOptions)
+        public override void Refresh(ParallelOptions parallelOptions)
         {
             try
             {
                 this.ExecutionState = TaskExecutionState.Running;
                 _Runwatch.Restart();
-                this.OnPropertyChanged(nameof(RunTime)); 
+                this.OnPropertyChanged(nameof(RunTime));
 
-                 DriveInfo info = new DriveInfo(_HardDrivePath);
+                DriveInfo info = new DriveInfo(_HardDrivePath);
                 this.HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
                 this.HardDriveFree = info.AvailableFreeSpace;
 
-                this.Refresh(IOHelper.GetClusterSize(this.Path), parallelOptions);
+                base.Refresh(parallelOptions);
             }
             finally
             {
                 _Runwatch.Stop();
                 this.OnPropertyChanged(nameof(RunTime));
-
                 this.ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
             }
         }
@@ -162,12 +161,9 @@ namespace SizeOnDisk.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    Dispatcher.Invoke((ThreadStart)delegate
-                    {
-                        ExceptionBox.ShowException(ex);
-                    });
+                    ExceptionBox.ShowException(ex);
                 }
-            }, parallelOptions.CancellationToken, TaskCreationOptions. LongRunning);
+            }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning);
             _Task.Start();
         }
 

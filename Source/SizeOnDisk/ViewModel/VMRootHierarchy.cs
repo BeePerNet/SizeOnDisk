@@ -39,13 +39,14 @@ namespace SizeOnDisk.ViewModel
 
         private DispatcherTimer _Timer;
 
-        public VMRootHierarchy() : base(null, string.Empty, string.Empty, Dispatcher.CurrentDispatcher)
+        public VMRootHierarchy() : base(null, null, null, 0, Dispatcher.CurrentDispatcher)
         {
+            this.Childs = new Collection<VMFile>();
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
                 this.Childs.Add(newFolder);
-                this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
+                this.Folders = this.Childs.OfType<VMFolder>().ToArray();
             }
             else
             {
@@ -64,7 +65,8 @@ namespace SizeOnDisk.ViewModel
         {
             VMRootFolder newFolder = new VMRootFolder(this, path, path, this.Dispatcher);
             this.Childs.Add(newFolder);
-            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
+            this.OnPropertyChanged(nameof(Childs));
+            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
             this.OnPropertyChanged(nameof(Folders));
             newFolder.RefreshAsync();
         }
@@ -75,7 +77,7 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException("folder", "Can not remove null item");
             this.SelectedRootFolder = null;
             this.Childs.Remove(folder);
-            this.Folders = new Collection<VMFolder>(this.Childs.OfType<VMFolder>().ToList());
+            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
             this.OnPropertyChanged(nameof(Folders));
             folder.Dispose();
         }
@@ -101,6 +103,7 @@ namespace SizeOnDisk.ViewModel
         internal void RefreshIsRunning()
         {
             this.OnPropertyChanged(nameof(IsRunning));
+            CommandManager.InvalidateRequerySuggested();
         }
 
         public static readonly CommandEx OpenFolderCommand = new CommandEx("openfolder", "ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "Insert"));

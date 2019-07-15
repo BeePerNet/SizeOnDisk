@@ -155,14 +155,14 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        public virtual void Refresh(uint clusterSize, ParallelOptions parallelOptions)
+        public virtual void Refresh(ParallelOptions parallelOptions)
         {
             LittleFileInfo fileInfo = new LittleFileInfo(this.Path);
             this.Attributes = fileInfo.Attributes;
             this.FileSize = fileInfo.Size;
             this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
                 fileInfo.CompressedSize : this.FileSize)
-                + clusterSize - 1) / clusterSize) * clusterSize;
+                + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
         }
 
         private FileAttributes _Attributes = FileAttributes.Normal;
@@ -187,9 +187,16 @@ namespace SizeOnDisk.ViewModel
         public void RefreshOnView()
         {
             _Details = new VMFileDetails(this);
-            _Details.Load();
+            LittleFileInfo fileInfo = _Details.Load();
             OnPropertyChanged(nameof(Details));
-            Attributes = _Details.Attributes;
+            Attributes = fileInfo.Attributes;
+            if (!(this is VMFolder))
+            {
+                this.FileSize = fileInfo.Size;
+                this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
+                    fileInfo.CompressedSize : this.FileSize)
+                    + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
+            }
         }
 
         //For VisualStudio Watch
@@ -219,7 +226,7 @@ namespace SizeOnDisk.ViewModel
             {
                 if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
                 {
-                    file.Parent.RemoveChilds(file);
+                    file.Parent.FillChildList();
                     file.Parent.RefreshCount();
                     file.Parent.RefreshParents();
                 }
@@ -242,7 +249,7 @@ namespace SizeOnDisk.ViewModel
             {
                 if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
                 {
-                    file.Parent.RemoveChilds(file);
+                    file.Parent.FillChildList();
                     file.Parent.RefreshCount();
                     file.Parent.RefreshParents();
                 }
