@@ -1,7 +1,6 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -41,12 +40,13 @@ namespace SizeOnDisk.ViewModel
 
         public VMRootHierarchy() : base(null, null, null, 0, Dispatcher.CurrentDispatcher)
         {
-            this.Childs = new Collection<VMFile>();
+            //this.Childs = new ObservableCollection<VMFile>();
+            //this.Folders = new ObservableCollection<VMFolder>();
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
-                this.Childs.Add(newFolder);
-                this.Folders = this.Childs.OfType<VMFolder>().ToArray();
+                //this.Childs.Add(newFolder);
+                this.Folders.Add(newFolder);
             }
             else
             {
@@ -64,10 +64,8 @@ namespace SizeOnDisk.ViewModel
         public void AddRootFolder(string path)
         {
             VMRootFolder newFolder = new VMRootFolder(this, path, path, this.Dispatcher);
-            this.Childs.Add(newFolder);
-            this.OnPropertyChanged(nameof(Childs));
-            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
-            this.OnPropertyChanged(nameof(Folders));
+            //this.Childs.Add(newFolder);
+            this.Folders.Add(newFolder);
             newFolder.RefreshAsync();
         }
 
@@ -76,15 +74,14 @@ namespace SizeOnDisk.ViewModel
             if (folder == null)
                 throw new ArgumentNullException("folder", "Can not remove null item");
             this.SelectedRootFolder = null;
-            this.Childs.Remove(folder);
-            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
-            this.OnPropertyChanged(nameof(Folders));
+            //this.Childs.Remove(folder);
+            this.Folders.Remove(folder);
             folder.Dispose();
         }
 
         public void StopAsync()
         {
-            foreach (VMRootFolder folder in this.Childs)
+            foreach (VMRootFolder folder in this.Folders)
                 folder.StopAsync();
         }
 
@@ -96,14 +93,14 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return this.Childs.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
+                return this.Folders.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
             }
         }
 
         internal void RefreshIsRunning()
         {
-            this.OnPropertyChanged(nameof(IsRunning));
             CommandManager.InvalidateRequerySuggested();
+            this.OnPropertyChanged(nameof(IsRunning));
         }
 
         public static readonly CommandEx OpenFolderCommand = new CommandEx("openfolder", "ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "Insert"));

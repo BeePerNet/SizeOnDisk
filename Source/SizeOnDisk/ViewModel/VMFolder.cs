@@ -9,8 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Threading;
-using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -76,6 +76,8 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
+        private object _myCollectionLock = new object();
+
         protected VMFolder(VMFolder parent, string name, string path, uint clusterSize, Dispatcher dispatcher)
             : base(parent, name, path)
         {
@@ -83,6 +85,12 @@ namespace SizeOnDisk.ViewModel
             FileCount = null;
             FolderCount = null;
             _Dispatcher = dispatcher;
+
+            dispatcher.BeginInvoke(new Action(() =>
+            {
+                BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
+                BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
+            }), DispatcherPriority.DataBind);
         }
 
         [DesignOnly(true)]
@@ -97,9 +105,9 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public Collection<VMFile> Childs { get; protected set; }
+        public ObservableCollection<VMFile> Childs { get; } = new ObservableCollection<VMFile>();
 
-        public VMFolder[] Folders { get; protected set; }
+        public ObservableCollection<VMFolder> Folders { get; } = new ObservableCollection<VMFolder>();
 
         private bool _isExpanded;
 
@@ -139,15 +147,17 @@ namespace SizeOnDisk.ViewModel
                     }
                     if (value && this.Path != null)
                     {
-                        new Thread(() =>
+                        Thread thread = new Thread(() =>
                         {
-                            if (this.Childs == null)
-                                this.FillChildList();
+                            this.FillChildList();
 
                             Parallel.ForEach(this.Childs, (T) => T.RefreshOnView());
                             //this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                             //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
-                        }).Start();
+                        });
+                        thread.IsBackground = true;
+                        thread.Priority = ThreadPriority.Highest;
+                        thread.Start();
                     }
                 }
             }
@@ -167,7 +177,7 @@ namespace SizeOnDisk.ViewModel
             if (Childs != null && Folders != null && !this.IsProtected)
             {
                 this.FileCount = this.Childs.Sum(T => T.FileCount);
-                this.FolderCount = this.Folders.Sum(T => T.FolderCount) + this.Folders.Length;
+                this.FolderCount = this.Folders.Sum(T => T.FolderCount) + this.Folders.Count;
                 this.DiskSize = this.Childs.Sum(T => T.DiskSize);
                 this.FileSize = this.Childs.Sum(T => T.FileSize);
             }
@@ -182,53 +192,59 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        //private object _Lock = new object();
+        private object _Lock = new object();
 
         public void FillChildList()
         {
-            try
+            lock (_Lock)
             {
-                //lock (_Lock)
+                try
                 {
-                    if (this.Childs == null)
-                        this.Childs = new Collection<VMFile>();
                     /*string[] childs;
                     childs = Directory.GetDirectories(this.Path);
                     VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.clusterSize, this.Dispatcher));
                     childs = Directory.GetFiles(this.Path);
                     VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));*/
-                    VMFile[] tmpChilds = this.Childs.ToArray();
-                    Collection<VMFile> result = new Collection<VMFile>();
+                    List<VMFile> tmpChilds = this.Childs.ToList();
+                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
                     VMFile found = null;
-
-                    LittleFileInfo[] files = IOHelper.GetFiles(this.Path);
-                    foreach (LittleFileInfo fileInfo in files)
+                    foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.Filename))
                     {
                         found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.Filename);
                         if (found == null)
                         {
-                            if ((fileInfo.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                            if (fileInfo.IsFolder)
+                            {
                                 found = new VMFolder(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename), this.ClusterSize, this.Dispatcher);
+                                this.Folders.Add(found as VMFolder);
+                            }
                             else
                                 found = new VMFile(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename));
+                            this.Childs.Add(found);
+                        }
+                        else
+                        {
+                            tmpChilds.Remove(found);
                         }
                         found.Refresh(fileInfo);
-                        result.Add(found);
                     }
-                    this.Childs = result;
+                    foreach (VMFile file in tmpChilds)
+                    {
+                        if (file is VMFolder)
+                            this.Folders.Remove(file as VMFolder);
+                        this.Childs.Remove(file);
+                    }
+                }
+
+                catch (DirectoryNotFoundException)
+                {
+
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    this.IsProtected = true;
                 }
             }
-            catch (DirectoryNotFoundException)
-            {
-
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                this.IsProtected = true;
-            }
-            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
-            this.OnPropertyChanged(nameof(Childs));
-            this.OnPropertyChanged(nameof(Folders));
         }
 
         internal override void Refresh(LittleFileInfo fileInfo)

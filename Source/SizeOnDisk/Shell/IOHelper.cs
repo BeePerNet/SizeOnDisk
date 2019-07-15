@@ -1,11 +1,9 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
@@ -388,10 +386,8 @@ namespace SizeOnDisk.Shell
         }*/
 
 
-        public static LittleFileInfo[] GetFiles(string folderPath)
+        public static IEnumerable<LittleFileInfo> GetFiles(string folderPath)
         {
-            Collection<LittleFileInfo> result = new Collection<LittleFileInfo>();
-
             int num = 0;
             IOHelper.WIN32_FIND_DATA win_find_data = new IOHelper.WIN32_FIND_DATA();
             string prefixedfolderPath = folderPath.TrimEnd(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
@@ -420,7 +416,7 @@ namespace SizeOnDisk.Shell
                             {
                                 IOHelper.WIN32_FILE_ATTRIBUTE_DATA data = new WIN32_FILE_ATTRIBUTE_DATA();
                                 data.PopulateFrom(win_find_data);
-                                result.Add(new LittleFileInfo(folderPath, win_find_data.cFileName, data));
+                                yield return new LittleFileInfo(folderPath, win_find_data.cFileName, data);
                             }
                             found = SafeNativeMethods.FindNextFile(handle, win_find_data);
                         }
@@ -435,7 +431,6 @@ namespace SizeOnDisk.Shell
             {
                 num2 = SafeNativeMethods.SetErrorMode(num2);
             }
-            return result.ToArray();
         }
 
         /// <summary>

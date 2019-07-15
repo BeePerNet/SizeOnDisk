@@ -9,7 +9,7 @@ using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFile : CommandViewModel
+    public class VMFile : CommandViewModel, IComparable<VMFile>
     {
         public static readonly CommandEx OpenCommand = new CommandEx("open", "PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
         public static readonly CommandEx EditCommand = new CommandEx("edit", "Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "EditKey"));
@@ -160,8 +160,8 @@ namespace SizeOnDisk.ViewModel
             /*this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
                 fileInfo.CompressedSize : this.FileSize)
                 + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;*/
-//            if ((this.Attributes & FileAttributes.Normal) != FileAttributes.Normal)
-  //              this.DiskSize = 0;
+            //            if ((this.Attributes & FileAttributes.Normal) != FileAttributes.Normal)
+            //              this.DiskSize = 0;
             this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
         }
 
@@ -188,8 +188,8 @@ namespace SizeOnDisk.ViewModel
         {
             _Details = new VMFileDetails(this);
             LittleFileInfo fileInfo = _Details.Load();
-            OnPropertyChanged(nameof(Details));
             this.Refresh(fileInfo);
+            OnPropertyChanged(nameof(Details));
         }
 
         //For VisualStudio Watch
@@ -337,13 +337,22 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-
         #endregion Commands
 
+        #region IComparable<VMFile> Members
 
+        public int CompareTo(VMFile other)
+        {
+            if (this == other)
+                return 0;
+            if (!(this is VMFolder) && other is VMFolder)
+                return 1;
+            if (this is VMFolder && !(other is VMFolder))
+                return -1;
+            return this.Name.CompareTo(other.Name);
+        }
 
-
-
+        #endregion
 
     }
 }

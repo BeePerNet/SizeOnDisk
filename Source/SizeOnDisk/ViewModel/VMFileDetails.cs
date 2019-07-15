@@ -2,11 +2,13 @@
 using SizeOnDisk.Utilities;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFileDetails
+    public class VMFileDetails : ObservableObject
     {
         private string _FileType;
         private FileAttributes _Attributes;
@@ -39,7 +41,13 @@ namespace SizeOnDisk.ViewModel
             this._LastWriteTime = fileInfo.LastWriteTime;
 
             this._icon = ShellHelper.GetIcon(_vmFile.Path, 16);
-            this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+            this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+
+            new Task(() =>
+            {
+                _thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+                this.OnPropertyChanged(nameof(Thumbnail));
+            }).Start();
 
             return fileInfo;
         }
@@ -83,7 +91,6 @@ namespace SizeOnDisk.ViewModel
                 return _icon;
             }
         }
-
 
         BitmapSource _thumbnail = null;
         //Seems to have problems with VOB

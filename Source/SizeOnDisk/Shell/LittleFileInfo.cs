@@ -49,6 +49,14 @@ namespace SizeOnDisk.Shell
                 }
         }
 
+        public bool IsFolder
+        {
+            get
+            {
+                return (_data.fileAttributes & (int)FileAttributes.Directory) > 0;
+            }
+        }
+
         public long Size
         {
             get

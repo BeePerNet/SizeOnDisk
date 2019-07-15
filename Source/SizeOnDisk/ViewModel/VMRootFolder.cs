@@ -1,15 +1,12 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace SizeOnDisk.ViewModel
@@ -61,14 +58,14 @@ namespace SizeOnDisk.ViewModel
         internal VMRootFolder(VMRootHierarchy parent, string name)
             : base(parent, name)
         {
-            this.Childs = new Collection<VMFile>();
-            VMFile newFolder = new VMFolder(this, "Folder 1");
+            VMFolder newFolder = new VMFolder(this, "Folder 1");
             this.Childs.Add(newFolder);
+            this.Folders.Add(newFolder);
             newFolder = new VMFolder(this, "Folder 2");
             this.Childs.Add(newFolder);
-            newFolder = new VMFile(this, "File 1");
-            this.Childs.Add(newFolder);
-            this.Folders = this.Childs.OfType<VMFolder>().ToArray();
+            this.Folders.Add(newFolder);
+            VMFile newFile = new VMFile(this, "File 1");
+            this.Childs.Add(newFile);
 
             this.IsExpanded = true;
             this.IsTreeSelected = true;
@@ -113,6 +110,7 @@ namespace SizeOnDisk.ViewModel
                 _Runwatch.Stop();
                 this.OnPropertyChanged(nameof(RunTime));
                 this.ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
+
             }
         }
 
