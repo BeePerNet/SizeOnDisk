@@ -32,7 +32,7 @@ namespace SizeOnDisk.ViewModel
                 _FileType = ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
             }
 
-            LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Path);
+            LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
             this._Attributes = fileInfo.Attributes;
             this._CreationTime = fileInfo.CreationTime;
             this._LastAccessTime = fileInfo.LastAccessTime;

@@ -1,8 +1,10 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -18,6 +20,14 @@ namespace SizeOnDisk.Shell
     {
         internal static class SafeNativeMethods
         {
+            [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+            internal static extern bool FindNextFile(SafeFindHandle hFindFile, [Out] WIN32_FIND_DATA lpFindFileData);
+
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool FindClose(IntPtr hFindFile);
+
 
             [DllImport("kernel32.dll")]
             internal static extern int SetErrorMode(int newMode);
@@ -29,7 +39,7 @@ namespace SizeOnDisk.Shell
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
             internal static extern SafeFindHandle FindFirstFile(string fileName, [In, Out] WIN32_FIND_DATA data);
 
-            [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            [DllImport("kernel32.dll", EntryPoint = "GetCompressedFileSizeW", CharSet = CharSet.Unicode, SetLastError = true)]
             internal static extern uint GetCompressedFileSize(string lpFileName, out uint lpFileSizeHigh);
 
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -46,9 +56,9 @@ namespace SizeOnDisk.Shell
             out long lpTotalNumberOfBytes,
             out long lpTotalNumberOfFreeBytes);*/
 
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success), DllImport("kernel32.dll")]
+            /*[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success), DllImport("kernel32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool FindClose(IntPtr handle);
+            internal static extern bool FindClose(IntPtr handle);*/
 
             [DllImport("shell32.dll", CharSet = CharSet.Auto)]
             private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
@@ -314,6 +324,9 @@ namespace SizeOnDisk.Shell
 
 
 
+
+
+
         /// <summary>
         /// Contain file handle
         /// </summary>
@@ -329,6 +342,100 @@ namespace SizeOnDisk.Shell
             {
                 return SafeNativeMethods.FindClose(base.handle);
             }
+        }
+
+        /*[SecurityCritical]
+        internal static void WinIOError(int errorCode, string maybeFullPath)
+        {
+            bool isInvalidPath = errorCode == 123 || errorCode == 161;
+            string displayablePath = __Error.GetDisplayablePath(maybeFullPath, isInvalidPath);
+            switch (errorCode)
+            {
+                case 2:
+                    if (displayablePath.Length == 0)
+                        throw new FileNotFoundException(Environment.GetResourceString("IO.FileNotFound"));
+                    throw new FileNotFoundException(Environment.GetResourceString("IO.FileNotFound_FileName", (object)displayablePath), displayablePath);
+                case 3:
+                    if (displayablePath.Length == 0)
+                        throw new DirectoryNotFoundException(Environment.GetResourceString("IO.PathNotFound_NoPathName"));
+                    throw new DirectoryNotFoundException(Environment.GetResourceString("IO.PathNotFound_Path", (object)displayablePath));
+                case 5:
+                    if (displayablePath.Length == 0)
+                        throw new UnauthorizedAccessException(Environment.GetResourceString("UnauthorizedAccess_IODenied_NoPathName"));
+                    throw new UnauthorizedAccessException(Environment.GetResourceString("UnauthorizedAccess_IODenied_Path", (object)displayablePath));
+                case 15:
+                    throw new DriveNotFoundException(Environment.GetResourceString("IO.DriveNotFound_Drive", (object)displayablePath));
+                case 32:
+                    if (displayablePath.Length == 0)
+                        throw new IOException(Environment.GetResourceString("IO.IO_SharingViolation_NoFileName"), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
+                    throw new IOException(Environment.GetResourceString("IO.IO_SharingViolation_File", (object)displayablePath), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
+                case 80:
+                    if (displayablePath.Length != 0)
+                        throw new IOException(Environment.GetResourceString("IO.IO_FileExists_Name", (object)displayablePath), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
+                    break;
+                case 87:
+                    throw new IOException(Win32Native.GetMessage(errorCode), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
+                case 183:
+                    if (displayablePath.Length != 0)
+                        throw new IOException(Environment.GetResourceString("IO.IO_AlreadyExists_Name", (object)displayablePath), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
+                    break;
+                case 206:
+                    throw new PathTooLongException(Environment.GetResourceString("IO.PathTooLong"));
+                case 995:
+                    throw new OperationCanceledException();
+            }
+            throw new IOException(Win32Native.GetMessage(errorCode), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
+        }*/
+
+
+        public static LittleFileInfo[] GetFiles(string folderPath)
+        {
+            Collection<LittleFileInfo> result = new Collection<LittleFileInfo>();
+
+            int num = 0;
+            IOHelper.WIN32_FIND_DATA win_find_data = new IOHelper.WIN32_FIND_DATA();
+            string prefixedfolderPath = folderPath.TrimEnd(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
+            prefixedfolderPath = string.Concat("\\\\?\\", folderPath);
+            int num2 = SafeNativeMethods.SetErrorMode(1);
+            try
+            {
+                SafeFindHandle handle = SafeNativeMethods.FindFirstFile(prefixedfolderPath + @"\*", win_find_data);
+                try
+                {
+                    if (handle.IsInvalid)
+                    {
+                        //throw new Win32Exception();
+                        int error = Marshal.GetLastWin32Error();
+                        if (error == 5)
+                            throw new UnauthorizedAccessException("Accès refusé: " + folderPath, new Win32Exception(error));
+                        else
+                            throw new Win32Exception(error);
+                    }
+                    else
+                    {
+                        bool found = true;
+                        while (found)
+                        {
+                            if (win_find_data.cFileName != "." && win_find_data.cFileName != "..")
+                            {
+                                IOHelper.WIN32_FILE_ATTRIBUTE_DATA data = new WIN32_FILE_ATTRIBUTE_DATA();
+                                data.PopulateFrom(win_find_data);
+                                result.Add(new LittleFileInfo(folderPath, win_find_data.cFileName, data));
+                            }
+                            found = SafeNativeMethods.FindNextFile(handle, win_find_data);
+                        }
+                    }
+                }
+                finally
+                {
+                    handle.Close();
+                }
+            }
+            finally
+            {
+                num2 = SafeNativeMethods.SetErrorMode(num2);
+            }
+            return result.ToArray();
         }
 
         /// <summary>
@@ -353,7 +460,8 @@ namespace SizeOnDisk.Shell
                         if (handle.IsInvalid)
                         {
                             num = Marshal.GetLastWin32Error();
-                            if (num != 0) throw new Win32Exception(num);
+                            if (num != 0)
+                                throw new Win32Exception(num);
                         }
                     }
                     finally
@@ -399,21 +507,24 @@ namespace SizeOnDisk.Shell
         /// </summary>
         /// <param name="filename">File name</param>
         /// <param name="data">The file attribute structure to fill</param>
-        public static void GetCompressedFileSize(string filename, ref IOHelper.WIN32_FILE_ATTRIBUTE_DATA data)
+        public static long? GetCompressedFileSize(string filename)
         {
+            //return ShellHelper.GetCompressedFileSize(filename);
+
             uint losize = SafeNativeMethods.GetCompressedFileSize(filename, out uint hosize);
             int error = Marshal.GetLastWin32Error();
             if (hosize == 0 && losize == 0xFFFFFFFF && error != 0)
+                //return null;
                 throw new Win32Exception(error);
-            data.fileSizeHigh = hosize;
-            data.fileSizeLow = losize;
+            return ((long)hosize << 32) + losize;
         }
 
         public static uint GetClusterSize(string path)
         {
             string drive = System.IO.Path.GetPathRoot(path);
             bool result = SafeNativeMethods.GetDiskFreeSpace(drive, out uint sectorsPerCluster, out uint bytesPerSector, out uint dummy, out dummy);
-            if (!result) throw new Win32Exception(Marshal.GetLastWin32Error());
+            if (!result)
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             return sectorsPerCluster * bytesPerSector;
         }
 

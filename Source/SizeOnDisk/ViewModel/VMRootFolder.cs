@@ -79,8 +79,6 @@ namespace SizeOnDisk.ViewModel
         {
             this.ExecutionState = TaskExecutionState.Running;
             _HardDrivePath = System.IO.Path.GetPathRoot(path);
-            this.IsExpanded = true;
-            this.IsTreeSelected = true;
         }
 
         #endregion creator
@@ -104,6 +102,9 @@ namespace SizeOnDisk.ViewModel
                 DriveInfo info = new DriveInfo(_HardDrivePath);
                 this.HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
                 this.HardDriveFree = info.AvailableFreeSpace;
+
+                this.IsExpanded = true;
+                this.IsTreeSelected = true;
 
                 base.Refresh(parallelOptions);
             }
@@ -146,7 +147,7 @@ namespace SizeOnDisk.ViewModel
                     try
                     {
                         _Timer.Start();
-                        this.RefreshOnView();
+                        //this.RefreshOnView();
                         this.Refresh(parallelOptions);
                     }
                     finally

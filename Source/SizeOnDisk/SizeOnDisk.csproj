@@ -67,6 +67,7 @@
     <NoWarn>
     </NoWarn>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -76,6 +77,7 @@
     <Optimize>true</Optimize>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icons\Hard_Drive.ico</ApplicationIcon>
@@ -167,8 +169,8 @@
       <DependentUpon>ExceptionBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\LanguageHelper.cs" />
-    <Compile Include="Utilities\LittleFileInfo.cs" />
-    <Compile Include="Utilities\ReparsePoint.cs" />
+    <Compile Include="Shell\LittleFileInfo.cs" />
+    <Compile Include="Shell\ReparsePoint.cs" />
     <Compile Include="Utilities\Settings.cs" />
     <Compile Include="Shell\ShellHelper.cs" />
     <Compile Include="Utilities\TextExceptionFormatter.cs" />

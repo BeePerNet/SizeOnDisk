@@ -1,13 +1,11 @@
 ﻿using SizeOnDisk.Shell;
-using SizeOnDisk.Utilities;
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Windows.Input;
 using WPFByYourCommand;
-using System.Linq;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -155,21 +153,23 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        public virtual void Refresh(ParallelOptions parallelOptions)
+        internal virtual void Refresh(LittleFileInfo fileInfo)
         {
-            LittleFileInfo fileInfo = new LittleFileInfo(this.Path);
             this.Attributes = fileInfo.Attributes;
             this.FileSize = fileInfo.Size;
-            this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
+            /*this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
                 fileInfo.CompressedSize : this.FileSize)
-                + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
+                + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;*/
+//            if ((this.Attributes & FileAttributes.Normal) != FileAttributes.Normal)
+  //              this.DiskSize = 0;
+            this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
         }
 
         private FileAttributes _Attributes = FileAttributes.Normal;
         public FileAttributes Attributes
         {
             get { return _Attributes; }
-            private set
+            protected set
             {
                 SetProperty(ref _Attributes, value);
             }
@@ -189,14 +189,7 @@ namespace SizeOnDisk.ViewModel
             _Details = new VMFileDetails(this);
             LittleFileInfo fileInfo = _Details.Load();
             OnPropertyChanged(nameof(Details));
-            Attributes = fileInfo.Attributes;
-            if (!(this is VMFolder))
-            {
-                this.FileSize = fileInfo.Size;
-                this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
-                    fileInfo.CompressedSize : this.FileSize)
-                    + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
-            }
+            this.Refresh(fileInfo);
         }
 
         //For VisualStudio Watch

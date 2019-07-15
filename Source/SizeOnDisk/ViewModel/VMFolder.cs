@@ -1,4 +1,5 @@
-﻿using SizeOnDisk.Utilities;
+﻿using SizeOnDisk.Shell;
+using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -181,17 +182,41 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        //private object _Lock = new object();
+
         public void FillChildList()
         {
-            if (this.Childs == null)
-                this.Childs = new Collection<VMFile>();
             try
             {
-                string[] childs;
-                childs = Directory.GetDirectories(this.Path);
-                VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.clusterSize, this.Dispatcher));
-                childs = Directory.GetFiles(this.Path);
-                VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));
+                //lock (_Lock)
+                {
+                    if (this.Childs == null)
+                        this.Childs = new Collection<VMFile>();
+                    /*string[] childs;
+                    childs = Directory.GetDirectories(this.Path);
+                    VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.clusterSize, this.Dispatcher));
+                    childs = Directory.GetFiles(this.Path);
+                    VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));*/
+                    VMFile[] tmpChilds = this.Childs.ToArray();
+                    Collection<VMFile> result = new Collection<VMFile>();
+                    VMFile found = null;
+
+                    LittleFileInfo[] files = IOHelper.GetFiles(this.Path);
+                    foreach (LittleFileInfo fileInfo in files)
+                    {
+                        found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.Filename);
+                        if (found == null)
+                        {
+                            if ((fileInfo.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                                found = new VMFolder(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename), this.ClusterSize, this.Dispatcher);
+                            else
+                                found = new VMFile(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename));
+                        }
+                        found.Refresh(fileInfo);
+                        result.Add(found);
+                    }
+                    this.Childs = result;
+                }
             }
             catch (DirectoryNotFoundException)
             {
@@ -206,14 +231,20 @@ namespace SizeOnDisk.ViewModel
             this.OnPropertyChanged(nameof(Folders));
         }
 
+        internal override void Refresh(LittleFileInfo fileInfo)
+        {
+            this.Attributes = fileInfo.Attributes;
+        }
+
 
         [SuppressMessage("Microsoft.Design", "CA1031")]
-        public override void Refresh(ParallelOptions parallelOptions)
+        public virtual void Refresh(ParallelOptions parallelOptions)
         {
             if (Dispatcher == null || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
                 return;
             try
             {
+
                 //Parallel.ForEach(this.Childs, (T) => T.RefreshOnView());
                 //this.Childs.ToList().ForEach((T) => T.RefreshOnView());
                 //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
@@ -228,9 +259,9 @@ namespace SizeOnDisk.ViewModel
 
                 //this.OnPropertyChanged(nameof(Folders));
                 //this.OnPropertyChanged(nameof(Childs));
-                //Parallel.ForEach(this.Folders, parallelOptions, (T) => T.Refresh(parallelOptions));
-                Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(parallelOptions));
-                //this.Childs.ToList().ForEach((T) => T.Refresh(clusterSize, parallelOptions));
+                Parallel.ForEach(this.Folders, parallelOptions, (T) => T.Refresh(parallelOptions));
+                //Parallel.ForEach(this.Childs, parallelOptions, (T) => T.Refresh(parallelOptions));
+                //this.Folders.ToList().ForEach((T) => T.Refresh(parallelOptions));
                 /*foreach(VMFile vm in this.Childs)
                 {
                     vm.Refresh(parallelOptions);
@@ -308,7 +339,7 @@ namespace SizeOnDisk.ViewModel
 
         #region static functions
 
-        private static void RefreshChildsList<T>(string[] childsPath, IList<VMFile> childs, Func<string, string, T> creator) where T : VMFile
+        /*private static void RefreshChildsList<T>(string[] childsPath, IList<VMFile> childs, Func<string, string, T> creator) where T : VMFile
         {
             List<T> filteredList;
             if (typeof(T) == typeof(VMFolder))
@@ -353,7 +384,7 @@ namespace SizeOnDisk.ViewModel
                     }
                 }
             }
-        }
+        }*/
 
         #endregion static functions
 

@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace SizeOnDisk.Utilities
+namespace SizeOnDisk.Shell
 {
     public class ReparsePoint
     {

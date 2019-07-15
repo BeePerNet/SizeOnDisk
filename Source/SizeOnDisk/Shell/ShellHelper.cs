@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Microsoft.Win32.SafeHandles;
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Permissions;
 using System.Windows;
 using System.Windows.Interop;
@@ -273,9 +275,32 @@ namespace SizeOnDisk.Shell
             }
         }
 
+        public static long? GetCompressedFileSize(string filename)
+        {
+            SafeNativeMethods.FILE_STANDARD_INFO dirinfo;
+            using (SafeFileHandle handle = SafeNativeMethods.OpenHandle(filename))
+            {
+                if (handle != null)
+                {
+
+                    bool result = SafeNativeMethods.GetFileInformationByHandleEx(handle, SafeNativeMethods.FILE_INFO_BY_HANDLE_CLASS.FileStandardInfo, out dirinfo, (uint)Marshal.SizeOf(typeof(SafeNativeMethods.FILE_STANDARD_INFO)));
+                    //bool result = SafeNativeMethods.GetFileInformationByHandleEx(handle, SafeNativeMethods.FILE_INFO_BY_HANDLE_CLASS.FileAllocationInfo, out dirinfo, (uint)Marshal.SizeOf(typeof(SafeNativeMethods.FILE_ID_BOTH_DIR_INFO)));
+                    int win32Error = Marshal.GetLastWin32Error();
+                    if (win32Error != 0)
+                        throw new Win32Exception(win32Error);
+                    return dirinfo.AllocationSize.ToInt64();
+                }
+            }
+            return null;
+        }
+
+
 
         internal static class SafeNativeMethods
         {
+            [DllImport("kernel32.dll", SetLastError = true)]
+            internal static extern bool GetFileInformationByHandleEx(SafeFileHandle hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, out FILE_STANDARD_INFO dirInfo, uint dwBufferSize);
+
             // .NET classes representing runtime callable wrappers.
 
             [DllImport("gdi32.dll")]
@@ -466,8 +491,150 @@ namespace SizeOnDisk.Shell
                 [Out] out IntPtr phbm);
             }
 
+            [DllImport("kernel32.dll")]
+            internal static extern int GetFileType(SafeFileHandle handle);
+
+            [SecurityCritical]
+            internal static SafeFileHandle OpenHandle(string path)
+            {
+                /*string fullPathInternal = Path.GetFullPathInternal(path);
+                string pathRoot = Path.GetPathRoot(fullPathInternal);
+                if (pathRoot == fullPathInternal && (int)pathRoot[1] == (int)Path.VolumeSeparatorChar)
+                    throw new ArgumentException(Environment.GetResourceString("Arg_PathIsVolume"));
+                FileIOPermission.QuickDemand(FileIOPermissionAccess.Write, Directory.GetDemandDir(fullPathInternal, true), false, false);*/
+                //SafeFileHandle file = SafeCreateFile(path, 1073741824, FileShare.Write | FileShare.Delete, (SECURITY_ATTRIBUTES)null, FileMode.Open, 33554432, IntPtr.Zero);
+                SafeFileHandle file = SafeCreateFile(path, 0, FileShare.ReadWrite | FileShare.Delete, (SECURITY_ATTRIBUTES)null, FileMode.Open, 0, IntPtr.Zero);
+                if (file.IsInvalid)
+                    //throw new Win32Exception();
+                    return null;
+                //__Error.WinIOError(Marshal.GetLastWin32Error(), fullPathInternal);
+                return file;
+            }
+
+            [SecurityCritical]
+            internal static SafeFileHandle SafeCreateFile(
+  string lpFileName,
+  int dwDesiredAccess,
+  FileShare dwShareMode,
+  SECURITY_ATTRIBUTES securityAttrs,
+  FileMode dwCreationDisposition,
+  int dwFlagsAndAttributes,
+  IntPtr hTemplateFile)
+            {
+                SafeFileHandle file = CreateFile(lpFileName, dwDesiredAccess, dwShareMode, securityAttrs, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+                if (!file.IsInvalid && GetFileType(file) != 1)
+                {
+                    file.Dispose();
+                    throw new NotSupportedException("NotSupported_FileStreamOnNonFiles");
+                }
+                return file;
+            }
+
+            [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true, BestFitMapping = false)]
+            internal static extern SafeFileHandle CreateFile(
+  string lpFileName,
+  int dwDesiredAccess,
+  FileShare dwShareMode,
+  SECURITY_ATTRIBUTES securityAttrs,
+  FileMode dwCreationDisposition,
+  int dwFlagsAndAttributes,
+  IntPtr hTemplateFile);
 
 
+            [StructLayout(LayoutKind.Explicit)]
+            internal struct LargeInteger
+            {
+                [FieldOffset(0)]
+                public int Low;
+                [FieldOffset(4)]
+                public int High;
+                [FieldOffset(0)]
+                public long QuadPart;
+
+                // use only when QuadPart canot be passed
+                public long ToInt64()
+                {
+                    return ((long)this.High << 32) | (uint)this.Low;
+                }
+
+                // just for demonstration
+                public static LargeInteger FromInt64(long value)
+                {
+                    return new LargeInteger
+                    {
+                        Low = (int)(value),
+                        High = (int)((value >> 32))
+                    };
+                }
+
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            internal class SECURITY_ATTRIBUTES
+            {
+                internal unsafe byte* pSecurityDescriptor = (byte*)null;
+                internal int nLength;
+                internal int bInheritHandle;
+            }
+
+
+            [StructLayout(LayoutKind.Sequential)]
+            internal struct FILE_STANDARD_INFO
+            {
+                public LargeInteger AllocationSize;
+                public LargeInteger EndOfFile;
+                public uint NumberOfLinks;
+                public bool DeletePending;
+                public bool Directory;
+            }
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            internal struct FILE_ID_BOTH_DIR_INFO
+            {
+                public uint NextEntryOffset;
+                public uint FileIndex;
+                public LargeInteger CreationTime;
+                public LargeInteger LastAccessTime;
+                public LargeInteger LastWriteTime;
+                public LargeInteger ChangeTime;
+                public LargeInteger EndOfFile;
+                public LargeInteger AllocationSize;
+                public uint FileAttributes;
+                public uint FileNameLength;
+                public uint EaSize;
+                public char ShortNameLength;
+                [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 12)]
+                public string ShortName;
+                public LargeInteger FileId;
+                [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 1)]
+                public string FileName;
+            }
+
+            public enum FILE_INFO_BY_HANDLE_CLASS
+            {
+                FileBasicInfo = 0,
+                FileStandardInfo = 1,
+                FileNameInfo = 2,
+                FileRenameInfo = 3,
+                FileDispositionInfo = 4,
+                FileAllocationInfo = 5,
+                FileEndOfFileInfo = 6,
+                FileStreamInfo = 7,
+                FileCompressionInfo = 8,
+                FileAttributeTagInfo = 9,
+                FileIdBothDirectoryInfo = 10,// 0x0A
+                FileIdBothDirectoryRestartInfo = 11, // 0xB
+                FileIoPriorityHintInfo = 12, // 0xC
+                FileRemoteProtocolInfo = 13, // 0xD
+                FileFullDirectoryInfo = 14, // 0xE
+                FileFullDirectoryRestartInfo = 15, // 0xF
+                FileStorageInfo = 16, // 0x10
+                FileAlignmentInfo = 17, // 0x11
+                FileIdInfo = 18, // 0x12
+                FileIdExtdDirectoryInfo = 19, // 0x13
+                FileIdExtdDirectoryRestartInfo = 20, // 0x14
+                MaximumFileInfoByHandlesClass
+            }
 
 
             [Flags]
