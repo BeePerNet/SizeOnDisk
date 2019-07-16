@@ -1,5 +1,4 @@
 ﻿using SizeOnDisk.Shell;
-using SizeOnDisk.Utilities;
 using System;
 using System.IO;
 using System.Threading.Tasks;

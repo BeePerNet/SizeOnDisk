@@ -69,43 +69,46 @@ namespace SizeOnDisk.Shell
         {
             List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> verbs = new List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)>();
             RegistryKey key = Registry.ClassesRoot.OpenSubKey(Path.GetExtension(path));
-            string defaultApp = key.GetValue(string.Empty, string.Empty).ToString();
-            key = key.OpenSubKey("OpenWithProgids");
-            string[] subvalues = new string[] { };
-            if (key == null)
-                subvalues = new string[] { defaultApp };
-            else
-                subvalues = key.GetValueNames();
-            foreach (string subkey in subvalues)
+            if (key != null)
             {
-                RegistryKey appkey = Registry.ClassesRoot.OpenSubKey(subkey);
-                if (appkey != null)
+                string defaultApp = key.GetValue(string.Empty, string.Empty).ToString();
+                key = key.OpenSubKey("OpenWithProgids");
+                string[] subvalues = new string[] { };
+                if (key == null)
+                    subvalues = new string[] { defaultApp };
+                else
+                    subvalues = key.GetValueNames();
+                foreach (string subkey in subvalues)
                 {
-                    string application = appkey.GetValue(string.Empty, string.Empty).ToString();
-                    if (application == string.Empty)
-                    {
-                        RegistryKey applicationkey = appkey.OpenSubKey("Application");
-                        if (applicationkey != null)
-                        {
-                            application = applicationkey.GetValue("AppUserModelID", string.Empty).ToString();
-                            if (application.Contains('!'))
-                            {
-                                string[] splits = application.Split('!');
-                                application = splits.Last();
-                            }
-                        }
-                    }
-                    appkey = appkey.OpenSubKey("Shell");
+                    RegistryKey appkey = Registry.ClassesRoot.OpenSubKey(subkey);
                     if (appkey != null)
                     {
-                        string defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
+                        string application = appkey.GetValue(string.Empty, string.Empty).ToString();
+                        if (application == string.Empty)
+                        {
+                            RegistryKey applicationkey = appkey.OpenSubKey("Application");
+                            if (applicationkey != null)
+                            {
+                                application = applicationkey.GetValue("AppUserModelID", string.Empty).ToString();
+                                if (application.Contains('!'))
+                                {
+                                    string[] splits = application.Split('!');
+                                    application = splits.Last();
+                                }
+                            }
+                        }
+                        appkey = appkey.OpenSubKey("Shell");
                         if (appkey != null)
                         {
-                            defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
-                            string[] appverbs = appkey.GetSubKeyNames();
-                            foreach (string appverb in appverbs)
+                            string defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
+                            if (appkey != null)
                             {
-                                verbs.Add((appverb, subkey, application, defaultApp == subkey, defaultverb == appverb));
+                                defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
+                                string[] appverbs = appkey.GetSubKeyNames();
+                                foreach (string appverb in appverbs)
+                                {
+                                    verbs.Add((appverb, subkey, application, defaultApp == subkey, defaultverb == appverb));
+                                }
                             }
                         }
                     }

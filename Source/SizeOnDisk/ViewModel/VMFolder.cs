@@ -2,15 +2,14 @@
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using System.Windows.Threading;
+using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -86,11 +85,14 @@ namespace SizeOnDisk.ViewModel
             FolderCount = null;
             _Dispatcher = dispatcher;
 
-            dispatcher.BeginInvoke(new Action(() =>
+            this.Childs = new DispatchObservableCollection<VMFile>();
+            this.Folders = new DispatchObservableCollection<VMFolder>();
+
+            /*dispatcher.BeginInvoke(new Action(() =>
             {
                 BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
                 BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
-            }), DispatcherPriority.DataBind);
+            }), DispatcherPriority.DataBind);*/
         }
 
         [DesignOnly(true)]
@@ -105,9 +107,9 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public ObservableCollection<VMFile> Childs { get; } = new ObservableCollection<VMFile>();
+        public DispatchObservableCollection<VMFile> Childs { get; }
 
-        public ObservableCollection<VMFolder> Folders { get; } = new ObservableCollection<VMFolder>();
+        public DispatchObservableCollection<VMFolder> Folders { get; }
 
         private bool _isExpanded;
 
