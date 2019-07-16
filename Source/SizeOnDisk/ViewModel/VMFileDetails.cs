@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using WPFByYourCommand;
+using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -40,7 +40,7 @@ namespace SizeOnDisk.ViewModel
             this._LastWriteTime = fileInfo.LastWriteTime;
 
             this._icon = ShellHelper.GetIcon(_vmFile.Path, 16);
-            this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+            this._bigicon = ShellHelper.GetIcon(_vmFile.Path, 96);
 
             new Task(() =>
             {
@@ -88,6 +88,15 @@ namespace SizeOnDisk.ViewModel
             get
             {
                 return _icon;
+            }
+        }
+
+        BitmapSource _bigicon = null;
+        public BitmapSource BigIcon
+        {
+            get
+            {
+                return _bigicon;
             }
         }
 

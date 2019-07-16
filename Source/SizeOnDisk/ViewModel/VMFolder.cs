@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using WPFByYourCommand;
+using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -101,6 +102,9 @@ namespace SizeOnDisk.ViewModel
         {
             FileCount = null;
             FolderCount = null;
+
+            this.Childs = new DispatchObservableCollection<VMFile>();
+            this.Folders = new DispatchObservableCollection<VMFolder>();
         }
 
         #endregion constructor

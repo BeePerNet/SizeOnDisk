@@ -1,15 +1,17 @@
 ﻿using SizeOnDisk.Shell;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using WPFByYourCommand;
+using WPFByYourCommand.Commands;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFile : CommandViewModel, IComparable<VMFile>
+    public class VMFile : CommandViewModel
     {
         public static readonly CommandEx OpenCommand = new CommandEx("open", "PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
         public static readonly CommandEx EditCommand = new CommandEx("edit", "Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "EditKey"));
@@ -307,7 +309,7 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
 
-            e.CanExecute = ShellHelper.GetVerbs(file.Path).Any(T => T.verb == command.Name);
+            e.CanExecute = ShellHelper.GetVerbs(file.Path, file is VMFolder).Any(T => T.verb == command.Name);
 
 
             //e.CanExecute = ShellHelper.CanCallShellCommand(file.Path, command.Name);
@@ -339,20 +341,32 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Commands
 
-        #region IComparable<VMFile> Members
 
-        public int CompareTo(VMFile other)
+        public IEnumerable<ICommand> Commands
         {
-            if (this == other)
-                return 0;
-            if (!(this is VMFolder) && other is VMFolder)
-                return 1;
-            if (this is VMFolder && !(other is VMFolder))
-                return -1;
-            return this.Name.CompareTo(other.Name);
+            get
+            {
+                List<ICommand> commands = new List<ICommand>();
+                commands.Add(VMFile.OpenCommand);
+                commands.Add(VMFile.EditCommand);
+                commands.Add(VMFile.OpenAsCommand);
+                commands.Add(VMFile.PrintCommand);
+                commands.Add(SeparatorDummyCommand.Instance);
+
+
+
+
+
+                commands.Add(SeparatorDummyCommand.Instance);
+                commands.Add(VMFile.ExploreCommand);
+                commands.Add(VMFile.FindCommand);
+                commands.Add(SeparatorDummyCommand.Instance);
+                commands.Add(VMFile.DeleteCommand);
+                commands.Add(VMFile.PermanentDeleteCommand);
+                commands.Add(SeparatorDummyCommand.Instance);
+                commands.Add(VMFile.PropertiesCommand);
+                return commands;
+            }
         }
-
-        #endregion
-
     }
 }

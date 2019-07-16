@@ -64,11 +64,87 @@ namespace SizeOnDisk.Shell
             return associations[extension];
         }
 
+        public class ShellCommandRoot
+        {
+            public ShellCommandSoftware Default;
+            public IList<ShellCommandSoftware> Softwares = new List<ShellCommandSoftware>();
+        }
 
-        public static IEnumerable<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> GetVerbs(string path)
+        public class ShellCommandSoftware
+        {
+            public string Name;
+            public string Id;
+            public ShellCommandVerb Default;
+            public IList<ShellCommandVerb> Verbs = new List<ShellCommandVerb>();
+        }
+
+        public class ShellCommandVerb
+        {
+            public string Verb;
+            public string Command;
+        }
+
+        public static ShellCommandRoot GetShellCommands(string path, bool isDirectory)
+        {
+            ShellCommandRoot result = new ShellCommandRoot();
+            if (isDirectory)
+            {
+                result.Default = new ShellCommandSoftware();
+                result.Softwares.Add(result.Default);
+                result.Default.Id = "Directory";
+                //result.Default.Name = IOHelper.;
+
+
+
+
+
+
+            }
+            return result;
+        }
+
+
+
+
+        public static IEnumerable<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> GetVerbs(string path, bool isDirectory)
         {
             List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> verbs = new List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)>();
             string ext = Path.GetExtension(path);
+            if (isDirectory && string.IsNullOrEmpty(ext))
+            {
+                RegistryKey appkey = Registry.ClassesRoot.OpenSubKey("Directory");
+                if (appkey != null)
+                {
+                    string application = appkey.GetValue(string.Empty, string.Empty).ToString();
+                    if (application == string.Empty)
+                    {
+                        RegistryKey applicationkey = appkey.OpenSubKey("Application");
+                        if (applicationkey != null)
+                        {
+                            application = applicationkey.GetValue("AppUserModelID", string.Empty).ToString();
+                            if (application.Contains('!'))
+                            {
+                                string[] splits = application.Split('!');
+                                application = splits.Last();
+                            }
+                        }
+                    }
+                    appkey = appkey.OpenSubKey("Shell");
+                    if (appkey != null)
+                    {
+                        string defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
+                        if (appkey != null)
+                        {
+                            defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
+                            string[] appverbs = appkey.GetSubKeyNames();
+                            foreach (string appverb in appverbs)
+                            {
+                                verbs.Add((appverb, "Directory", application, false, defaultverb == appverb));
+                            }
+                        }
+                    }
+                }
+            }
             if (!string.IsNullOrEmpty(ext))
             {
                 RegistryKey key = Registry.ClassesRoot.OpenSubKey(ext);
@@ -479,11 +555,11 @@ namespace SizeOnDisk.Shell
             #endregion
 
             [DllImport("shell32.dll", EntryPoint = "ExtractIconW",
-                CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
+                CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
             private static extern IntPtr ExtractIcon(int hInst, string lpszExeFileName, uint nIconIndex);
 
             [DllImport("shell32.dll", EntryPoint = "DestroyIcon",
-                CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
+                CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
             private static extern bool DestroyIcon(IntPtr hIcon);
 
             [ComImport()]
@@ -520,13 +596,13 @@ namespace SizeOnDisk.Shell
 
             [SecurityCritical]
             internal static SafeFileHandle SafeCreateFile(
-  string lpFileName,
-  int dwDesiredAccess,
-  FileShare dwShareMode,
-  SECURITY_ATTRIBUTES securityAttrs,
-  FileMode dwCreationDisposition,
-  int dwFlagsAndAttributes,
-  IntPtr hTemplateFile)
+        string lpFileName,
+        int dwDesiredAccess,
+        FileShare dwShareMode,
+        SECURITY_ATTRIBUTES securityAttrs,
+        FileMode dwCreationDisposition,
+        int dwFlagsAndAttributes,
+        IntPtr hTemplateFile)
             {
                 SafeFileHandle file = CreateFile(lpFileName, dwDesiredAccess, dwShareMode, securityAttrs, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
                 if (!file.IsInvalid && GetFileType(file) != 1)
@@ -539,13 +615,13 @@ namespace SizeOnDisk.Shell
 
             [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true, BestFitMapping = false)]
             internal static extern SafeFileHandle CreateFile(
-  string lpFileName,
-  int dwDesiredAccess,
-  FileShare dwShareMode,
-  SECURITY_ATTRIBUTES securityAttrs,
-  FileMode dwCreationDisposition,
-  int dwFlagsAndAttributes,
-  IntPtr hTemplateFile);
+        string lpFileName,
+        int dwDesiredAccess,
+        FileShare dwShareMode,
+        SECURITY_ATTRIBUTES securityAttrs,
+        FileMode dwCreationDisposition,
+        int dwFlagsAndAttributes,
+        IntPtr hTemplateFile);
 
 
             [StructLayout(LayoutKind.Explicit)]

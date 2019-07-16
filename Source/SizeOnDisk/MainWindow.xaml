@@ -26,12 +26,13 @@
         <vm:VMRootHierarchy />
     </Window.DataContext>
     <Window.Resources>
+        <cmd:MenuItemTemplateSelector x:Key="menuItemSelector" />
         <cmd:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <cmd:IsEqualConverter x:Key="IsEqualConverter" />
         <cmd:IsNotEqualConverter x:Key="IsNotEqualConverter" />
         <conv:IsRunningConverter x:Key="IsRunningConverter" />
         <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
-        <conv:SizeConverter x:Key="SizeConverter" /> 
+        <conv:SizeConverter x:Key="SizeConverter" />
         <Style x:Key="ColoredName" TargetType="TextBlock">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Compressed}" Value="True">
@@ -47,27 +48,30 @@
                     <Setter Property="Opacity" Value="0.6" />
                 </DataTrigger>
             </Style.Triggers>
+            <Style.Setters>
+                <Setter Property="ToolTip" Value="{Binding Name}" />
+            </Style.Setters>
         </Style>
         <Style x:Key="{x:Type StatusBarItem}" TargetType="StatusBarItem">
             <Setter Property="Margin" Value="3,0,3,1" />
         </Style>
-        <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}">
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.OpenCommand">
-                <MenuItem.Icon>
-                    <Image Source="{Binding Details.Icon}" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.EditCommand" />
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.OpenAsCommand" />
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.PrintCommand" />
-            <Separator />
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.ExploreCommand" />
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.FindCommand" />
-            <Separator />
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.DeleteCommand" />
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.PermanentDeleteCommand" />
-            <Separator />
-            <MenuItem cmd:CommandExLoc.Command="vm:VMFile.PropertiesCommand" />
+        <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
+                     ItemsSource="{Binding Commands}"
+                     UsesItemContainerTemplate="True"
+                     ItemContainerTemplateSelector="{StaticResource menuItemSelector}">
+            <ContextMenu.Resources>
+                <ResourceDictionary>
+                    <DataTemplate x:Key="{x:Type cmd:CommandEx}" DataType="{x:Type cmd:CommandEx}">
+                        <MenuItem cmd:CommandExLoc.Command="{Binding}" />
+                    </DataTemplate>
+                    <HierarchicalDataTemplate x:Key="{x:Type cmd:ParentCommandEx}" DataType="{x:Type cmd:ParentCommandEx}" ItemsSource="{Binding Childs}">
+                        <MenuItem cmd:CommandExLoc.Command="{Binding}" UsesItemContainerTemplate ="true" ItemContainerTemplateSelector="{StaticResource menuItemSelector}" />
+                    </HierarchicalDataTemplate>
+                    <DataTemplate x:Key="{x:Type cmd:SeparatorDummyCommand}" DataType="{x:Type cmd:SeparatorDummyCommand}">
+                        <Separator />
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ContextMenu.Resources>
         </ContextMenu>
     </Window.Resources>
     <Grid>
@@ -158,7 +162,7 @@
                         <Setter Property="HeaderTemplate">
                             <Setter.Value>
                                 <DataTemplate >
-                                    <TextBlock Text="{Binding Name}" Style="{StaticResource ColoredName}" />
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource ColoredName}" ToolTip="{Binding Name}" />
                                 </DataTemplate>
                             </Setter.Value>
                         </Setter>
@@ -201,8 +205,30 @@
                                 <RowDefinition SharedSizeGroup="Icons" MinHeight="96" />
                                 <RowDefinition SharedSizeGroup="Names" />
                             </Grid.RowDefinitions>
-                            <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            <TextBlock Style="{StaticResource ColoredName}" Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
+                            <Canvas Margin="0" Width="96" Height="96" VerticalAlignment="Center" HorizontalAlignment="Center" Canvas.ZIndex="100">
+                                <cmd:AutoDisablingImage Margin="0" Canvas.Right="0" Canvas.Bottom="0" Source="{Binding Details.BigIcon}" x:Name="BigIcon" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}">
+                                    <cmd:AutoDisablingImage.Style>
+                                        <Style TargetType="cmd:AutoDisablingImage">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Details.Thumbnail, Converter={StaticResource IsEqualConverter}}" Value="False" >
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Width" From="96" To="32" Duration="0:0:2" />
+                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="96" To="32" Duration="0:0:2" />
+                                                                <DoubleAnimation Storyboard.TargetProperty="(Canvas.Right)" From="0" To="-2" Duration="0:0:2" />
+                                                                <DoubleAnimation Storyboard.TargetProperty="(Canvas.Bottom)" From="0" To="-2" Duration="0:0:2" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </cmd:AutoDisablingImage.Style>
+                                </cmd:AutoDisablingImage>
+                            </Canvas>
+                            <cmd:AutoDisablingImage Margin="0" Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
