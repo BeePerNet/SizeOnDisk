@@ -386,4 +386,10 @@
   <data name="PermanentDeleteKey" xml:space="preserve">
     <value>Shift+Delete</value>
   </data>
+  <data name="Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="PrintTo" xml:space="preserve">
+    <value>Print to</value>
+  </data>
 </root>

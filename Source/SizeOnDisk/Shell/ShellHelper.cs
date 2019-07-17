@@ -20,50 +20,62 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using System.Windows.Resources;
+using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.Shell
 {
     public static class ShellHelper
     {
         private static Dictionary<string, string> associations = new Dictionary<string, string>();
+        private static string currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        private static object _lock = new object();
+
+
+        public static void Activate(string appId, string arguments)
+        {
+            SafeNativeMethods.ApplicationActivationManager appActiveManager = new SafeNativeMethods.ApplicationActivationManager();//Class not registered
+            //IApplicationActivationManager iappActiveManager = (IApplicationActivationManager)appActiveManager;
+            uint pid;
+            appActiveManager.ActivateApplication(appId, arguments, SafeNativeMethods.ActivateOptions.None, out pid);
+        }
+
+        public static void Activate(string appId, string file, string verb)
+        {
+            SafeNativeMethods.ApplicationActivationManager appActiveManager = new SafeNativeMethods.ApplicationActivationManager();//Class not registered
+            SafeNativeMethods.IShellItem pShellItem;
+            SafeNativeMethods.IShellItemArray pShellItemArray = null;
+            Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
+            if (SafeNativeMethods.SHCreateItemFromParsingName(file, IntPtr.Zero, ref guid, out pShellItem) == (int)SafeNativeMethods.HResult.Ok)
+            {
+                if (SafeNativeMethods.SHCreateShellItemArrayFromShellItem(pShellItem, typeof(SafeNativeMethods.IShellItemArray).GUID, out pShellItemArray) == (int)SafeNativeMethods.HResult.Ok)
+                {
+                    uint pid;
+                    appActiveManager.ActivateForFile(appId, pShellItemArray, verb, out pid);
+                }
+            }
+        }
 
         public static string GetFriendlyName(string extension)
         {
-            if (string.IsNullOrWhiteSpace(extension))
-                return string.Empty;
-            if (!associations.ContainsKey(extension))
+            lock (_lock)
             {
-                string fileType = String.Empty;
-
-                using (RegistryKey rk = Registry.ClassesRoot.OpenSubKey("\\" + extension))
+                if (currentCulture != CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
                 {
-                    if (rk != null)
-                    {
-                        string applicationType = rk.GetValue(String.Empty, String.Empty).ToString();
-
-                        if (!string.IsNullOrEmpty(applicationType))
-                        {
-                            using (RegistryKey appTypeKey = Registry.ClassesRoot.OpenSubKey("\\" + applicationType))
-                            {
-                                if (appTypeKey != null)
-                                {
-                                    fileType = appTypeKey.GetValue(String.Empty, String.Empty).ToString();
-                                }
-                            }
-                        }
-                    }
-
-                    // Couldn't find the file type in the registry. Display some default.
-                    if (string.IsNullOrEmpty(fileType))
-                    {
-                        fileType = extension.Replace(".", String.Empty);
-                    }
+                    associations = new Dictionary<string, string>();
+                    currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
                 }
-                if (!associations.ContainsKey(extension))
-                    // Cache the association so we don't traverse the registry again
-                    associations.Add(extension, fileType);
-            }
 
+                if (string.IsNullOrWhiteSpace(extension))
+                    return string.Empty;
+                if (!associations.ContainsKey(extension))
+                {
+                    string fileType = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyDocName, extension);
+                    if (!associations.ContainsKey(extension))
+                        // Cache the association so we don't traverse the registry again
+                        associations.Add(extension, fileType);
+                }
+            }
             return associations[extension];
         }
 
@@ -87,53 +99,188 @@ namespace SizeOnDisk.Shell
         public class ShellCommandVerb
         {
             public string Verb;
+            public string Name;
             public string Command;
         }
 
+        private static BitmapSource GetIcon(string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                string[] values = value.Split(',');
+                if (values != null && values.Length == 2)
+                {
+                    return SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                }
+                else if (values != null && values.Length == 1)
+                {
+                    string icon = values[0];
+                    if (values[0].StartsWith("@"))
+                    {
+                        StringBuilder outBuff = new StringBuilder(1024);
+                        if (SafeNativeMethods.SHLoadIndirectString(icon, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
+                        {
+                            icon = outBuff.ToString();
+                            if (icon.Contains(','))
+                            {
+                                values = outBuff.ToString().Split(',');
+                                if (values != null && values.Length == 2)
+                                    return SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                            }
+                            else
+                            {
+                                return new BitmapImage(new Uri(icon));
+                            }
+                        }
+                    }
+                    else
+                        return SafeNativeMethods.ExtractIconFromDLL(values[0], 0);
+                }
+            }
+            return null;
+        }
 
-        private static ShellCommandVerb GetVerb(RegistryKey verbkey, string id)
+
+        private static string GetText(string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                string[] values = value.Split(',');
+                if (values != null && values.Length == 2)
+                {
+                    return SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1]));
+                }
+                else if (values != null && values.Length == 1)
+                {
+                    string text = values[0];
+                    if (values[0].StartsWith("@"))
+                    {
+                        StringBuilder outBuff = new StringBuilder(1024);
+                        if (SafeNativeMethods.SHLoadIndirectString(text, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
+                        {
+                            text = outBuff.ToString();
+                            if (text.Contains(','))
+                            {
+                                values = outBuff.ToString().Split(',');
+                                if (values != null && values.Length == 2)
+                                    return SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1]));
+                            }
+                            else
+                            {
+                                return text;
+                            }
+                        }
+                    }
+                    else
+                        return SafeNativeMethods.ExtractStringFromDLL(values[0], 0);
+                }
+            }
+            return null;
+        }
+
+        private static ShellCommandVerb GetVerb(RegistryKey verbkey, string id, string appUserModeId)
         {
             ShellCommandVerb verb = new ShellCommandVerb();
             verb.Verb = id;
+            verb.Name = id;
+
+            string name = verbkey.GetValue(string.Empty, string.Empty).ToString();
+            if (name.StartsWith("@"))
+            {
+                StringBuilder outBuff = new StringBuilder(1024);
+                if (SafeNativeMethods.SHLoadIndirectString(name, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
+                {
+                    verb.Name = outBuff.ToString();
+                }
+            }
+            else
+            {
+                name = LocExtension.GetLocalizedValue<string>($"PresentationCore:ExceptionStringTable:{id}Text");
+                if (!string.IsNullOrEmpty(name))
+                    verb.Name = name;
+                name = LocExtension.GetLocalizedValue<string>($"{id}");
+                if (!string.IsNullOrEmpty(name))
+                    verb.Name = name;
+            }
+
             RegistryKey cmd = verbkey.OpenSubKey("command");
             if (cmd != null)
             {
                 verb.Command = cmd.GetValue(string.Empty, string.Empty).ToString();
             }
+            if (string.IsNullOrEmpty(verb.Command))
+            {
+                if (!string.IsNullOrEmpty(appUserModeId))
+                    verb.Command = "Id:" + appUserModeId;
+            }
             return verb;
         }
+
+        public enum ShellIconSize
+        {
+            SmallIcon, LargeIcon
+        }
+
+
+
+
+
+
+
+
 
 
         private static ShellCommandSoftware GetSoftware(RegistryKey appkey, string id)
         {
-            string application = appkey.GetValue(string.Empty, string.Empty).ToString();
-
             ShellCommandSoftware soft = new ShellCommandSoftware();
             soft.Id = id;
 
-            string[] values = appkey.GetValue("FriendlyTypeName", string.Empty).ToString().Split(',');
-            if (values.Length == 2)
+            RegistryKey subkey;
+            string[] values;
+
+            soft.Name = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyAppName, id);
+            string value = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.DefaultIcon, id);
+            soft.Icon = GetIcon(value);
+            if (soft.Icon == null)
             {
-                soft.Name = SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1]));
+                value = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.AppIconReference, id);
+                soft.Icon = GetIcon(value);
             }
-            RegistryKey subkey = appkey.OpenSubKey("DefaultIcon");
-            if (subkey != null)
+            if (string.IsNullOrWhiteSpace(soft.Name))
             {
-                values = subkey.GetValue(string.Empty, string.Empty).ToString().Split(',');
-                if (values.Length == 2)
+                value = appkey.GetValue("FriendlyTypeName", string.Empty).ToString();
+                soft.Name = GetText(value);
+            }
+
+            if (soft.Icon == null)
+            {
+                subkey = appkey.OpenSubKey("DefaultIcon");
+                if (subkey != null)
                 {
-                    soft.Icon = SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                    value = subkey.GetValue(string.Empty, string.Empty).ToString();
+                    soft.Icon = GetIcon(value);
                 }
             }
+
+            string appid = string.Empty;
             subkey = appkey.OpenSubKey("Application");
             if (subkey != null)
             {
-                string value = subkey.GetValue(string.Empty, string.Empty).ToString();
-                if (values.Length == 2)
+                appid = subkey.GetValue("AppUserModelID", string.Empty).ToString();
+
+                if (soft.Icon == null)
                 {
-                    soft.Icon = SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                    value = subkey.GetValue(string.Empty, string.Empty).ToString();
+                    soft.Icon = GetIcon(value);
+                }
+
+                if (string.IsNullOrEmpty(soft.Name))
+                {
+                    value = subkey.GetValue("ApplicationName", string.Empty).ToString();
+                    soft.Name = GetText(value);
                 }
             }
+
             subkey = appkey.OpenSubKey("Shell");
             if (subkey != null)
             {
@@ -142,14 +289,20 @@ namespace SizeOnDisk.Shell
                 foreach (string appverb in appverbs)
                 {
                     RegistryKey verbkey = subkey.OpenSubKey(appverb);
-                    ShellCommandVerb verb = GetVerb(verbkey, appverb);
+                    ShellCommandVerb verb = GetVerb(verbkey, appverb, appid);
                     soft.Verbs.Add(verb);
                     if (defaultverb == appverb)
                         soft.Default = verb;
                 }
             }
             if (string.IsNullOrEmpty(soft.Name))
-                soft.Name = id;
+            {
+                string application = appkey.GetValue(string.Empty, string.Empty).ToString();
+                if (!string.IsNullOrWhiteSpace(application))
+                    soft.Name = application;
+                else
+                    soft.Name = id;
+            }
 
             return soft;
         }
@@ -206,6 +359,7 @@ namespace SizeOnDisk.Shell
             }
             return result;
         }
+
 
 
 
@@ -302,6 +456,84 @@ namespace SizeOnDisk.Shell
             return verbs;
         }
 
+        /*public static void Test()
+{
+    List<(string, string)> items = new List<(string, string)>();
+
+    const string extension = ".jpg";
+
+    IntPtr pEnumAssocHandlers;
+    SafeNativeMethods.SHAssocEnumHandlers(extension, SafeNativeMethods.ASSOC_FILTER.ASSOC_FILTER_RECOMMENDED, out pEnumAssocHandlers);
+
+    IntPtr pFuncNext = Marshal.ReadIntPtr(Marshal.ReadIntPtr(pEnumAssocHandlers) + 3 * sizeof(int));
+    SafeNativeMethods.FuncNext next = (SafeNativeMethods.FuncNext)Marshal.GetDelegateForFunctionPointer(pFuncNext, typeof(SafeNativeMethods.FuncNext));
+
+    IntPtr[] pArrayAssocHandlers = new IntPtr[255];
+    int num;
+
+    int resNext = next(pEnumAssocHandlers, 255, pArrayAssocHandlers, out num);
+    if (resNext == 0)
+    {
+        for (int i = 0; i < num; i++)
+        {
+            IntPtr pAssocHandler = pArrayAssocHandlers[i];
+            IntPtr pFuncGetName = Marshal.ReadIntPtr(Marshal.ReadIntPtr(pAssocHandler) + 3 * sizeof(int));
+            SafeNativeMethods.FuncGetName getName = (SafeNativeMethods.FuncGetName)Marshal.GetDelegateForFunctionPointer(pFuncGetName, typeof(SafeNativeMethods.FuncGetName));
+            IntPtr pName;
+            int resGetName = getName(pAssocHandler, out pName);
+            string path = Marshal.PtrToStringUni(pName);
+
+            IntPtr pFuncGetUiName = Marshal.ReadIntPtr(Marshal.ReadIntPtr(pAssocHandler) + 4 * sizeof(int));
+            SafeNativeMethods.FuncGetUiName getUiName = (SafeNativeMethods.FuncGetUiName)Marshal.GetDelegateForFunctionPointer(pFuncGetUiName, typeof(SafeNativeMethods.FuncGetUiName));
+            IntPtr pUiName;
+            int resGetUiName = getUiName(pAssocHandler, out pUiName);
+            string uiname = Marshal.PtrToStringUni(pUiName);
+
+            Marshal.Release(pArrayAssocHandlers[i]);
+
+            items.Add((path, uiname));
+        }
+    }
+    Marshal.Release(pEnumAssocHandlers);
+}*/
+
+
+
+
+
+        /*public static Icon GetIconForExtension(string extension, ShellIconSize size = ShellIconSize.SmallIcon)
+        {
+            RegistryKey keyForExt = Registry.ClassesRoot.OpenSubKey(extension);
+            if (keyForExt == null) return null;
+
+            string className = Convert.ToString(keyForExt.GetValue(null));
+            RegistryKey keyForClass = Registry.ClassesRoot.OpenSubKey(className);
+            if (keyForClass == null) return null;
+
+            RegistryKey keyForIcon = keyForClass.OpenSubKey("DefaultIcon");
+            if (keyForIcon == null)
+            {
+                RegistryKey keyForCLSID = keyForClass.OpenSubKey("CLSID");
+                if (keyForCLSID == null) return null;
+
+                string clsid = "CLSID\\"
+                    + Convert.ToString(keyForCLSID.GetValue(null))
+                    + "\\DefaultIcon";
+                keyForIcon = Registry.ClassesRoot.OpenSubKey(clsid);
+                if (keyForIcon == null) return null;
+            }
+
+            string[] defaultIcon = Convert.ToString(keyForIcon.GetValue(null)).Split(',');
+            int index = (defaultIcon.Length > 1) ? Int32.Parse(defaultIcon[1]) : 0;
+
+            IntPtr[] handles = new IntPtr[1];
+            if (SafeNativeMethods.ExtractIconEx(defaultIcon[0], index,
+                (size == ShellIconSize.LargeIcon) ? handles : null,
+                (size == ShellIconSize.SmallIcon) ? handles : null, 1) > 0)
+                return Icon.FromHandle(handles[0]);
+            else
+                return null;
+        }*/
 
 
 
@@ -339,6 +571,32 @@ namespace SizeOnDisk.Shell
         {
             ShellExecute(fileName, null, null, ownerWindow);
         }
+
+        public static string FileExtentionInfo(AssocStr assocStr, string doctype)
+        {
+            uint pcchOut = 0;
+            if (SafeNativeMethods.AssocQueryString(AssocF.Verify, assocStr, doctype, null, null, ref pcchOut) != 1)
+                return null;
+            StringBuilder pszOut = new StringBuilder((int)pcchOut);
+            if (SafeNativeMethods.AssocQueryString(AssocF.Verify, assocStr, doctype, null, pszOut, ref pcchOut) != 0)
+                return null;
+            return pszOut.ToString();
+        }
+
+        /*public static void VerbExecute(string command)
+        {
+            uint bufferSize = 260;
+            var buffer = new StringBuilder((int)bufferSize);
+            SafeNativeMethods.AssocQueryString(AssocF.IsProtocol, AssocStr.Command, "http", "open", buffer, ref bufferSize);
+            var template = buffer.ToString();
+
+            string application, commandLine, parameters;
+            SafeNativeMethods.SHEvaluateSystemCommandTemplate(template, out application, out commandLine, out parameters);
+
+            parameters = parameters.Replace("%1", "\"? " + command + "\"");
+
+            Process.Start(application, parameters);
+        }*/
 
 
 
@@ -489,10 +747,206 @@ namespace SizeOnDisk.Shell
             return null;
         }
 
+        [Flags]
+        public enum AssocF : uint
+        {
+            None = 0,
+            Init_NoRemapCLSID = 0x1,
+            Init_ByExeName = 0x2,
+            Open_ByExeName = 0x2,
+            Init_DefaultToStar = 0x4,
+            Init_DefaultToFolder = 0x8,
+            NoUserSettings = 0x10,
+            NoTruncate = 0x20,
+            Verify = 0x40,
+            RemapRunDll = 0x80,
+            NoFixUps = 0x100,
+            IgnoreBaseClass = 0x200,
+            Init_IgnoreUnknown = 0x400,
+            Init_FixedProgId = 0x800,
+            IsProtocol = 0x1000,
+            InitForFile = 0x2000,
+        }
+
+        public enum AssocStr
+        {
+            Command = 1,
+            Executable,
+            FriendlyDocName,
+            FriendlyAppName,
+            NoOpen,
+            ShellNewValue,
+            DDECommand,
+            DDEIfExec,
+            DDEApplication,
+            DDETopic,
+            InfoTip,
+            QuickTip,
+            TileInfo,
+            ContentType,
+            DefaultIcon,
+            ShellExtension,
+            DropTarget,
+            DelegateExecute,
+            SupportedUriProtocols,
+            // The values below ('Max' excluded) have been introduced in W10 1511
+            ProgID,
+            AppID,
+            AppPublisher,
+            AppIconReference,
+            Max
+        }
+
 
 
         internal static class SafeNativeMethods
         {
+            internal enum ActivateOptions
+            {
+                None = 0x00000000,  // No flags set
+                DesignMode = 0x00000001,  // The application is being activated for design mode, and thus will not be able to
+                                          // to create an immersive window. Window creation must be done by design tools which
+                                          // load the necessary components by communicating with a designer-specified service on
+                                          // the site chain established on the activation manager.  The splash screen normally
+                                          // shown when an application is activated will also not appear.  Most activations
+                                          // will not use this flag.
+                NoErrorUI = 0x00000002,  // Do not show an error dialog if the app fails to activate.                                
+                NoSplashScreen = 0x00000004,  // Do not show the splash screen when activating the app.
+            }
+
+            [ComImport, Guid("2e941141-7f97-4756-ba1d-9decde894a3d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            internal interface IApplicationActivationManager
+            {
+                // Activates the specified immersive application for the "Launch" contract, passing the provided arguments
+                // string into the application.  Callers can obtain the process Id of the application instance fulfilling this contract.
+                IntPtr ActivateApplication([In] String appUserModelId, [In] String arguments, [In] ActivateOptions options, [Out] out UInt32 processId);
+                IntPtr ActivateForFile([In] String appUserModelId, [In] IShellItemArray /*IShellItemArray* */ itemArray, [In] String verb, [Out] out UInt32 processId);
+                IntPtr ActivateForProtocol([In] String appUserModelId, [In] IntPtr /* IShellItemArray* */itemArray, [Out] out UInt32 processId);
+            }
+
+            [ComImport, Guid("45BA127D-10A8-46EA-8AB7-56EA9078943C")]//Application Activation Manager
+            internal class ApplicationActivationManager : IApplicationActivationManager
+            {
+                [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)/*, PreserveSig*/]
+                public extern IntPtr ActivateApplication([In] String appUserModelId, [In] String arguments, [In] ActivateOptions options, [Out] out UInt32 processId);
+                [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+                public extern IntPtr ActivateForFile([In] String appUserModelId, [In] IShellItemArray /*IShellItemArray* */ itemArray, [In] String verb, [Out] out UInt32 processId);
+                [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+                public extern IntPtr ActivateForProtocol([In] String appUserModelId, [In] IntPtr /* IShellItemArray* */itemArray, [Out] out UInt32 processId);
+            }
+
+            public enum GETPROPERTYSTOREFLAGS
+            {
+                GPS_DEFAULT = 0,
+                GPS_HANDLERPROPERTIESONLY = 0x1,
+                GPS_READWRITE = 0x2,
+                GPS_TEMPORARY = 0x4,
+                GPS_FASTPROPERTIESONLY = 0x8,
+                GPS_OPENSLOWITEM = 0x10,
+                GPS_DELAYCREATION = 0x20,
+                GPS_BESTEFFORT = 0x40,
+                GPS_NO_OPLOCK = 0x80,
+                GPS_PREFERQUERYPROPERTIES = 0x100,
+                GPS_EXTRINSICPROPERTIES = 0x200,
+                GPS_EXTRINSICPROPERTIESONLY = 0x400,
+                GPS_MASK_VALID = 0x7FF
+            }
+
+            [StructLayout(LayoutKind.Sequential, Pack = 4)]
+            public struct REFPROPERTYKEY
+            {
+                private Guid fmtid;
+                private int pid;
+                public Guid FormatId
+                {
+                    get
+                    {
+                        return this.fmtid;
+                    }
+                }
+                public int PropertyId
+                {
+                    get
+                    {
+                        return this.pid;
+                    }
+                }
+                public REFPROPERTYKEY(Guid formatId, int propertyId)
+                {
+                    this.fmtid = formatId;
+                    this.pid = propertyId;
+                }
+                public static readonly REFPROPERTYKEY PKEY_DateCreated = new REFPROPERTYKEY(new Guid("B725F130-47EF-101A-A5F1-02608C9EEBAC"), 15);
+            }
+
+            public enum SIATTRIBFLAGS
+            {
+                SIATTRIBFLAGS_AND = 0x1,
+                SIATTRIBFLAGS_OR = 0x2,
+                SIATTRIBFLAGS_APPCOMPAT = 0x3,
+                SIATTRIBFLAGS_MASK = 0x3,
+                SIATTRIBFLAGS_ALLITEMS = 0x4000
+            }
+
+            [ComImport()]
+            [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            [Guid("b63ea76d-1f85-456f-a19c-48159efa858b")]
+            public interface IShellItemArray
+            {
+                int BindToHandler(IntPtr pbc, ref Guid bhid, ref Guid riid, ref IntPtr ppvOut);
+                int GetPropertyStore(GETPROPERTYSTOREFLAGS flags, ref Guid riid, ref IntPtr ppv);
+                int GetPropertyDescriptionList(REFPROPERTYKEY keyType, ref Guid riid, ref IntPtr ppv);
+                int GetAttributes(SIATTRIBFLAGS AttribFlags, int sfgaoMask, ref int psfgaoAttribs);
+                int GetCount(ref int pdwNumItems);
+                int GetItemAt(int dwIndex, ref IShellItem ppsi);
+                int EnumItems(ref IntPtr ppenumShellItems);
+            }
+
+
+
+            [DllImport("Shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern int SHCreateShellItemArrayFromShellItem(IShellItem psi, [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid, out IShellItemArray ppv);
+
+
+            [Flags]
+            public enum ASSOC_FILTER
+            {
+                ASSOC_FILTER_NONE = 0x00000000,
+                ASSOC_FILTER_RECOMMENDED = 0x00000001
+            }
+
+            [DllImport("Shell32", EntryPoint = "SHAssocEnumHandlers", PreserveSig = false)]
+            public extern static void SHAssocEnumHandlers([MarshalAs(UnmanagedType.LPWStr)] string pszExtra, ASSOC_FILTER afFilter, [Out] out IntPtr ppEnumHandler);
+
+            // IEnumAssocHandlers
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Unicode)]
+            internal delegate int FuncNext(IntPtr refer, int celt, [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Interface, SizeParamIndex = 1)] IntPtr[] rgelt, [Out] out int pceltFetched);
+
+            // IAssocHandler
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Unicode)]
+            internal delegate int FuncGetName(IntPtr refer, out IntPtr ppsz);
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Unicode)]
+            internal delegate int FuncGetUiName(IntPtr refer, out IntPtr ppsz);
+
+
+
+            [DllImport("shlwapi.dll", BestFitMapping = false, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true, ThrowOnUnmappableChar = true)]
+            internal static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
+
+
+            [DllImport("Shlwapi.dll", EntryPoint = "AssocQueryStringW", CharSet = CharSet.Auto, ExactSpelling = true, SetLastError = true, ThrowOnUnmappableChar = true)]
+            internal static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, [In][Out] ref uint pcchOut);
+
+
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+            internal static extern void SHEvaluateSystemCommandTemplate(
+               string template,
+               [Out] out string application,
+               [Out] out string commandLine,
+               [Out] out string parameters);
+
+
             [DllImport("kernel32.dll", SetLastError = true)]
             internal static extern bool GetFileInformationByHandleEx(SafeFileHandle hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, out FILE_STANDARD_INFO dirInfo, uint dwBufferSize);
 
@@ -674,9 +1128,24 @@ namespace SizeOnDisk.Shell
                 CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
             private static extern bool DestroyIcon(IntPtr hIcon);
 
-            public static BitmapSource ExtractIconFromDLL(string file, int number)
+            [DllImport("Shell32.dll")]
+            public static extern int ExtractIconEx(
+    string libName,
+    int iconIndex,
+    IntPtr[] largeIcon,
+    IntPtr[] smallIcon,
+    uint nIcons
+);
+
+            public static BitmapSource ExtractIconFromDLL(string file, int index)
             {
-                System.IntPtr hIcon = ExtractIcon(Process.GetCurrentProcess().Handle, file, number);
+                IntPtr[] handles = new IntPtr[1];
+                System.IntPtr hIcon = IntPtr.Zero;
+
+                if (SafeNativeMethods.ExtractIconEx(file, index, null, handles, 1) > 0)
+                    hIcon = handles[0];
+
+                //System.IntPtr hIcon = ExtractIcon(Process.GetCurrentProcess().Handle, file, number);
                 if (hIcon == IntPtr.Zero)
                 {
                     // extraction error
@@ -708,7 +1177,6 @@ namespace SizeOnDisk.Shell
                     DestroyIcon(hIcon);
                 }
             }
-
 
 
             [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]

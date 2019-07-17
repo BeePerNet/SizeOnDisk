@@ -1,4 +1,5 @@
 ﻿using SizeOnDisk.Properties;
+using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
 using System.Threading;
@@ -14,6 +15,10 @@ namespace SizeOnDisk
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+
+            //ShellHelper.Test();
+            //string text = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.DefaultIcon, "jpegfile");
+
             /*bool usingDarkTheme = false;
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
             {

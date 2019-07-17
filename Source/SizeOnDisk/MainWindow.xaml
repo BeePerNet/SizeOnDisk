@@ -57,28 +57,7 @@
             <Setter Property="Margin" Value="3,0,3,1" />
         </Style>
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
-                     ItemsSource="{Binding FileCommands}">
-            <ContextMenu.ItemContainerStyle>
-                <Style TargetType="{x:Type MenuItem}">
-                    <Setter Property="cmd:CommandBehavior.Command" Value="{Binding}" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Converter={StaticResource ObjectToTypeStringConverter}}" Value="ParentCommand">
-                            <Setter Property="ItemsSource" Value="{Binding Childs}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Text}" Value="-">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <Separator/>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ContextMenu.ItemContainerStyle>
-        </ContextMenu>
-
+                     ItemsSource="{Binding FileCommands}" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>

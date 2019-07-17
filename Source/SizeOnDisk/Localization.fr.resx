@@ -348,8 +348,8 @@
   <data name="UISizeFormatType" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
-  <data name="Attributes" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  <data name="Attributes" xml:space="preserve">
+    <value>Attributs</value>
   </data>
   <data name="Extension" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
@@ -384,7 +384,10 @@
   <data name="PermanentDeleteKey" xml:space="preserve">
     <value>Maj+Suppr</value>
   </data>
-  <data name="Attributes" xml:space="preserve">
-    <value>Attributs</value>
+  <data name="Play" xml:space="preserve">
+    <value>Lire</value>
+  </data>
+  <data name="PrintTo" xml:space="preserve">
+    <value>Imprimer vers</value>
   </data>
 </root>

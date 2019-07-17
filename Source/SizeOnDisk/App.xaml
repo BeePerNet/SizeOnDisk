@@ -5,6 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/WPFByYourCommand;component/Themes/Generic.xaml" />
                 <!--ResourceDictionary Source="/PresentationFramework.Royale, Version=4.0.0.0,
                        Culture=neutral, PublicKeyToken=31bf3856ad364e35,
                        ProcessorArchitecture=MSIL;component/themes/Royale.normalcolor.xaml" /-->

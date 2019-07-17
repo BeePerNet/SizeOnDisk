@@ -352,6 +352,24 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Play.
+        /// </summary>
+        public static string Play {
+            get {
+                return ResourceManager.GetString("Play", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Print to.
+        /// </summary>
+        public static string PrintTo {
+            get {
+                return ResourceManager.GetString("PrintTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Ready.
         /// </summary>
         public static string Ready {

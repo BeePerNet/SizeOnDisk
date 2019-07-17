@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -342,14 +343,57 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Commands
 
+        private bool CanExecuteCommand(DirectCommand command, object parameter)
+        {
+            return !string.IsNullOrEmpty(command.Tag);
+        }
+
         private void ExecuteCommand(DirectCommand command, object parameter)
         {
-            string cmd = command.Name;
+            new Task(() =>
+            {
+                if (command.Tag.StartsWith("Id:"))
+                {
+                    string cmd = command.Tag.Substring(3);
+                    //ShellHelper.Activate(cmd, this.Path);
+                    ShellHelper.Activate(cmd, this.Path, command.Name);
+                }
+                else
+                {
+                    string cmd = command.Tag;
+                    string parameters = string.Empty;
+                    int pos = 1;
+                    if (cmd.StartsWith("\"") && cmd.Count(T => T == '\"') > 1)
+                    {
+                        while (pos < cmd.Length)
+                        {
+                            pos = cmd.IndexOf('\"', pos);
+                            if (pos < 0 || pos >= cmd.Length)
+                                pos = cmd.Length;
+                            else if (cmd[pos + 1] != '\"')
+                            {
+                                parameters = cmd.Substring(pos + 1);
+                                cmd = cmd.Substring(0, pos + 1);
+                                pos = cmd.Length;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        pos = cmd.IndexOf(' ');
+                        if (pos > 0 && pos < cmd.Length)
+                        {
+                            parameters = cmd.Substring(pos + 1);
+                            cmd = cmd.Substring(0, pos);
+                        }
+                    }
 
-            if (cmd.Contains("%1"))
-                cmd = cmd.Replace("%1", this.Path);
+                    if (parameters.Contains("%1"))
+                        parameters = parameters.Replace("%1", this.Path);
 
-            ShellHelper.ShellExecute("cmd", null, cmd, new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
+                    ShellHelper.ShellExecute(cmd, null, parameters, new System.Windows.Interop.WindowInteropHelper(Application.Current.MainWindow).Handle);
+                }
+            }).Start();
         }
 
         public IList<CommandBinding> CommandsBindings { get; } = new List<CommandBinding>();
@@ -365,7 +409,6 @@ namespace SizeOnDisk.ViewModel
                 commands.Add(VMFile.PrintCommand);
                 commands.Add(SeparatorDummyCommand.Instance);
 
-
                 ShellHelper.ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
                 foreach (ShellHelper.ShellCommandSoftware soft in root.Softwares)
                 {
@@ -378,19 +421,21 @@ namespace SizeOnDisk.ViewModel
                         image.Width = 16;
                         image.Height = 16;
                         parent.Icon = image;
-                    }                    
+                    }
 
                     foreach (ShellHelper.ShellCommandVerb verb in soft.Verbs)
                     {
-                        DirectCommand cmd = new DirectCommand(verb.Command, verb.Verb, null, typeof(VMFile), ExecuteCommand);
-
-                        parent.Childs.Add(cmd);
+                        if (verb.Verb != "new")// && !string.IsNullOrEmpty(verb.Command))
+                        {
+                            DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&",""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
+                            cmd.Tag = verb.Command;
+                            parent.Childs.Add(cmd);
+                        }
                     }
                     //if (parent.Childs.Count == 1)
                     if (parent.Childs.Count > 0)
                         commands.Add(parent);
                 }
-
 
                 commands.Add(SeparatorDummyCommand.Instance);
                 commands.Add(VMFile.ExploreCommand);
