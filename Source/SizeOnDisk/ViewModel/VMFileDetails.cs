@@ -40,7 +40,7 @@ namespace SizeOnDisk.ViewModel
             this._LastWriteTime = fileInfo.LastWriteTime;
 
             this._icon = ShellHelper.GetIcon(_vmFile.Path, 16);
-            this._bigicon = ShellHelper.GetIcon(_vmFile.Path, 96);
+            this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
 
             new Task(() =>
             {
@@ -91,14 +91,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        BitmapSource _bigicon = null;
+        /*BitmapSource _bigicon = null;
         public BitmapSource BigIcon
         {
             get
             {
                 return _bigicon;
             }
-        }
+        }*/
 
         BitmapSource _thumbnail = null;
         //Seems to have problems with VOB

@@ -11,7 +11,7 @@
         lex:ResxLocalizationProvider.DefaultAssembly="SizeOnDisk"
         lex:ResxLocalizationProvider.DefaultDictionary="Localization"
         lex:LocalizeDictionary.DesignCulture="fr"
-        cmd:CommandEx.Context="{Binding}"
+        cmd:CommandBehavior.Context="{Binding}"
         Height="500"
         Width="850"
         Title="{Binding Path=SelectedValue, StringFormat=SizeOnDisk - \{0\}, ElementName=treeView}"
@@ -30,6 +30,7 @@
         <cmd:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <cmd:IsEqualConverter x:Key="IsEqualConverter" />
         <cmd:IsNotEqualConverter x:Key="IsNotEqualConverter" />
+        <cmd:ObjectToTypeStringConverter x:Key="ObjectToTypeStringConverter" />
         <conv:IsRunningConverter x:Key="IsRunningConverter" />
         <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
@@ -56,23 +57,28 @@
             <Setter Property="Margin" Value="3,0,3,1" />
         </Style>
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
-                     ItemsSource="{Binding Commands}"
-                     UsesItemContainerTemplate="True"
-                     ItemContainerTemplateSelector="{StaticResource menuItemSelector}">
-            <ContextMenu.Resources>
-                <ResourceDictionary>
-                    <DataTemplate x:Key="{x:Type cmd:CommandEx}" DataType="{x:Type cmd:CommandEx}">
-                        <MenuItem cmd:CommandExLoc.Command="{Binding}" />
-                    </DataTemplate>
-                    <HierarchicalDataTemplate x:Key="{x:Type cmd:ParentCommandEx}" DataType="{x:Type cmd:ParentCommandEx}" ItemsSource="{Binding Childs}">
-                        <MenuItem cmd:CommandExLoc.Command="{Binding}" UsesItemContainerTemplate ="true" ItemContainerTemplateSelector="{StaticResource menuItemSelector}" />
-                    </HierarchicalDataTemplate>
-                    <DataTemplate x:Key="{x:Type cmd:SeparatorDummyCommand}" DataType="{x:Type cmd:SeparatorDummyCommand}">
-                        <Separator />
-                    </DataTemplate>
-                </ResourceDictionary>
-            </ContextMenu.Resources>
+                     ItemsSource="{Binding FileCommands}">
+            <ContextMenu.ItemContainerStyle>
+                <Style TargetType="{x:Type MenuItem}">
+                    <Setter Property="cmd:CommandBehavior.Command" Value="{Binding}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Converter={StaticResource ObjectToTypeStringConverter}}" Value="ParentCommand">
+                            <Setter Property="ItemsSource" Value="{Binding Childs}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Text}" Value="-">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Separator/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContextMenu.ItemContainerStyle>
         </ContextMenu>
+
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -82,10 +88,10 @@
         </Grid.RowDefinitions>
         <ToolBarTray  Grid.Row="0">
             <ToolBar>
-                <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.OpenFolderCommand" Margin="2" />
-                <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.RefreshCommand" Margin="2" />
-                <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.StopCommand" Margin="2" />
-                <Button cmd:CommandExLoc.Command="vm:VMRootHierarchy.CloseCommand" Margin="2" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Margin="2" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.RefreshCommand}" Margin="2" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.StopCommand}" Margin="2" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.CloseCommand}" Margin="2" />
                 <Separator />
                 <ToggleButton ToolTip="Details view"
                               Margin="2"
@@ -205,7 +211,7 @@
                                 <RowDefinition SharedSizeGroup="Icons" MinHeight="96" />
                                 <RowDefinition SharedSizeGroup="Names" />
                             </Grid.RowDefinitions>
-                            <Canvas Margin="0" Width="96" Height="96" VerticalAlignment="Center" HorizontalAlignment="Center" Canvas.ZIndex="100">
+                            <!--Canvas Margin="0" Width="96" Height="96" VerticalAlignment="Center" HorizontalAlignment="Center" Canvas.ZIndex="100">
                                 <cmd:AutoDisablingImage Margin="0" Canvas.Right="0" Canvas.Bottom="0" Source="{Binding Details.BigIcon}" x:Name="BigIcon" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}">
                                     <cmd:AutoDisablingImage.Style>
                                         <Style TargetType="cmd:AutoDisablingImage">
@@ -214,19 +220,17 @@
                                                     <DataTrigger.EnterActions>
                                                         <BeginStoryboard>
                                                             <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetProperty="Width" From="96" To="32" Duration="0:0:2" />
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="96" To="32" Duration="0:0:2" />
-                                                                <DoubleAnimation Storyboard.TargetProperty="(Canvas.Right)" From="0" To="-2" Duration="0:0:2" />
-                                                                <DoubleAnimation Storyboard.TargetProperty="(Canvas.Bottom)" From="0" To="-2" Duration="0:0:2" />
+                                                                <DoubleAnimation Storyboard.TargetProperty="Width" From="96" To="40" Duration="0:0:2" />
+                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="96" To="40" Duration="0:0:2" />
                                                             </Storyboard>
                                                         </BeginStoryboard>
                                                     </DataTrigger.EnterActions>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </cmd:AutoDisablingImage.Style>
+                                    </>
                                 </cmd:AutoDisablingImage>
-                            </Canvas>
+                            </-->
                             <cmd:AutoDisablingImage Margin="0" Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
                         </Grid>

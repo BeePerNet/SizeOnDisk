@@ -5,23 +5,24 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using WPFByYourCommand;
 using WPFByYourCommand.Commands;
 
 namespace SizeOnDisk.ViewModel
 {
     public class VMFile : CommandViewModel
     {
-        public static readonly CommandEx OpenCommand = new CommandEx("open", "PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
-        public static readonly CommandEx EditCommand = new CommandEx("edit", "Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "EditKey"));
-        public static readonly CommandEx OpenAsCommand = new CommandEx("openas", "OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "OpenAsKey"));
-        public static readonly CommandEx PrintCommand = new CommandEx("print", "PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
-        public static readonly CommandEx ExploreCommand = new CommandEx("explore", "Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Folder.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
-        public static readonly CommandEx FindCommand = new CommandEx("find", "PresentationCore:ExceptionStringTable:FindText", "pack://application:,,,/SizeOnDisk;component/Icons/SearchFolderHS.png", typeof(VMFile), new KeyGesture(Key.F, ModifierKeys.Control, "PresentationCore:ExceptionStringTable:FindKeyDisplayString"));
-        public static readonly CommandEx DeleteCommand = new CommandEx("delete", "PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin_Empty.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
-        public static readonly CommandEx PermanentDeleteCommand = new CommandEx("permanentdelete", "PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "PermanentDeleteKey"));
-        public static readonly CommandEx PropertiesCommand = new CommandEx("properties", "PresentationCore:ExceptionStringTable:PropertiesText", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
+        public static readonly RoutedCommandEx OpenCommand = new RoutedCommandEx("open", "loc:PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
+        public static readonly RoutedCommandEx EditCommand = new RoutedCommandEx("edit", "loc:Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "loc:EditKey"));
+        public static readonly RoutedCommandEx OpenAsCommand = new RoutedCommandEx("openas", "loc:OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "loc:OpenAsKey"));
+        public static readonly RoutedCommandEx PrintCommand = new RoutedCommandEx("print", "loc:PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
+        public static readonly RoutedCommandEx ExploreCommand = new RoutedCommandEx("explore", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Folder.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
+        public static readonly RoutedCommandEx FindCommand = new RoutedCommandEx("find", "loc:PresentationCore:ExceptionStringTable:FindText", "pack://application:,,,/SizeOnDisk;component/Icons/SearchFolderHS.png", typeof(VMFile), new KeyGesture(Key.F, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:FindKeyDisplayString"));
+        public static readonly RoutedCommandEx DeleteCommand = new RoutedCommandEx("delete", "loc:PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin_Empty.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
+        public static readonly RoutedCommandEx PermanentDeleteCommand = new RoutedCommandEx("permanentdelete", "loc:PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "loc:PermanentDeleteKey"));
+        public static readonly RoutedCommandEx PropertiesCommand = new RoutedCommandEx("properties", "loc:PresentationCore:ExceptionStringTable:PropertiesText", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
 
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -341,8 +342,19 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Commands
 
+        private void ExecuteCommand(DirectCommand command, object parameter)
+        {
+            string cmd = command.Name;
 
-        public IEnumerable<ICommand> Commands
+            if (cmd.Contains("%1"))
+                cmd = cmd.Replace("%1", this.Path);
+
+            ShellHelper.ShellExecute("cmd", null, cmd, new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
+        }
+
+        public IList<CommandBinding> CommandsBindings { get; } = new List<CommandBinding>();
+
+        public IEnumerable<ICommand> FileCommands
         {
             get
             {
@@ -354,7 +366,30 @@ namespace SizeOnDisk.ViewModel
                 commands.Add(SeparatorDummyCommand.Instance);
 
 
+                ShellHelper.ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
+                foreach (ShellHelper.ShellCommandSoftware soft in root.Softwares)
+                {
+                    ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
 
+                    if (soft.Icon != null)
+                    {
+                        Image image = new Image();
+                        image.Source = soft.Icon;
+                        image.Width = 16;
+                        image.Height = 16;
+                        parent.Icon = image;
+                    }                    
+
+                    foreach (ShellHelper.ShellCommandVerb verb in soft.Verbs)
+                    {
+                        DirectCommand cmd = new DirectCommand(verb.Command, verb.Verb, null, typeof(VMFile), ExecuteCommand);
+
+                        parent.Childs.Add(cmd);
+                    }
+                    //if (parent.Childs.Count == 1)
+                    if (parent.Childs.Count > 0)
+                        commands.Add(parent);
+                }
 
 
                 commands.Add(SeparatorDummyCommand.Instance);

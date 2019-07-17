@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
+using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -66,6 +69,8 @@ namespace SizeOnDisk.Shell
 
         public class ShellCommandRoot
         {
+            public string ContentType;
+            public string PerceivedType;
             public ShellCommandSoftware Default;
             public IList<ShellCommandSoftware> Softwares = new List<ShellCommandSoftware>();
         }
@@ -74,6 +79,7 @@ namespace SizeOnDisk.Shell
         {
             public string Name;
             public string Id;
+            public BitmapSource Icon;
             public ShellCommandVerb Default;
             public IList<ShellCommandVerb> Verbs = new List<ShellCommandVerb>();
         }
@@ -84,24 +90,123 @@ namespace SizeOnDisk.Shell
             public string Command;
         }
 
+
+        private static ShellCommandVerb GetVerb(RegistryKey verbkey, string id)
+        {
+            ShellCommandVerb verb = new ShellCommandVerb();
+            verb.Verb = id;
+            RegistryKey cmd = verbkey.OpenSubKey("command");
+            if (cmd != null)
+            {
+                verb.Command = cmd.GetValue(string.Empty, string.Empty).ToString();
+            }
+            return verb;
+        }
+
+
+        private static ShellCommandSoftware GetSoftware(RegistryKey appkey, string id)
+        {
+            string application = appkey.GetValue(string.Empty, string.Empty).ToString();
+
+            ShellCommandSoftware soft = new ShellCommandSoftware();
+            soft.Id = id;
+
+            string[] values = appkey.GetValue("FriendlyTypeName", string.Empty).ToString().Split(',');
+            if (values.Length == 2)
+            {
+                soft.Name = SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1]));
+            }
+            RegistryKey subkey = appkey.OpenSubKey("DefaultIcon");
+            if (subkey != null)
+            {
+                values = subkey.GetValue(string.Empty, string.Empty).ToString().Split(',');
+                if (values.Length == 2)
+                {
+                    soft.Icon = SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                }
+            }
+            subkey = appkey.OpenSubKey("Application");
+            if (subkey != null)
+            {
+                string value = subkey.GetValue(string.Empty, string.Empty).ToString();
+                if (values.Length == 2)
+                {
+                    soft.Icon = SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                }
+            }
+            subkey = appkey.OpenSubKey("Shell");
+            if (subkey != null)
+            {
+                string defaultverb = subkey.GetValue(string.Empty, string.Empty).ToString();
+                string[] appverbs = subkey.GetSubKeyNames();
+                foreach (string appverb in appverbs)
+                {
+                    RegistryKey verbkey = subkey.OpenSubKey(appverb);
+                    ShellCommandVerb verb = GetVerb(verbkey, appverb);
+                    soft.Verbs.Add(verb);
+                    if (defaultverb == appverb)
+                        soft.Default = verb;
+                }
+            }
+            if (string.IsNullOrEmpty(soft.Name))
+                soft.Name = id;
+
+            return soft;
+        }
+
+
+
+
         public static ShellCommandRoot GetShellCommands(string path, bool isDirectory)
         {
             ShellCommandRoot result = new ShellCommandRoot();
             if (isDirectory)
             {
-                result.Default = new ShellCommandSoftware();
-                result.Softwares.Add(result.Default);
-                result.Default.Id = "Directory";
-                //result.Default.Name = IOHelper.;
+                RegistryKey appkey = Registry.ClassesRoot.OpenSubKey("Directory");
+                if (appkey != null)
+                {
+                    ShellCommandSoftware soft = GetSoftware(appkey, "Directory");
+                    result.Softwares.Add(soft);
+                    result.Default = soft;
+                }
+            }
+            else
+            {
+                string ext = Path.GetExtension(path);
+                RegistryKey key = Registry.ClassesRoot.OpenSubKey(ext);
+                if (key != null)
+                {
+                    result.ContentType = key.GetValue("Content Type", string.Empty).ToString();
+                    result.PerceivedType = key.GetValue("PerceivedType", string.Empty).ToString();
 
+                    string defaultApp = key.GetValue(string.Empty, string.Empty).ToString();
+                    key = key.OpenSubKey("OpenWithProgids");
+                    string[] subvalues = new string[] { };
+                    if (key == null)
+                        subvalues = new string[] { defaultApp };
+                    else
+                        subvalues = key.GetValueNames();
+                    foreach (string subkey in subvalues)
+                    {
+                        //Comme folder à vérifier comment simplifier
+                        RegistryKey appkey = Registry.ClassesRoot.OpenSubKey(subkey);
+                        if (appkey != null)
+                        {
+                            string application = appkey.GetValue(string.Empty, string.Empty).ToString();
 
-
-
-
-
+                            ShellCommandSoftware soft = GetSoftware(appkey, subkey);
+                            result.Softwares.Add(soft);
+                            if (application == subkey)
+                            {
+                                result.Default = soft;
+                            }
+                        }
+                    }
+                }
             }
             return result;
         }
+
 
 
 
@@ -230,6 +335,13 @@ namespace SizeOnDisk.Shell
             return result;
         }
 
+        public static void ShellExecute(string fileName, IntPtr ownerWindow)
+        {
+            ShellExecute(fileName, null, null, ownerWindow);
+        }
+
+
+
         public static void ShellExecute(string fileName, string verb, string parameters, IntPtr ownerWindow)
         {
             SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO();
@@ -252,7 +364,7 @@ namespace SizeOnDisk.Shell
 
         public static void ShellExecute(string fileName, string verb, IntPtr ownerWindow)
         {
-            ShellExecute(fileName, verb, string.Empty, ownerWindow);
+            ShellExecute(fileName, verb, null, ownerWindow);
         }
 
         /*public static BitmapSource GetIconAsync(string path, int size = 16, bool thumbnail = false)
@@ -556,11 +668,67 @@ namespace SizeOnDisk.Shell
 
             [DllImport("shell32.dll", EntryPoint = "ExtractIconW",
                 CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
-            private static extern IntPtr ExtractIcon(int hInst, string lpszExeFileName, uint nIconIndex);
+            private static extern IntPtr ExtractIcon(IntPtr hInst, string lpszExeFileName, int nIconIndex);
 
-            [DllImport("shell32.dll", EntryPoint = "DestroyIcon",
+            [DllImport("user32.dll", EntryPoint = "DestroyIcon",
                 CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
             private static extern bool DestroyIcon(IntPtr hIcon);
+
+            public static BitmapSource ExtractIconFromDLL(string file, int number)
+            {
+                System.IntPtr hIcon = ExtractIcon(Process.GetCurrentProcess().Handle, file, number);
+                if (hIcon == IntPtr.Zero)
+                {
+                    // extraction error
+                    return null;
+                }
+                try
+                {
+                    Icon icon = Icon.FromHandle(hIcon);
+
+                    Bitmap bitmap = icon.ToBitmap();
+                    IntPtr hBitmap = bitmap.GetHbitmap();
+
+                    BitmapSource wpfBitmap = Imaging.CreateBitmapSourceFromHBitmap(
+                        hBitmap,
+                        IntPtr.Zero,
+                        Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+
+                    if (!DeleteObject(hBitmap))
+                    {
+                        throw new Win32Exception();
+                    }
+
+                    return wpfBitmap;                    //returnValue.Freeze();
+                }
+                finally
+                {
+                    // Release the handle
+                    DestroyIcon(hIcon);
+                }
+            }
+
+
+
+            [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+            private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            private static extern int LoadString(IntPtr hInstance, int ID, StringBuilder lpBuffer, int nBufferMax);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            private static extern bool FreeLibrary(IntPtr hModule);
+
+            public static string ExtractStringFromDLL(string file, int number)
+            {
+                IntPtr lib = LoadLibrary(file);
+                StringBuilder result = new StringBuilder(256);
+                LoadString(lib, number, result, result.Capacity);
+                FreeLibrary(lib);
+                return result.ToString();
+            }
 
             [ComImport()]
             [Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b")]

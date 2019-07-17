@@ -2,12 +2,14 @@
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Threading;
 using WPFByYourCommand;
 using WPFByYourCommand.Observables;
@@ -86,14 +88,14 @@ namespace SizeOnDisk.ViewModel
             FolderCount = null;
             _Dispatcher = dispatcher;
 
-            this.Childs = new DispatchObservableCollection<VMFile>();
-            this.Folders = new DispatchObservableCollection<VMFolder>();
+            this.Childs = new ObservableCollection<VMFile>();
+            this.Folders = new ObservableCollection<VMFolder>();
 
-            /*dispatcher.BeginInvoke(new Action(() =>
+            dispatcher.BeginInvoke(new Action(() =>
             {
                 BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
                 BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
-            }), DispatcherPriority.DataBind);*/
+            }), DispatcherPriority.DataBind);
         }
 
         [DesignOnly(true)]
@@ -103,17 +105,17 @@ namespace SizeOnDisk.ViewModel
             FileCount = null;
             FolderCount = null;
 
-            this.Childs = new DispatchObservableCollection<VMFile>();
-            this.Folders = new DispatchObservableCollection<VMFolder>();
+            this.Childs = new ObservableCollection<VMFile>();
+            this.Folders = new ObservableCollection<VMFolder>();
         }
 
         #endregion constructor
 
         #region properties
 
-        public DispatchObservableCollection<VMFile> Childs { get; }
+        public ObservableCollection<VMFile> Childs { get; }
 
-        public DispatchObservableCollection<VMFolder> Folders { get; }
+        public ObservableCollection<VMFolder> Folders { get; }
 
         private bool _isExpanded;
 
