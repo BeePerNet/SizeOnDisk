@@ -2,6 +2,7 @@
 using Microsoft.Win32.SafeHandles;
 using SizeOnDisk.Utilities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -25,7 +26,7 @@ namespace SizeOnDisk.Shell
 {
     public static class ShellHelper
     {
-        private static Dictionary<string, string> associations = new Dictionary<string, string>();
+        private static ConcurrentDictionary<string, string> associations = new ConcurrentDictionary<string, string>();
         private static string currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         private static object _lock = new object();
 
@@ -56,22 +57,21 @@ namespace SizeOnDisk.Shell
 
         public static string GetFriendlyName(string extension)
         {
-            lock (_lock)
+            if (string.IsNullOrWhiteSpace(extension))
+                return string.Empty;
+            //return ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyDocName, extension);
+            if (currentCulture != CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
             {
-                if (currentCulture != CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
-                {
-                    associations = new Dictionary<string, string>();
-                    currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-                }
-
-                if (string.IsNullOrWhiteSpace(extension))
-                    return string.Empty;
+                associations = new ConcurrentDictionary<string, string>();
+                currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            }
+            if (!associations.ContainsKey(extension))
+            {
+                string fileType = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyDocName, extension);
                 if (!associations.ContainsKey(extension))
                 {
-                    string fileType = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyDocName, extension);
-                    if (!associations.ContainsKey(extension))
-                        // Cache the association so we don't traverse the registry again
-                        associations.Add(extension, fileType);
+                    // Cache the association so we don't traverse the registry again
+                    while (!associations.TryAdd(extension, fileType)) { }
                 }
             }
             return associations[extension];

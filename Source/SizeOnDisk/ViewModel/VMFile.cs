@@ -350,50 +350,47 @@ namespace SizeOnDisk.ViewModel
 
         private void ExecuteCommand(DirectCommand command, object parameter)
         {
-            new Task(() =>
+            if (command.Tag.StartsWith("Id:"))
             {
-                if (command.Tag.StartsWith("Id:"))
+                string cmd = command.Tag.Substring(3);
+                //ShellHelper.Activate(cmd, this.Path);
+                ShellHelper.Activate(cmd, this.Path, command.Name);
+            }
+            else
+            {
+                string cmd = command.Tag;
+                string parameters = string.Empty;
+                int pos = 1;
+                if (cmd.StartsWith("\"") && cmd.Count(T => T == '\"') > 1)
                 {
-                    string cmd = command.Tag.Substring(3);
-                    //ShellHelper.Activate(cmd, this.Path);
-                    ShellHelper.Activate(cmd, this.Path, command.Name);
+                    while (pos < cmd.Length)
+                    {
+                        pos = cmd.IndexOf('\"', pos);
+                        if (pos < 0 || pos >= cmd.Length)
+                            pos = cmd.Length;
+                        else if (cmd[pos + 1] != '\"')
+                        {
+                            parameters = cmd.Substring(pos + 1);
+                            cmd = cmd.Substring(0, pos + 1);
+                            pos = cmd.Length;
+                        }
+                    }
                 }
                 else
                 {
-                    string cmd = command.Tag;
-                    string parameters = string.Empty;
-                    int pos = 1;
-                    if (cmd.StartsWith("\"") && cmd.Count(T => T == '\"') > 1)
+                    pos = cmd.IndexOf(' ');
+                    if (pos > 0 && pos < cmd.Length)
                     {
-                        while (pos < cmd.Length)
-                        {
-                            pos = cmd.IndexOf('\"', pos);
-                            if (pos < 0 || pos >= cmd.Length)
-                                pos = cmd.Length;
-                            else if (cmd[pos + 1] != '\"')
-                            {
-                                parameters = cmd.Substring(pos + 1);
-                                cmd = cmd.Substring(0, pos + 1);
-                                pos = cmd.Length;
-                            }
-                        }
+                        parameters = cmd.Substring(pos + 1);
+                        cmd = cmd.Substring(0, pos);
                     }
-                    else
-                    {
-                        pos = cmd.IndexOf(' ');
-                        if (pos > 0 && pos < cmd.Length)
-                        {
-                            parameters = cmd.Substring(pos + 1);
-                            cmd = cmd.Substring(0, pos);
-                        }
-                    }
-
-                    if (parameters.Contains("%1"))
-                        parameters = parameters.Replace("%1", this.Path);
-
-                    ShellHelper.ShellExecute(cmd, null, parameters, new System.Windows.Interop.WindowInteropHelper(Application.Current.MainWindow).Handle);
                 }
-            }).Start();
+
+                if (parameters.Contains("%1"))
+                    parameters = parameters.Replace("%1", this.Path);
+
+                ShellHelper.ShellExecute(cmd, null, parameters, new System.Windows.Interop.WindowInteropHelper(Application.Current.MainWindow).Handle);
+            }
         }
 
         public IList<CommandBinding> CommandsBindings { get; } = new List<CommandBinding>();
@@ -427,7 +424,7 @@ namespace SizeOnDisk.ViewModel
                     {
                         if (verb.Verb != "new")// && !string.IsNullOrEmpty(verb.Command))
                         {
-                            DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&",""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
+                            DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
                             cmd.Tag = verb.Command;
                             parent.Childs.Add(cmd);
                         }
