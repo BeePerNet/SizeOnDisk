@@ -16,11 +16,9 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using System.Windows.Resources;
 using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.Shell
@@ -125,7 +123,9 @@ namespace SizeOnDisk.Shell
                             {
                                 values = outBuff.ToString().Split(',');
                                 if (values != null && values.Length == 2)
+                                {
                                     return SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                                }
                             }
                             else
                             {
@@ -134,7 +134,9 @@ namespace SizeOnDisk.Shell
                         }
                     }
                     else
+                    {
                         return SafeNativeMethods.ExtractIconFromDLL(values[0], 0);
+                    }
                 }
             }
             return null;
@@ -172,7 +174,9 @@ namespace SizeOnDisk.Shell
                         }
                     }
                     else
+                    {
                         return SafeNativeMethods.ExtractStringFromDLL(values[0], 0);
+                    }
                 }
             }
             return null;
@@ -1139,6 +1143,9 @@ namespace SizeOnDisk.Shell
 
             public static BitmapSource ExtractIconFromDLL(string file, int index)
             {
+                if (file.StartsWith("@%"))
+                    file = file.Substring(1);
+
                 IntPtr[] handles = new IntPtr[1];
                 System.IntPtr hIcon = IntPtr.Zero;
 
