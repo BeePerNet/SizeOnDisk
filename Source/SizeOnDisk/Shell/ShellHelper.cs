@@ -115,7 +115,7 @@ namespace SizeOnDisk.Shell
                 else if (values != null && values.Length == 1)
                 {
                     string icon = values[0];
-                    if (values[0].StartsWith("@"))
+                    if (values[0].StartsWith("@{"))
                     {
                         StringBuilder outBuff = new StringBuilder(1024);
                         if (SafeNativeMethods.SHLoadIndirectString(icon, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
@@ -153,7 +153,7 @@ namespace SizeOnDisk.Shell
                 else if (values != null && values.Length == 1)
                 {
                     string text = values[0];
-                    if (values[0].StartsWith("@"))
+                    if (values[0].StartsWith("@{"))
                     {
                         StringBuilder outBuff = new StringBuilder(1024);
                         if (SafeNativeMethods.SHLoadIndirectString(text, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
@@ -1191,6 +1191,8 @@ namespace SizeOnDisk.Shell
 
             public static string ExtractStringFromDLL(string file, int number)
             {
+                if (file.StartsWith("@"))
+                    file = file.Substring(1);
                 IntPtr lib = LoadLibrary(file);
                 StringBuilder result = new StringBuilder(256);
                 LoadString(lib, number, result, result.Capacity);

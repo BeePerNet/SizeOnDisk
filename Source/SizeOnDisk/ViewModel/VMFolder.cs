@@ -248,7 +248,7 @@ namespace SizeOnDisk.ViewModel
                 {
 
                 }
-                catch (UnauthorizedAccessException ex)
+                catch (UnauthorizedAccessException)
                 {
                     this.IsProtected = true;
                 }
