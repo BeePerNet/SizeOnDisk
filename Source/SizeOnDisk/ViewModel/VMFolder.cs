@@ -11,8 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Threading;
-using WPFByYourCommand;
-using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {

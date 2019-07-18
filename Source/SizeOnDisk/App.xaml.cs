@@ -1,8 +1,6 @@
 ﻿using SizeOnDisk.Properties;
-using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
-using System.Threading;
 using System.Windows;
 
 namespace SizeOnDisk

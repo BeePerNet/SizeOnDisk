@@ -3,14 +3,11 @@ using SizeOnDisk.Utilities;
 using SizeOnDisk.ViewModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using WPFByYourCommand;
 using WPFByYourCommand.Commands;
 
 namespace SizeOnDisk
@@ -66,19 +63,6 @@ namespace SizeOnDisk
 
         private VMRootHierarchy _RootHierarchy;
         private Legend _Legend;
-
-        /// <summary>
-        /// When selection changed, scroll to the first item of the list
-        /// </summary>
-        private void _TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            /*IEditableCollectionView collection = CollectionViewSource.GetDefaultView(this.Listing.ItemsSource) as IEditableCollectionView;
-
-            if (collection != null && collection.IsEditingItem)
-            {
-                collection.CancelEdit();
-            }*/
-        }
 
         private void Selector_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

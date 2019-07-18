@@ -62,6 +62,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -119,7 +120,7 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="225" />
                 <ColumnDefinition Width="Auto" />
@@ -128,7 +129,6 @@
             <TreeView Name="treeView"
                       BorderThickness="1"
                       ItemsSource="{Binding Folders}"
-                      SelectedItemChanged="_TreeView_SelectedItemChanged"
                       ContextMenu="{StaticResource VMContextMenu}"
                       DisplayMemberPath="Name"
                       SelectedValuePath="Path"
@@ -190,26 +190,6 @@
                                 <RowDefinition SharedSizeGroup="Icons" MinHeight="96" />
                                 <RowDefinition SharedSizeGroup="Names" />
                             </Grid.RowDefinitions>
-                            <!--Canvas Margin="0" Width="96" Height="96" VerticalAlignment="Center" HorizontalAlignment="Center" Canvas.ZIndex="100">
-                                <cmd:AutoDisablingImage Margin="0" Canvas.Right="0" Canvas.Bottom="0" Source="{Binding Details.BigIcon}" x:Name="BigIcon" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}">
-                                    <cmd:AutoDisablingImage.Style>
-                                        <Style TargetType="cmd:AutoDisablingImage">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Details.Thumbnail, Converter={StaticResource IsEqualConverter}}" Value="False" >
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetProperty="Width" From="96" To="40" Duration="0:0:2" />
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="96" To="40" Duration="0:0:2" />
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </>
-                                </cmd:AutoDisablingImage>
-                            </-->
                             <cmd:AutoDisablingImage Margin="0" Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
                         </Grid>
@@ -297,7 +277,7 @@
             </DataGrid>
         </Grid>
         <StatusBar Name="StatusBar"
-                   Grid.Row="2">
+                   Grid.Row="3">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
