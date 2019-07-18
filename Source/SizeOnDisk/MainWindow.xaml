@@ -16,7 +16,6 @@
         Width="850"
         Title="{Binding Path=SelectedValue, StringFormat=SizeOnDisk - \{0\}, ElementName=treeView}"
         ResizeMode="CanResizeWithGrip"
-        WindowStartupLocation="CenterScreen"
         Closing="Window_Closing"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
         Loaded="Window_Loaded"
@@ -120,6 +119,7 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
+        <TextBox Grid.Row="1" Text="{Binding SelectedItem.Path, ElementName=Listing, Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="225" />
@@ -169,7 +169,7 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ContextMenu="{StaticResource VMContextMenu}"
                       Grid.IsSharedSizeScope="True"
-                      Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
+                      Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
                 <ListView.Resources>
                     <Style TargetType="ListViewItem">
                         <Setter Property="IsSelected" 
@@ -210,7 +210,7 @@
                       HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                       VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                       ClipboardCopyMode="IncludeHeader"
-                Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
                 <DataGrid.Resources>
                     <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
                         <Setter Property="TextAlignment" Value="Right" />

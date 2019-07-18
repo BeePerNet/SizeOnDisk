@@ -82,12 +82,7 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name, path)
         {
             this.clusterSize = clusterSize;
-            FileCount = null;
-            FolderCount = null;
             _Dispatcher = dispatcher;
-
-            this.Childs = new ObservableCollection<VMFile>();
-            this.Folders = new ObservableCollection<VMFolder>();
 
             dispatcher.BeginInvoke(new Action(() =>
             {
@@ -100,20 +95,15 @@ namespace SizeOnDisk.ViewModel
         internal VMFolder(VMFolder parent, string name)
             : base(parent, name)
         {
-            FileCount = null;
-            FolderCount = null;
-
-            this.Childs = new ObservableCollection<VMFile>();
-            this.Folders = new ObservableCollection<VMFolder>();
         }
 
         #endregion constructor
 
         #region properties
 
-        public ObservableCollection<VMFile> Childs { get; }
+        public ObservableCollection<VMFile> Childs { get; internal set; } = new ObservableCollection<VMFile>();
 
-        public ObservableCollection<VMFolder> Folders { get; }
+        public ObservableCollection<VMFolder> Folders { get; internal set; } = new ObservableCollection<VMFolder>();
 
         private bool _isExpanded;
 
@@ -198,58 +188,68 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        private object _Lock = new object();
-
         public void FillChildList()
         {
-            lock (_Lock)
+            ObservableCollection<VMFile> currentChilds = this.Childs;
+            ObservableCollection<VMFolder> currentFolders = this.Folders;
+            try
             {
-                try
+                /*string[] childs;
+                childs = Directory.GetDirectories(this.Path);
+                VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.clusterSize, this.Dispatcher));
+                childs = Directory.GetFiles(this.Path);
+                VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));*/
+                List<VMFile> tmpChilds = this.Childs.ToList();
+                if (this.Childs.Count == 0)
                 {
-                    /*string[] childs;
-                    childs = Directory.GetDirectories(this.Path);
-                    VMFolder.RefreshChildsList<VMFolder>(childs, this.Childs, (p, q) => new VMFolder(this, p, q, this.clusterSize, this.Dispatcher));
-                    childs = Directory.GetFiles(this.Path);
-                    VMFolder.RefreshChildsList<VMFile>(childs, this.Childs, (p, q) => new VMFile(this, p, q));*/
-                    List<VMFile> tmpChilds = this.Childs.ToList();
-                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
-                    VMFile found = null;
-                    foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.Filename))
+                    currentChilds = new ObservableCollection<VMFile>();
+                    currentFolders = new ObservableCollection<VMFolder>();
+                }
+                IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
+                VMFile found = null;
+                foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.Filename))
+                {
+                    found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.Filename);
+                    if (found == null)
                     {
-                        found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.Filename);
-                        if (found == null)
+                        if (fileInfo.IsFolder)
                         {
-                            if (fileInfo.IsFolder)
-                            {
-                                found = new VMFolder(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename), this.ClusterSize, this.Dispatcher);
-                                this.Folders.Add(found as VMFolder);
-                            }
-                            else
-                                found = new VMFile(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename));
-                            this.Childs.Add(found);
+                            found = new VMFolder(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename), this.ClusterSize, this.Dispatcher);
+                            currentFolders.Add(found as VMFolder);
                         }
                         else
-                        {
-                            tmpChilds.Remove(found);
-                        }
-                        found.Refresh(fileInfo);
+                            found = new VMFile(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename));
+                        currentChilds.Add(found);
                     }
-                    foreach (VMFile file in tmpChilds)
+                    else
                     {
-                        if (file is VMFolder)
-                            this.Folders.Remove(file as VMFolder);
-                        this.Childs.Remove(file);
+                        tmpChilds.Remove(found);
                     }
+                    found.Refresh(fileInfo);
                 }
-
-                catch (DirectoryNotFoundException)
+                foreach (VMFile file in tmpChilds)
                 {
+                    if (file is VMFolder)
+                        currentFolders.Remove(file as VMFolder);
+                    currentChilds.Remove(file);
+                }
+            }
 
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    this.IsProtected = true;
-                }
+            catch (DirectoryNotFoundException)
+            {
+
+            }
+            catch (UnauthorizedAccessException)
+            {
+                this.IsProtected = true;
+            }
+
+            if (this.Childs.Count == 0)
+            {
+                this.Folders = currentFolders;
+                this.OnPropertyChanged(nameof(this.Folders));
+                this.Childs = currentChilds;
+                this.OnPropertyChanged(nameof(this.Childs));
             }
         }
 

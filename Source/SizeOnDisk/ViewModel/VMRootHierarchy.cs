@@ -98,8 +98,8 @@ namespace SizeOnDisk.ViewModel
 
         internal void RefreshIsRunning()
         {
-            CommandManager.InvalidateRequerySuggested();
             this.OnPropertyChanged(nameof(IsRunning));
+            CommandManager.InvalidateRequerySuggested();
         }
 
         public static readonly RoutedCommandEx OpenFolderCommand = new RoutedCommandEx("openfolder", "loc:ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "loc:Insert"));

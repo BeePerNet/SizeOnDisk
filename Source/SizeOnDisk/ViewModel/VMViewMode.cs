@@ -2,7 +2,7 @@
 {
     public enum VMViewMode
     {
-        Details,
+        Details = 0,
         Tile
     }
 }
