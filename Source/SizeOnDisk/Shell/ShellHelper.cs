@@ -363,101 +363,6 @@ namespace SizeOnDisk.Shell
         }
 
 
-
-
-
-
-        public static IEnumerable<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> GetVerbs(string path, bool isDirectory)
-        {
-            List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)> verbs = new List<(string verb, string appid, string application, bool isdefaultapp, bool isdefaultverb)>();
-            string ext = Path.GetExtension(path);
-            if (isDirectory && string.IsNullOrEmpty(ext))
-            {
-                RegistryKey appkey = Registry.ClassesRoot.OpenSubKey("Directory");
-                if (appkey != null)
-                {
-                    string application = appkey.GetValue(string.Empty, string.Empty).ToString();
-                    if (application == string.Empty)
-                    {
-                        RegistryKey applicationkey = appkey.OpenSubKey("Application");
-                        if (applicationkey != null)
-                        {
-                            application = applicationkey.GetValue("AppUserModelID", string.Empty).ToString();
-                            if (application.Contains('!'))
-                            {
-                                string[] splits = application.Split('!');
-                                application = splits.Last();
-                            }
-                        }
-                    }
-                    appkey = appkey.OpenSubKey("Shell");
-                    if (appkey != null)
-                    {
-                        string defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
-                        if (appkey != null)
-                        {
-                            defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
-                            string[] appverbs = appkey.GetSubKeyNames();
-                            foreach (string appverb in appverbs)
-                            {
-                                verbs.Add((appverb, "Directory", application, false, defaultverb == appverb));
-                            }
-                        }
-                    }
-                }
-            }
-            if (!string.IsNullOrEmpty(ext))
-            {
-                RegistryKey key = Registry.ClassesRoot.OpenSubKey(ext);
-                if (key != null)
-                {
-                    string defaultApp = key.GetValue(string.Empty, string.Empty).ToString();
-                    key = key.OpenSubKey("OpenWithProgids");
-                    string[] subvalues = new string[] { };
-                    if (key == null)
-                        subvalues = new string[] { defaultApp };
-                    else
-                        subvalues = key.GetValueNames();
-                    foreach (string subkey in subvalues)
-                    {
-                        RegistryKey appkey = Registry.ClassesRoot.OpenSubKey(subkey);
-                        if (appkey != null)
-                        {
-                            string application = appkey.GetValue(string.Empty, string.Empty).ToString();
-                            if (application == string.Empty)
-                            {
-                                RegistryKey applicationkey = appkey.OpenSubKey("Application");
-                                if (applicationkey != null)
-                                {
-                                    application = applicationkey.GetValue("AppUserModelID", string.Empty).ToString();
-                                    if (application.Contains('!'))
-                                    {
-                                        string[] splits = application.Split('!');
-                                        application = splits.Last();
-                                    }
-                                }
-                            }
-                            appkey = appkey.OpenSubKey("Shell");
-                            if (appkey != null)
-                            {
-                                string defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
-                                if (appkey != null)
-                                {
-                                    defaultverb = appkey.GetValue(string.Empty, string.Empty).ToString();
-                                    string[] appverbs = appkey.GetSubKeyNames();
-                                    foreach (string appverb in appverbs)
-                                    {
-                                        verbs.Add((appverb, subkey, application, defaultApp == subkey, defaultverb == appverb));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return verbs;
-        }
-
         /*public static void Test()
 {
     List<(string, string)> items = new List<(string, string)>();
@@ -550,24 +455,6 @@ namespace SizeOnDisk.Shell
         }
 
         #region public functions
-
-        [SuppressMessage("Microsoft.Globalization", "CA1308")]
-        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Assertion)]
-        public static bool CanCallShellCommand(string fileName, string verb)
-        {
-            if (string.IsNullOrWhiteSpace(verb))
-                return false;
-            verb = verb.ToLowerInvariant();
-            ProcessStartInfo processStartInfo = new ProcessStartInfo();
-            processStartInfo.FileName = fileName;
-            bool result = processStartInfo.Verbs.SingleOrDefault(T => T.ToLowerInvariant() == verb) != null;
-            if (!result && verbReplacementList.ContainsKey(verb))
-            {
-                verb = verbReplacementList[verb];
-                result = processStartInfo.Verbs.SingleOrDefault(T => T.ToLowerInvariant() == verb) != null;
-            }
-            return result;
-        }
 
         public static void ShellExecute(string fileName, IntPtr ownerWindow)
         {

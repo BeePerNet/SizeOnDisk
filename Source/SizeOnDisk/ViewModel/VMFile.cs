@@ -284,12 +284,7 @@ namespace SizeOnDisk.ViewModel
                 e.CanExecute = true;
                 return;
             }
-            if (isFolder && file.IsProtected)
-            {
-                e.CanExecute = false;
-                return;
-            }
-            if (command == ExploreCommand || command == FindCommand)
+            if (command == ExploreCommand)
             {
                 e.CanExecute = true;
                 return;
@@ -299,22 +294,23 @@ namespace SizeOnDisk.ViewModel
                 e.CanExecute = false;
                 return;
             }
-            if (command == OpenAsCommand)
+            if (command == FindCommand || !isFolder)
             {
                 e.CanExecute = true;
                 return;
             }
-
+            if (command == OpenAsCommand || !isFolder)
+            {
+                e.CanExecute = true;
+                return;
+            }
             if (command == OpenCommand && string.IsNullOrWhiteSpace(System.IO.Path.GetExtension(file.Path)))
             {
                 e.CanExecute = false;
                 return;
             }
 
-            e.CanExecute = ShellHelper.GetVerbs(file.Path, file is VMFolder).Any(T => T.verb == command.Name);
-
-
-            //e.CanExecute = ShellHelper.CanCallShellCommand(file.Path, command.Name);
+            e.CanExecute = file.Verbs.Any(T => T == command.Name);
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]
@@ -336,7 +332,7 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 string path = file.Path;
-                if (e.Command == ExploreCommand && !isFolder)
+                if (e.Command == ExploreCommand || e.Command == FindCommand && !isFolder)
                     path = file.Parent.Path;
                 ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
             }
@@ -346,7 +342,7 @@ namespace SizeOnDisk.ViewModel
 
         private bool CanExecuteCommand(DirectCommand command, object parameter)
         {
-            return !string.IsNullOrEmpty(command.Tag);
+            return !this.IsProtected; //!string.IsNullOrEmpty(command.Tag);
         }
 
         private void ExecuteCommand(DirectCommand command, object parameter)
@@ -399,7 +395,8 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public IList<CommandBinding> CommandsBindings { get; } = new List<CommandBinding>();
+        private string[] _Verbs;
+        public string[] Verbs { get { return _Verbs; } set { SetProperty(ref _Verbs, value); } }
 
         public IEnumerable<ICommand> FileCommands
         {
@@ -413,6 +410,7 @@ namespace SizeOnDisk.ViewModel
                 commands.Add(SeparatorDummyCommand.Instance);
 
                 ShellHelper.ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
+                Verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
                 foreach (ShellHelper.ShellCommandSoftware soft in root.Softwares)
                 {
                     ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
