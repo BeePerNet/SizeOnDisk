@@ -314,7 +314,7 @@ namespace SizeOnDisk.ViewModel
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]
-        protected virtual void CallShellCommand(object sender, ExecutedRoutedEventArgs e)
+        private static void CallShellCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
@@ -332,7 +332,7 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 string path = file.Path;
-                if (e.Command == ExploreCommand || e.Command == FindCommand && !isFolder)
+                if ((e.Command == ExploreCommand || e.Command == FindCommand) && (!isFolder || file.IsProtected))
                     path = file.Parent.Path;
                 ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
             }
