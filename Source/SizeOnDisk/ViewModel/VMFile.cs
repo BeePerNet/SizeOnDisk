@@ -47,13 +47,6 @@ namespace SizeOnDisk.ViewModel
         #region fields
 
         private string _Name;
-
-        private long? _DiskSize = null;
-        private long? _FileSize = null;
-        private long? _FileCount = null;
-        private long? _FileTotal = 1;
-        private long? _FolderTotal = null;
-
         private bool _IsProtected = false;
 
         #endregion fields
@@ -110,22 +103,19 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public long? FileCount
+        private long? _FileSize = null;
+        private long? _DiskSize = null;
+
+        public virtual long? FileTotal
         {
-            get { return _FileCount; }
-            protected set { SetProperty(ref _FileCount, value); }
+            get { return 1; }
+            protected set { }
         }
 
-        public long? FileTotal
+        public virtual long? FolderTotal
         {
-            get { return _FileTotal; }
-            protected set { SetProperty(ref _FileTotal, value); }
-        }
-
-        public long? FolderTotal
-        {
-            get { return _FolderTotal; }
-            protected set { SetProperty(ref _FolderTotal, value); }
+            get { return null; }
+            protected set { }
         }
 
         public long? DiskSize
@@ -133,6 +123,7 @@ namespace SizeOnDisk.ViewModel
             get { return _DiskSize; }
             protected set { SetProperty(ref _DiskSize, value); }
         }
+
 
         public long? FileSize
         {

@@ -83,6 +83,7 @@ namespace SizeOnDisk.ViewModel
         {
             this.clusterSize = clusterSize;
             _Dispatcher = dispatcher;
+            FileTotal = null;
 
             dispatcher.BeginInvoke(new Action(() =>
             {
@@ -124,6 +125,51 @@ namespace SizeOnDisk.ViewModel
                 }
             }
         }
+
+
+
+        private long? _FileTotal = 1;
+        private long? _FolderTotal = null;
+
+        public long? FileCount
+        {
+            get { return this.Childs?.Count - this.Folders?.Count; }
+        }
+
+        public override long? FileTotal
+        {
+            get { return _FileTotal; }
+            protected set { SetProperty(ref _FileTotal, value); }
+        }
+
+        public override long? FolderTotal
+        {
+            get { return _FolderTotal; }
+            protected set { SetProperty(ref _FolderTotal, value); }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private bool _isTreeSelected;
 
@@ -170,9 +216,16 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshCount()
         {
-            if (Childs != null && Folders != null && !this.IsProtected)
+            this.OnPropertyChanged(nameof(this.FileCount));
+            if (this.IsProtected)
             {
-                this.FileCount = this.Childs?.Count - this.Folders?.Count;
+                this.FileTotal = null;
+                this.FolderTotal = null;
+                this.DiskSize = null;
+                this.FileSize = null;
+            }
+            else
+            {
                 this.FileTotal = this.Childs.Sum(T => T.FileTotal);
                 this.FolderTotal = this.Folders.Sum(T => T.FolderTotal) + this.Folders.Count;
                 this.DiskSize = this.Childs.Sum(T => T.DiskSize);
