@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -329,12 +330,13 @@ namespace SizeOnDisk.ViewModel
             if (command == null)
                 throw new ArgumentNullException("e", "Command is not RoutedCommand");
 
-            if (file is VMFolder && command == OpenCommand)
+            bool isFolder = file is VMFolder;
+            if (isFolder && command == OpenCommand)
                 ShellHelper.ShellExecute(file.Path, OpenCommand.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
             else
             {
                 string path = file.Path;
-                if (e.Command == ExploreCommand && !(file is VMFolder))
+                if (e.Command == ExploreCommand && !isFolder)
                     path = file.Parent.Path;
                 ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
             }
@@ -349,7 +351,7 @@ namespace SizeOnDisk.ViewModel
 
         private void ExecuteCommand(DirectCommand command, object parameter)
         {
-            if (command.Tag.StartsWith("Id:"))
+            if (command.Tag.StartsWith("Id:", StringComparison.InvariantCulture))
             {
                 string cmd = command.Tag.Substring(3);
                 //ShellHelper.Activate(cmd, this.Path);
@@ -384,9 +386,14 @@ namespace SizeOnDisk.ViewModel
                         cmd = cmd.Substring(0, pos);
                     }
                 }
+                string workingDirectory = this.Path;
+                if (!(this is VMFolder))
+                    workingDirectory = this.Parent.Path;
 
-                if (parameters.Contains("%1"))
-                    parameters = parameters.Replace("%1", this.Path);
+                parameters = Regex.Replace(parameters, "%1", this.Path, RegexOptions.IgnoreCase);
+                parameters = Regex.Replace(parameters, "%l", this.Path, RegexOptions.IgnoreCase);
+                parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
+                parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
 
                 ShellHelper.ShellExecute(cmd, null, parameters, new System.Windows.Interop.WindowInteropHelper(Application.Current.MainWindow).Handle);
             }

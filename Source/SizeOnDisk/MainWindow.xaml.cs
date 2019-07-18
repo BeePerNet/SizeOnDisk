@@ -138,14 +138,6 @@ namespace SizeOnDisk
             aboutBox.ShowDialog();
         }
 
-        private void CommandBinding_DeleteCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (Listing.SelectedItem != null && !(Listing.SelectedItem is VMRootFolder))
-            {
-                e.CanExecute = true;
-            }
-            e.Handled = true;
-        }
 
     }
 }

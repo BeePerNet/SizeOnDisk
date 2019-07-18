@@ -207,18 +207,18 @@ namespace SizeOnDisk.ViewModel
                 }
                 IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
                 VMFile found = null;
-                foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.Filename))
+                foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
                 {
-                    found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.Filename);
+                    found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);
                     if (found == null)
                     {
                         if (fileInfo.IsFolder)
                         {
-                            found = new VMFolder(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename), this.ClusterSize, this.Dispatcher);
+                            found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize, this.Dispatcher);
                             currentFolders.Add(found as VMFolder);
                         }
                         else
-                            found = new VMFile(this, fileInfo.Filename, System.IO.Path.Combine(fileInfo.Path, fileInfo.Filename));
+                            found = new VMFile(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName));
                         currentChilds.Add(found);
                     }
                     else

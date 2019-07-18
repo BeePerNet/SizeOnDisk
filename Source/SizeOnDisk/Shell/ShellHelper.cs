@@ -28,7 +28,6 @@ namespace SizeOnDisk.Shell
     {
         private static ConcurrentDictionary<string, string> associations = new ConcurrentDictionary<string, string>();
         private static string currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-        private static object _lock = new object();
 
 
         public static void Activate(string appId, string arguments)
@@ -240,7 +239,6 @@ namespace SizeOnDisk.Shell
             soft.Id = id;
 
             RegistryKey subkey;
-            string[] values;
 
             soft.Name = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyAppName, id);
             string value = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.DefaultIcon, id);

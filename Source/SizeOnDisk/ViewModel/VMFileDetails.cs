@@ -10,8 +10,6 @@ namespace SizeOnDisk.ViewModel
     public class VMFileDetails : ObservableObject
     {
         private string _FileType;
-        private FileAttributes _Attributes;
-
         private DateTime? _CreationTime;
         private DateTime? _LastAccessTime;
         private DateTime? _LastWriteTime;
@@ -34,7 +32,6 @@ namespace SizeOnDisk.ViewModel
             }
 
             LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
-            this._Attributes = fileInfo.Attributes;
             this._CreationTime = fileInfo.CreationTime;
             this._LastAccessTime = fileInfo.LastAccessTime;
             this._LastWriteTime = fileInfo.LastWriteTime;

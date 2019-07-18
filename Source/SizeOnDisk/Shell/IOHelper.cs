@@ -388,7 +388,6 @@ namespace SizeOnDisk.Shell
 
         public static IEnumerable<LittleFileInfo> GetFiles(string folderPath)
         {
-            int num = 0;
             IOHelper.WIN32_FIND_DATA win_find_data = new IOHelper.WIN32_FIND_DATA();
             string prefixedfolderPath = folderPath.TrimEnd(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
             prefixedfolderPath = string.Concat("\\\\?\\", folderPath);

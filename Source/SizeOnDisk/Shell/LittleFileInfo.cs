@@ -14,12 +14,12 @@ namespace SizeOnDisk.Shell
         long? _CompressedSize = null;
         IOHelper.WIN32_FILE_ATTRIBUTE_DATA _data;
 
-        string _Filename;
+        string _FileName;
         string _Path;
 
         internal LittleFileInfo(string path, string filename)
         {
-            _Filename = Filename;
+            _FileName = FileName;
             _Path = path;
             string fullfilename = filename;
             if (string.IsNullOrEmpty(path))
@@ -37,7 +37,7 @@ namespace SizeOnDisk.Shell
 
         internal LittleFileInfo(string path, string filename, IOHelper.WIN32_FILE_ATTRIBUTE_DATA data)
         {
-            _Filename = filename;
+            _FileName = filename;
             _Path = path;
             _data = data;
             if ((this.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
@@ -104,7 +104,7 @@ namespace SizeOnDisk.Shell
             }
         }
 
-        public string Filename { get => _Filename; }
+        public string FileName { get => _FileName; }
         public string Path { get => _Path; }
     }
 }

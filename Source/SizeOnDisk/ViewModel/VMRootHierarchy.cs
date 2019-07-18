@@ -39,13 +39,11 @@ namespace SizeOnDisk.ViewModel
 
         public VMRootHierarchy() : base(null, null, null, 0, Dispatcher.CurrentDispatcher)
         {
-            //this.Childs = new ObservableCollection<VMFile>();
-            //this.Folders = new ObservableCollection<VMFolder>();
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
-                //this.Childs.Add(newFolder);
                 this.Folders.Add(newFolder);
+                this.SelectedRootFolder = newFolder;
             }
             else
             {
@@ -106,7 +104,7 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx RefreshCommand = new RoutedCommandEx("refresh", "loc:PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootHierarchy), new KeyGesture(Key.F5, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:RefreshKeyDisplayString"));
         public static readonly RoutedCommandEx StopCommand = new RoutedCommandEx("stop", "loc:PresentationCore:ExceptionStringTable:StopText", "pack://application:,,,/SizeOnDisk;component/Icons/StopHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Escape, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:StopKeyDisplayString"));
         public static readonly RoutedCommandEx CloseCommand = new RoutedCommandEx("close", "loc:PresentationCore:ExceptionStringTable:CloseText", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMRootHierarchy));
-        public static readonly RoutedUICommand RefreshAllCommand = new RoutedUICommand("Refresh all", "loc:RefreshAll", typeof(VMFile));
+        public static readonly RoutedUICommand RefreshAllCommand = new RoutedUICommand("Refresh all", "RefreshAll", typeof(VMFile));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
