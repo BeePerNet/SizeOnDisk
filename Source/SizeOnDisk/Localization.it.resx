@@ -129,7 +129,7 @@
   <data name="DiskSize" xml:space="preserve">
     <value>Dimensione su disco</value>
   </data>
-  <data name="FileCount" xml:space="preserve">
+  <data name="FileTotal" xml:space="preserve">
     <value>Numero di file</value>
   </data>
   <data name="FileSize" xml:space="preserve">
@@ -138,7 +138,7 @@
   <data name="Finished" xml:space="preserve">
     <value>Completato</value>
   </data>
-  <data name="FolderCount" xml:space="preserve">
+  <data name="FolderTotal" xml:space="preserve">
     <value>Cartelle</value>
   </data>
   <data name="HardDriveUsage" xml:space="preserve">

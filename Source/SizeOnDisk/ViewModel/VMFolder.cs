@@ -172,8 +172,9 @@ namespace SizeOnDisk.ViewModel
         {
             if (Childs != null && Folders != null && !this.IsProtected)
             {
-                this.FileCount = this.Childs.Sum(T => T.FileCount);
-                this.FolderCount = this.Folders.Sum(T => T.FolderCount) + this.Folders.Count;
+                this.FileCount = this.Childs?.Count - this.Folders?.Count;
+                this.FileTotal = this.Childs.Sum(T => T.FileTotal);
+                this.FolderTotal = this.Folders.Sum(T => T.FolderTotal) + this.Folders.Count;
                 this.DiskSize = this.Childs.Sum(T => T.DiskSize);
                 this.FileSize = this.Childs.Sum(T => T.FileSize);
             }

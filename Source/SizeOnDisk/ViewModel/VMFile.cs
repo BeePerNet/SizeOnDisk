@@ -50,8 +50,9 @@ namespace SizeOnDisk.ViewModel
 
         private long? _DiskSize = null;
         private long? _FileSize = null;
-        private long? _FileCount = 1;
-        private long? _FolderCount = null;
+        private long? _FileCount = null;
+        private long? _FileTotal = 1;
+        private long? _FolderTotal = null;
 
         private bool _IsProtected = false;
 
@@ -115,10 +116,16 @@ namespace SizeOnDisk.ViewModel
             protected set { SetProperty(ref _FileCount, value); }
         }
 
-        public long? FolderCount
+        public long? FileTotal
         {
-            get { return _FolderCount; }
-            protected set { SetProperty(ref _FolderCount, value); }
+            get { return _FileTotal; }
+            protected set { SetProperty(ref _FileTotal, value); }
+        }
+
+        public long? FolderTotal
+        {
+            get { return _FolderTotal; }
+            protected set { SetProperty(ref _FolderTotal, value); }
         }
 
         public long? DiskSize

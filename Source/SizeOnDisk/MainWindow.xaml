@@ -241,15 +241,15 @@
                     <DataGridTextColumn Binding="{Binding Attributes,Converter={StaticResource FileAttributesConverter}}"
                                         Header="{lex:Loc Attributes}"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:Loc FolderCount}"
+                    <DataGridTextColumn Header="{lex:Loc FolderTotal}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
-                                        Binding="{Binding FolderCount,StringFormat=N0}"
-                                        SortMemberPath="FolderCount"
+                                        Binding="{Binding FolderTotal,StringFormat=N0}"
+                                        SortMemberPath="FolderTotal"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{lex:Loc FileCount}"
+                    <DataGridTextColumn Header="{lex:Loc FileTotal}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
-                                        Binding="{Binding FileCount,StringFormat=N0}"
-                                        SortMemberPath="FileCount"
+                                        Binding="{Binding FileTotal,StringFormat=N0}"
+                                        SortMemberPath="FileTotal"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Header="{lex:Loc FileSize}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
@@ -287,9 +287,13 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -316,34 +320,49 @@
             <Separator Grid.Column="3" />
             <StatusBarItem Grid.Column="4"
                            Content="{Binding RunningThreads}" />
-            <Separator Grid.Column="8" />
-            <StatusBarItem Grid.Column="9"
-                           Content="{Binding Path=SelectedItem.FolderCount, ElementName=treeView}"
+
+
+
+
+            <StatusBarItem Grid.Column="6"
+                           Content="{Binding Path=SelectedItem.Folders.Count, ElementName=treeView}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFolders}" />
-            <Separator Grid.Column="10" />
-            <StatusBarItem Grid.Column="11"
+            <Separator Grid.Column="7" />
+            <StatusBarItem Grid.Column="8"
                            Content="{Binding Path=SelectedItem.FileCount, ElementName=treeView}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFiles}" />
-            <Separator Grid.Column="12" />
-            <StatusBarItem Grid.Column="13"
+
+
+            <Separator Grid.Column="9" />
+            <StatusBarItem Grid.Column="10"
+                           Content="{Binding Path=SelectedItem.FolderTotal, ElementName=treeView}"
+                           ContentStringFormat="N0"
+                           ToolTip="{lex:Loc TotalFolders}" />
+            <Separator Grid.Column="11" />
+            <StatusBarItem Grid.Column="12"
+                           Content="{Binding Path=SelectedItem.FileTotal, ElementName=treeView}"
+                           ContentStringFormat="N0"
+                           ToolTip="{lex:Loc TotalFiles}" />
+            <Separator Grid.Column="13" />
+            <StatusBarItem Grid.Column="14"
                            Content="{Binding Path=SelectedItem.FileSize, ElementName=treeView,Converter={StaticResource SizeConverter}}"
                            ToolTip="{lex:Loc TotalFileSize}" />
-            <Separator Grid.Column="14" />
-            <StatusBarItem Grid.Column="15"
+            <Separator Grid.Column="15" />
+            <StatusBarItem Grid.Column="16"
                            Content="{Binding Path=SelectedItem.DiskSize, ElementName=treeView,Converter={StaticResource SizeConverter}}"
                            ToolTip="{lex:Loc TotalDiskSize}" />
-            <Separator Grid.Column="16" />
-            <StatusBarItem Grid.Column="17"
+            <Separator Grid.Column="17" />
+            <StatusBarItem Grid.Column="18"
                            Content="{Binding SelectedRootFolder.HardDrivePath}"
                            ToolTip="{lex:Loc HardDriveUsage}" />
-            <Separator Grid.Column="18" />
-            <StatusBarItem Grid.Column="19"
+            <Separator Grid.Column="19" />
+            <StatusBarItem Grid.Column="20"
                            Content="{Binding SelectedRootFolder.HardDriveUsage,Converter={StaticResource SizeConverter}}"
                            ToolTip="{lex:Loc HardDriveUsage}" />
-            <Separator Grid.Column="20" />
-            <StatusBarItem Grid.Column="21"
+            <Separator Grid.Column="21" />
+            <StatusBarItem Grid.Column="22"
                            Content="{Binding SelectedRootFolder.HardDriveFree,Converter={StaticResource SizeConverter}}"
                            ToolTip="{lex:Loc HardDriveFree}" />
         </StatusBar>

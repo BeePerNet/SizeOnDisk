@@ -129,7 +129,7 @@
   <data name="DiskSize" xml:space="preserve">
     <value>Размер диска</value>
   </data>
-  <data name="FileCount" xml:space="preserve">
+  <data name="FileTotal" xml:space="preserve">
     <value>Файлы</value>
   </data>
   <data name="FileSize" xml:space="preserve">
@@ -138,7 +138,7 @@
   <data name="Finished" xml:space="preserve">
     <value>Закончено</value>
   </data>
-  <data name="FolderCount" xml:space="preserve">
+  <data name="FolderTotal" xml:space="preserve">
     <value>Папки</value>
   </data>
   <data name="HardDriveUsage" xml:space="preserve">

@@ -198,9 +198,9 @@ namespace SizeOnDisk {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Files.
         /// </summary>
-        public static string FileCount {
+        public static string FileTotal {
             get {
-                return ResourceManager.GetString("FileCount", resourceCulture);
+                return ResourceManager.GetString("FileTotal", resourceCulture);
             }
         }
         
@@ -234,9 +234,9 @@ namespace SizeOnDisk {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Folders.
         /// </summary>
-        public static string FolderCount {
+        public static string FolderTotal {
             get {
-                return ResourceManager.GetString("FolderCount", resourceCulture);
+                return ResourceManager.GetString("FolderTotal", resourceCulture);
             }
         }
         
