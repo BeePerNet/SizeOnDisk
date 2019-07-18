@@ -13,9 +13,9 @@ using System.Runtime.InteropServices;
 #else
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
-[assembly: AssemblyCompany("BeePerNet")]
+[assembly: AssemblyCompany("Sébastien Gariépy")]
 [assembly: AssemblyProduct("SizeOnDisk")]
-[assembly: AssemblyCopyright("GNU GENERAL PUBLIC LICENSE")]
+[assembly: AssemblyCopyright("GNU General Public License v3.0")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
