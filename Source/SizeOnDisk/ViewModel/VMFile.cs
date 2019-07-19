@@ -299,12 +299,17 @@ namespace SizeOnDisk.ViewModel
                 e.CanExecute = false;
                 return;
             }
-            if (command == FindCommand || !isFolder)
+            if (command == FindCommand && !isFolder)
             {
                 e.CanExecute = true;
                 return;
             }
-            if (command == OpenAsCommand || !isFolder)
+            if (command == OpenAsCommand && !isFolder)
+            {
+                e.CanExecute = true;
+                return;
+            }
+            if (command == OpenCommand && isFolder)
             {
                 e.CanExecute = true;
                 return;
@@ -315,7 +320,7 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
 
-            e.CanExecute = file.Verbs.Any(T => T == command.Name);
+            e.CanExecute = file.Verbs != null && file.Verbs.Any(T => T == command.Name);
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]
@@ -347,7 +352,7 @@ namespace SizeOnDisk.ViewModel
 
         private bool CanExecuteCommand(DirectCommand command, object parameter)
         {
-            return !this.IsProtected; //!string.IsNullOrEmpty(command.Tag);
+            return !this.IsProtected && !string.IsNullOrEmpty(command.Tag);
         }
 
         private void ExecuteCommand(DirectCommand command, object parameter)
@@ -408,35 +413,40 @@ namespace SizeOnDisk.ViewModel
                 commands.Add(VMFile.EditCommand);
                 commands.Add(VMFile.OpenAsCommand);
                 commands.Add(VMFile.PrintCommand);
-                commands.Add(SeparatorDummyCommand.Instance);
 
                 ShellHelper.ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
                 Verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
-                foreach (ShellHelper.ShellCommandSoftware soft in root.Softwares)
+                if (Verbs.Length > 0)
                 {
-                    ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
-
-                    if (soft.Icon != null)
+                    commands.Add(SeparatorDummyCommand.Instance);
+                    foreach (ShellHelper.ShellCommandSoftware soft in root.Softwares)
                     {
-                        Image image = new Image();
-                        image.Source = soft.Icon;
-                        image.Width = 16;
-                        image.Height = 16;
-                        parent.Icon = image;
-                    }
+                        ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
 
-                    foreach (ShellHelper.ShellCommandVerb verb in soft.Verbs)
-                    {
-                        if (verb.Verb.ToLowerInvariant() != "new")// && !string.IsNullOrEmpty(verb.Command))
+                        if (soft.Icon != null)
                         {
-                            DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
-                            cmd.Tag = verb.Command;
-                            parent.Childs.Add(cmd);
+                            Image image = new Image();
+                            image.Source = soft.Icon;
+                            image.Width = 16;
+                            image.Height = 16;
+                            parent.Icon = image;
+                        }
+
+                        foreach (ShellHelper.ShellCommandVerb verb in soft.Verbs)
+                        {
+                            if (verb.Verb.ToLowerInvariant() != "new" && !string.IsNullOrEmpty(verb.Command))
+                            {
+                                DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
+                                cmd.Tag = verb.Command;
+                                parent.Childs.Add(cmd);
+                            }
+                        }
+                        //if (parent.Childs.Count == 1)
+                        if (parent.Childs.Count > 0)
+                        {
+                            commands.Add(parent);
                         }
                     }
-                    //if (parent.Childs.Count == 1)
-                    if (parent.Childs.Count > 0)
-                        commands.Add(parent);
                 }
 
                 commands.Add(SeparatorDummyCommand.Instance);
