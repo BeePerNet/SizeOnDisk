@@ -427,7 +427,7 @@ namespace SizeOnDisk.ViewModel
 
                     foreach (ShellHelper.ShellCommandVerb verb in soft.Verbs)
                     {
-                        if (verb.Verb != "new")// && !string.IsNullOrEmpty(verb.Command))
+                        if (verb.Verb.ToLowerInvariant() != "new")// && !string.IsNullOrEmpty(verb.Command))
                         {
                             DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
                             cmd.Tag = verb.Command;
