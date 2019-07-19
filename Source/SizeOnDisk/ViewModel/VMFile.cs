@@ -380,12 +380,8 @@ namespace SizeOnDisk.ViewModel
                 }
                 else
                 {
-                    pos = cmd.IndexOf(' ');
-                    if (pos > 0 && pos < cmd.Length)
-                    {
-                        parameters = cmd.Substring(pos + 1);
-                        cmd = cmd.Substring(0, pos);
-                    }
+                    cmd = $"\"{cmd}\"";
+                    parameters = "\"%1\"";
                 }
                 string workingDirectory = this.Path;
                 if (!(this is VMFolder))

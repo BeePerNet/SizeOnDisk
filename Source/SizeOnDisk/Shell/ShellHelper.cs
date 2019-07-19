@@ -253,6 +253,11 @@ namespace SizeOnDisk.Shell
                 value = appkey.GetValue("FriendlyTypeName", string.Empty).ToString();
                 soft.Name = GetText(value);
             }
+            if (string.IsNullOrWhiteSpace(soft.Name))
+            {
+                value = appkey.GetValue("DisplayName", string.Empty).ToString();
+                soft.Name = GetText(value);
+            }
 
             if (soft.Icon == null)
             {
@@ -328,19 +333,26 @@ namespace SizeOnDisk.Shell
             else
             {
                 string ext = Path.GetExtension(path);
-                RegistryKey key = Registry.ClassesRoot.OpenSubKey(ext);
-                if (key != null)
+                RegistryKey extkey = Registry.ClassesRoot.OpenSubKey(ext);
+                if (extkey != null)
                 {
-                    result.ContentType = key.GetValue("Content Type", string.Empty).ToString();
-                    result.PerceivedType = key.GetValue("PerceivedType", string.Empty).ToString();
+                    result.ContentType = extkey.GetValue("Content Type", string.Empty).ToString();
+                    result.PerceivedType = extkey.GetValue("PerceivedType", string.Empty).ToString();
 
-                    string defaultApp = key.GetValue(string.Empty, string.Empty).ToString();
-                    key = key.OpenSubKey("OpenWithProgids");
-                    string[] subvalues = new string[] { };
-                    if (key == null)
-                        subvalues = new string[] { defaultApp };
-                    else
-                        subvalues = key.GetValueNames();
+                    string defaultApp = extkey.GetValue(string.Empty, string.Empty).ToString();
+                    RegistryKey key = extkey.OpenSubKey("OpenWithProgids");
+
+                    List<string> subvalues = new List<string>(); ;
+                    if (key != null)
+                        subvalues.AddRange(key.GetValueNames());
+
+                    if (!string.IsNullOrWhiteSpace(defaultApp))
+                    {
+                        if (subvalues.Contains(defaultApp))
+                            subvalues.Remove(defaultApp);
+                        subvalues.Insert(0, defaultApp);
+                    }
+
                     foreach (string subkey in subvalues)
                     {
                         //Comme folder à vérifier comment simplifier
@@ -357,6 +369,14 @@ namespace SizeOnDisk.Shell
                             }
                         }
                     }
+
+
+
+
+
+
+
+
                 }
             }
             return result;
