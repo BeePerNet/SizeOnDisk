@@ -13,8 +13,8 @@
         lex:LocalizeDictionary.DesignCulture="fr"
         cmd:CommandBehavior.Context="{Binding}"
         Height="500"
-        Width="850"
-        Title="{Binding Path=SelectedValue, StringFormat=SizeOnDisk - \{0\}, ElementName=treeView}"
+        Width="1050"
+        Title="{Binding Path=SelectedTreeItem.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         Closing="Window_Closing"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
@@ -119,20 +119,19 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <TextBox Grid.Row="1" Text="{Binding SelectedItem.Path, ElementName=Listing, Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
+        <TextBox Grid.Row="1" Text="{Binding SelectedListItem.Path,Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="225" />
+                <ColumnDefinition Width="250" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TreeView Name="treeView"
-                      BorderThickness="1"
+            <TreeView BorderThickness="1"
                       ItemsSource="{Binding Folders}"
                       ContextMenu="{StaticResource VMContextMenu}"
                       DisplayMemberPath="Name"
                       SelectedValuePath="Path"
-                      cmd:ItemsControlExtender.FocusPreviewMouseRightButtonDown="True">
+                      cmd:ItemsControlBehavior.FocusPreviewMouseRightButtonDown="True">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <Setter Property="cmd:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
@@ -163,13 +162,13 @@
             <ListView Grid.Column="2"
                           SelectionMode="Extended"
                           cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
-                ItemsSource="{Binding ElementName=treeView, Path=SelectedItem.Childs}"
+                ItemsSource="{Binding Path=SelectedTreeItem.Childs}"
                     BorderThickness="1"
-                    SelectedItem="{Binding  ElementName=treeView, Path=SelectedItem.SelectedItem}"
+                    SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ContextMenu="{StaticResource VMContextMenu}"
                       Grid.IsSharedSizeScope="True"
-                      Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
+                      Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
                 <ListView.Resources>
                     <Style TargetType="ListViewItem">
                         <Setter Property="IsSelected" 
@@ -201,16 +200,15 @@
                     VirtualizingStackPanel.VirtualizationMode="Standard"
                     cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                     BorderThickness="1"
-                ItemsSource="{Binding ElementName=treeView, Path=SelectedItem.Childs}"
-                    SelectedItem="{Binding  ElementName=treeView, Path=SelectedItem.SelectedItem}"
-                      Name="Listing"
+                ItemsSource="{Binding SelectedTreeItem.Childs}"
+                    SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
                       AutoGenerateColumns="False"
                       HeadersVisibility="Column"
                       ContextMenu="{StaticResource VMContextMenu}"
                       HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                       VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                       ClipboardCopyMode="IncludeHeader"
-                Visibility="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
                 <DataGrid.Resources>
                     <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
                         <Setter Property="TextAlignment" Value="Right" />
@@ -325,33 +323,33 @@
 
 
             <StatusBarItem Grid.Column="6"
-                           Content="{Binding Path=SelectedItem.Folders.Count, ElementName=treeView}"
+                           Content="{Binding SelectedTreeItem.Folders.Count}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFolders}" />
             <Separator Grid.Column="7" />
             <StatusBarItem Grid.Column="8"
-                           Content="{Binding Path=SelectedItem.FileCount, ElementName=treeView}"
+                           Content="{Binding SelectedTreeItem.FileCount}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFiles}" />
 
 
             <Separator Grid.Column="9" />
             <StatusBarItem Grid.Column="10"
-                           Content="{Binding Path=SelectedItem.FolderTotal, ElementName=treeView}"
+                           Content="{Binding SelectedTreeItem.FolderTotal}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFolders}" />
             <Separator Grid.Column="11" />
             <StatusBarItem Grid.Column="12"
-                           Content="{Binding Path=SelectedItem.FileTotal, ElementName=treeView}"
+                           Content="{Binding SelectedTreeItem.FileTotal}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFiles}" />
             <Separator Grid.Column="13" />
             <StatusBarItem Grid.Column="14"
-                           Content="{Binding Path=SelectedItem.FileSize, ElementName=treeView,Converter={StaticResource SizeConverter}}"
+                           Content="{Binding SelectedTreeItem.FileSize, Converter={StaticResource SizeConverter}}"
                            ToolTip="{lex:Loc TotalFileSize}" />
             <Separator Grid.Column="15" />
             <StatusBarItem Grid.Column="16"
-                           Content="{Binding Path=SelectedItem.DiskSize, ElementName=treeView,Converter={StaticResource SizeConverter}}"
+                           Content="{Binding SelectedTreeItem.DiskSize, Converter={StaticResource SizeConverter}}"
                            ToolTip="{lex:Loc TotalDiskSize}" />
             <Separator Grid.Column="17" />
             <StatusBarItem Grid.Column="18"

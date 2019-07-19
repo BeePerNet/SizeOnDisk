@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,7 @@ using WPFByYourCommand.Commands;
 
 namespace SizeOnDisk.ViewModel
 {
+    [DebuggerDisplay("{GetType().Name}: {Name}")]
     public class VMFile : CommandViewModel
     {
         public static readonly RoutedCommandEx OpenCommand = new RoutedCommandEx("open", "loc:PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
@@ -53,18 +55,20 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        [DesignOnly(true)]
-        internal VMFile(VMFolder parent, string name) : this(parent, name, null)
-        {
-
-        }
-
         internal VMFile(VMFolder parent, string name, string path)
         {
             _Name = name;
             Path = path;
             Parent = parent;
         }
+
+        [DesignOnly(true)]
+        internal VMFile(VMFolder parent, string name, string path, bool dummy) : this(parent, name, path)
+        {
+            DiskSize = 4096;
+            FileSize = 12;
+        }
+
 
         #endregion constructor
 
@@ -142,7 +146,12 @@ namespace SizeOnDisk.ViewModel
         public virtual bool IsSelected
         {
             get { return _isSelected; }
-            set { SetProperty(ref _isSelected, value); }
+            set
+            {
+                SetProperty(ref _isSelected, value);
+                if (value)
+                    SelectListItem(this);
+            }
         }
 
         #endregion properties
@@ -154,6 +163,10 @@ namespace SizeOnDisk.ViewModel
             this.Parent.SelectItem();
         }
 
+        protected virtual void SelectListItem(VMFile selected)
+        {
+            this.Parent.SelectListItem(selected);
+        }
 
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
@@ -192,12 +205,6 @@ namespace SizeOnDisk.ViewModel
             LittleFileInfo fileInfo = _Details.Load();
             this.Refresh(fileInfo);
             OnPropertyChanged(nameof(Details));
-        }
-
-        //For VisualStudio Watch
-        public override string ToString()
-        {
-            return string.Concat(this.GetType().Name, ": ", Path);
         }
 
         #endregion functions

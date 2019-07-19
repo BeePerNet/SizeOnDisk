@@ -30,6 +30,8 @@ namespace SizeOnDisk.Converters
                         return Localization.Ready;
                     case TaskExecutionState.Running:
                         return Localization.Calculating;
+                    default:
+                        return value.ToString();
                 }
             }
             if (convertible != null && convertible.ToBoolean(culture))

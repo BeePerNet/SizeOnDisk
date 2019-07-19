@@ -108,10 +108,11 @@ namespace SizeOnDisk
 
         public void UpdateUILanguage()
         {
-            if (this.Listing.ItemsSource != null)
+            //TODO: Test and reactivate elsewhere
+            /*if (this.Listing.ItemsSource != null)
             {
                 CollectionViewSource.GetDefaultView(this.Listing.Items).Refresh();
-            }
+            }*/
             BindingExpression binding;
             foreach (StatusBarItem item in StatusBar.Items.OfType<StatusBarItem>())
             {

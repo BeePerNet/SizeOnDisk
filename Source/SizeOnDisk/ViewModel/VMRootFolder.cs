@@ -55,20 +55,19 @@ namespace SizeOnDisk.ViewModel
         #region creator
 
         [DesignOnly(true)]
-        internal VMRootFolder(VMRootHierarchy parent, string name)
-            : base(parent, name)
+        internal VMRootFolder(VMRootHierarchy parent, string name, string path)
+            : base(parent, name, path)
         {
-            VMFolder newFolder = new VMFolder(this, "Folder 1");
+            VMFolder newFolder = new VMFolder(this, "Folder 1", "\\\\Root Folder\\Folder 1");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            newFolder = new VMFolder(this, "Folder 2");
+            newFolder = new VMFolder(this, "Folder 2", "\\\\Root Folder\\Folder 2");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            VMFile newFile = new VMFile(this, "File 1");
+            VMFile newFile = new VMFile(this, "File 1", "\\\\Root Folder\\File 1");
             this.Childs.Add(newFile);
-
-            this.IsExpanded = true;
-            this.IsTreeSelected = true;
+            this.RefreshCount();
+            this._ExecutionState = TaskExecutionState.Designing;
         }
 
         internal VMRootFolder(VMRootHierarchy parent, string name, string path, Dispatcher dispatcher)
@@ -86,6 +85,16 @@ namespace SizeOnDisk.ViewModel
         {
             (this.Parent as VMRootHierarchy).SelectedRootFolder = this;
         }
+        protected override void SelectTreeItem(VMFolder folder)
+        {
+            (this.Parent as VMRootHierarchy).SelectedTreeItem = folder;
+            (this.Parent as VMRootHierarchy).SelectedListItem = folder;
+        }
+        protected override void SelectListItem(VMFile file)
+        {
+            (this.Parent as VMRootHierarchy).SelectedListItem = file;
+        }
+
 
 
         public override void Refresh(ParallelOptions parallelOptions)
@@ -242,7 +251,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     // dispose managed resources
                     this.Stop();
-
+                                       
                     if (_CancellationTokenSource != null)
                     {
                         _CancellationTokenSource.Dispose();

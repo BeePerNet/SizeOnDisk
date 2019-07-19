@@ -93,9 +93,10 @@ namespace SizeOnDisk.ViewModel
         }
 
         [DesignOnly(true)]
-        internal VMFolder(VMFolder parent, string name)
-            : base(parent, name)
+        internal VMFolder(VMFolder parent, string name, string path)
+            : base(parent, name, path)
         {
+            RefreshCount();
         }
 
         #endregion constructor
@@ -168,6 +169,10 @@ namespace SizeOnDisk.ViewModel
 
 
 
+        protected virtual void SelectTreeItem(VMFolder folder)
+        {
+            this.Parent.SelectTreeItem(folder);
+        }
 
 
 
@@ -185,20 +190,19 @@ namespace SizeOnDisk.ViewModel
                     if (_isTreeSelected && this.Parent != null)
                     {
                         this.Parent.IsExpanded = true;
+                        this.SelectTreeItem(this);
                         this.SelectItem();
                     }
-                    if (value && this.Path != null)
+                    if (value && this.Path != null && _Dispatcher != null)
                     {
                         Thread thread = new Thread(() =>
                         {
                             this.FillChildList();
 
                             Parallel.ForEach(this.Childs, (T) => T.RefreshOnView());
-                            //this.Childs.ToList().ForEach((T) => T.RefreshOnView());
-                            //this.Childs.ToList().AsParallel().ForAll((T) => T.RefreshOnView());
                         });
                         thread.IsBackground = true;
-                        thread.Priority = ThreadPriority.Highest;
+                        //thread.Priority = ThreadPriority.Highest;
                         thread.Start();
                     }
                 }

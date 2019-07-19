@@ -20,6 +20,7 @@ namespace SizeOnDisk.ViewModel
         }
 
 
+
         private int _RunningThreads = 0;
         public int RunningThreads
         {
@@ -35,15 +36,33 @@ namespace SizeOnDisk.ViewModel
             set { SetProperty(ref _SelectedRootFolder, value); }
         }
 
+        VMFolder _SelectedTreeItem;
+
+        public VMFolder SelectedTreeItem
+        {
+            get { return _SelectedTreeItem; }
+            set { SetProperty(ref _SelectedTreeItem, value); }
+        }
+
+        VMFile _SelectedListItem;
+
+        public VMFile SelectedListItem
+        {
+            get { return _SelectedListItem; }
+            set { SetProperty(ref _SelectedListItem, value); }
+        }
+
         private DispatcherTimer _Timer;
 
         public VMRootHierarchy() : base(null, null, null, 0, Dispatcher.CurrentDispatcher)
         {
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
+                VMRootFolder newFolder = new VMRootFolder(this, "Root Folder", "\\\\Root Folder");
                 this.Folders.Add(newFolder);
-                this.SelectedRootFolder = newFolder;
+                newFolder.IsExpanded = true;
+                newFolder.IsTreeSelected = true;
+                newFolder.Childs.Last().IsSelected = true;
             }
             else
             {
@@ -71,8 +90,12 @@ namespace SizeOnDisk.ViewModel
             if (folder == null)
                 throw new ArgumentNullException("folder", "Can not remove null item");
             this.SelectedRootFolder = null;
-            //this.Childs.Remove(folder);
             this.Folders.Remove(folder);
+            if (this.Folders.Count == 0)
+            {
+                this.SelectedTreeItem = null;
+                this.SelectedListItem = null;
+            }
             folder.Dispose();
         }
 
