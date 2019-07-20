@@ -13,7 +13,7 @@ namespace SizeOnDisk
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-
+            System.Diagnostics.Process.Start("C:\\Program Files\\7-Zip\\7-zip.dll");
             //ShellHelper.Test();
             //string text = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.DefaultIcon, "jpegfile");
 

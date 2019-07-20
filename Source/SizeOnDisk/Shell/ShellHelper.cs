@@ -449,11 +449,6 @@ namespace SizeOnDisk.Shell
 
         #region public functions
 
-        public static void ShellExecute(string fileName, IntPtr ownerWindow)
-        {
-            ShellExecute(fileName, null, null, ownerWindow);
-        }
-
         public static string FileExtentionInfo(AssocStr assocStr, string doctype)
         {
             IntPtr pcchOut = IntPtr.Zero;
@@ -482,9 +477,20 @@ namespace SizeOnDisk.Shell
 
 
 
-        public static void ShellExecute(string fileName, string verb, string parameters, IntPtr ownerWindow)
+        public static void ShellExecute(string fileName, string verb = null, string parameters = null)
         {
-            SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = fileName,
+                Verb = verb,
+                Arguments = parameters,
+                CreateNoWindow = true
+            };
+            Process process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+
+            /*SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO
             {
                 hwnd = ownerWindow,
                 lpVerb = verb,
@@ -501,24 +507,8 @@ namespace SizeOnDisk.Shell
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Invalid operation ({1}) on file {0}", fileName,
                     (SafeNativeMethods.ShellExecuteReturnCodes)info.hInstApp.ToInt32()));
-            }
+            }*/
         }
-
-        public static void ShellExecute(string fileName, string verb, IntPtr ownerWindow)
-        {
-            ShellExecute(fileName, verb, null, ownerWindow);
-        }
-
-        /*public static BitmapSource GetIconAsync(string path, int size = 16, bool thumbnail = false)
-        {
-            BitmapSource result = null;
-            var task = Task.Factory.StartNew(() =>
-            {
-                result = GetIcon(path, size, thumbnail);
-            });
-            task.Wait(100);
-            return result;
-        }*/
 
 
         public static BitmapSource GetIcon(string path, int size = 16, bool thumbnail = false, bool cache = false)
@@ -830,11 +820,6 @@ namespace SizeOnDisk.Shell
             IntPtr pbc,
             ref Guid riid,
             [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
-
-
-            [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool ShellExecuteEx(ref SHELLEXECUTEINFO lpExecInfo);
 
 
 
@@ -1272,8 +1257,6 @@ namespace SizeOnDisk.Shell
                 SE_ERR_PNF = 3, // The specified path was not found. 
                 SE_ERR_SHARE = 26,  // A sharing violation occurred. 
             }
-
-            internal const int SW_SHOW = 5;
 
 
 

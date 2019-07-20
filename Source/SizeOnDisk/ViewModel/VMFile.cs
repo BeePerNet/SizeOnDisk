@@ -336,13 +336,13 @@ namespace SizeOnDisk.ViewModel
 
             bool isFolder = file is VMFolder;
             if (isFolder && command == OpenCommand)
-                ShellHelper.ShellExecute(file.Path, OpenCommand.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
+                ShellHelper.ShellExecute(file.Path, OpenCommand.Name.ToLowerInvariant());
             else
             {
                 string path = file.Path;
                 if ((e.Command == ExploreCommand || e.Command == FindCommand) && (!isFolder || file.IsProtected))
                     path = file.Parent.Path;
-                ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant(), new System.Windows.Interop.WindowInteropHelper(System.Windows.Application.Current.MainWindow).Handle);
+                ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant());
             }
         }
 
@@ -383,8 +383,12 @@ namespace SizeOnDisk.ViewModel
                 }
                 else
                 {
-                    cmd = $"\"{cmd}\"";
-                    parameters = "\"%1\"";
+                    pos = cmd.IndexOf(' ');
+                    if (pos > 0 && pos < cmd.Length)
+                    {
+                        parameters = cmd.Substring(pos + 1);
+                        cmd = cmd.Substring(0, pos + 1);
+                    }
                 }
                 string workingDirectory = this.Path;
                 if (!(this is VMFolder))
@@ -395,7 +399,7 @@ namespace SizeOnDisk.ViewModel
                 parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
                 parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
 
-                ShellHelper.ShellExecute(cmd, null, parameters, new System.Windows.Interop.WindowInteropHelper(Application.Current.MainWindow).Handle);
+                ShellHelper.ShellExecute(cmd, null, parameters);
             }
         }
 
