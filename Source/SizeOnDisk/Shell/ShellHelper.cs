@@ -272,6 +272,13 @@ namespace SizeOnDisk.Shell
             {
                 string defaultverb = subkey.GetValue(string.Empty, string.Empty).ToString();
                 string[] appverbs = subkey.GetSubKeyNames();
+                if (appverbs.Contains("OPEN", StringComparer.OrdinalIgnoreCase) && appverbs[0].ToUpperInvariant() != "OPEN")
+                {
+                    string openOne = appverbs.First(T => T.ToUpperInvariant() == "OPEN");
+                    int pos = Array.FindIndex(appverbs, T => T == openOne);
+                    appverbs[pos] = appverbs[0];
+                    appverbs[0] = openOne;
+                }
                 foreach (string appverb in appverbs)
                 {
                     RegistryKey verbkey = subkey.OpenSubKey(appverb);
@@ -474,17 +481,20 @@ namespace SizeOnDisk.Shell
 
             Process.Start(application, parameters);
         }*/
+        public static void ShellExecuteRunAs(string filename)
+        {
+            ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL {filename}");
+        }
 
 
-
-        public static void ShellExecute(string fileName, string verb = null, string parameters = null)
+        public static void ShellExecute(string fileName, string arguments = null, string verb = null)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo()
             {
                 FileName = fileName,
                 Verb = verb,
-                Arguments = parameters,
-                CreateNoWindow = true
+                Arguments = arguments,
+                CreateNoWindow = true,
             };
             Process process = new Process();
             process.StartInfo = startInfo;

@@ -298,12 +298,12 @@ namespace SizeOnDisk.ViewModel
                 e.CanExecute = false;
                 return;
             }
-            if (command == FindCommand && !isFolder)
+            if (command == OpenAsCommand)
             {
                 e.CanExecute = true;
                 return;
             }
-            if (command == OpenAsCommand && !isFolder)
+            if (command == FindCommand && !isFolder)
             {
                 e.CanExecute = true;
                 return;
@@ -334,16 +334,21 @@ namespace SizeOnDisk.ViewModel
             if (!(e.Command is RoutedCommand command))
                 throw new ArgumentNullException("e", "Command is not RoutedCommand");
 
+            if (command == OpenAsCommand)
+            {
+                ShellHelper.ShellExecuteRunAs(file.Path);
+                return;
+            }
             bool isFolder = file is VMFolder;
             if (isFolder && command == OpenCommand)
-                ShellHelper.ShellExecute(file.Path, OpenCommand.Name.ToLowerInvariant());
-            else
             {
-                string path = file.Path;
-                if ((e.Command == ExploreCommand || e.Command == FindCommand) && (!isFolder || file.IsProtected))
-                    path = file.Parent.Path;
-                ShellHelper.ShellExecute(path, command.Name.ToLowerInvariant());
+                ShellHelper.ShellExecute(file.Path, null, OpenCommand.Name.ToLowerInvariant());
+                return;
             }
+            string path = file.Path;
+            if ((e.Command == ExploreCommand || e.Command == FindCommand) && (!isFolder || file.IsProtected))
+                path = file.Parent.Path;
+            ShellHelper.ShellExecute(path, null, command.Name.ToLowerInvariant());
         }
 
         #endregion Commands
@@ -399,7 +404,7 @@ namespace SizeOnDisk.ViewModel
                 parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
                 parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
 
-                ShellHelper.ShellExecute(cmd, null, parameters);
+                ShellHelper.ShellExecute(cmd, parameters);
             }
         }
 
