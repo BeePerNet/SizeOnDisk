@@ -235,7 +235,7 @@
                        KeyPath="yes" />
       </Component>
     </DirectoryRef>
-    <Feature Id="ProductFeature"
+    <Feature Id="ProductFeature" Absent="disallow"
              Title="SizeOnDisk required files"
              Level="1"
              ConfigurableDirectory="INSTALLDIR">
@@ -334,7 +334,7 @@
     <SetProperty Id="WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED"
                  Value="1"
                  After="AppSearch">
-      WIXNETFX4RELEASEINSTALLED >= "#$(var.NetFx452MinRelease)"
+      WIXNETFX4RELEASEINSTALLED &gt;= "#$(var.NetFx452MinRelease)"
     </SetProperty>
     <Condition Message="[ProductName] Requires .NET Framework 4.5.2 or later to be installed. Please install the .NET Framework then run this installer again.">
       <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]>

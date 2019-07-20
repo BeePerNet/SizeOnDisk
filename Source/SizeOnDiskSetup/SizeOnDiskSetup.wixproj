@@ -65,16 +65,6 @@
     <None Include="WiSubStg.vbs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SizeOnDisk\SizeOnDisk.csproj">
-      <Name>SizeOnDisk</Name>
-      <Project>{483c22c0-1b87-4323-9166-10980ef42bc7}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <WixExtension Include="WixUtilExtension">
       <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
       <Name>WixUtilExtension</Name>
@@ -104,7 +94,14 @@
     <EmbeddedResource Include="ja.wxl" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ACME.Setup.wax" />
+    <ProjectReference Include="..\SizeOnDisk\SizeOnDisk.csproj">
+      <Name>SizeOnDisk</Name>
+      <Project>{483c22c0-1b87-4323-9166-10980ef42bc7}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <PropertyGroup>
