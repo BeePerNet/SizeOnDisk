@@ -336,7 +336,7 @@ namespace SizeOnDisk.ViewModel
 
             if (command == OpenAsCommand)
             {
-                ShellHelper.ShellExecuteRunAs(file.Path);
+                ShellHelper.ShellExecuteOpenAs(file.Path);
                 return;
             }
             bool isFolder = file is VMFolder;
@@ -360,15 +360,23 @@ namespace SizeOnDisk.ViewModel
 
         private void ExecuteCommand(DirectCommand command, object parameter)
         {
-            if (command.Tag.StartsWith("Id:", StringComparison.Ordinal))
+            string cmd = command.Tag;
+            if (cmd.StartsWith("Id:", StringComparison.Ordinal))
             {
-                string cmd = command.Tag.Substring(3);
-                //ShellHelper.Activate(cmd, this.Path);
+                cmd = cmd.Substring(3);
                 ShellHelper.Activate(cmd, this.Path, command.Name);
+            }
+            else if (cmd.StartsWith("cmd:", StringComparison.OrdinalIgnoreCase))
+            {
+                cmd = cmd.Substring(4);
+                ShellHelper.ShellExecute(this.Path, null, cmd);
+            }
+            else if (cmd.StartsWith("dll:", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotImplementedException($"Name:{command.Name}, Text:{command.Text}, Command{command.Tag}");
             }
             else
             {
-                string cmd = command.Tag;
                 string parameters = string.Empty;
                 int pos = 1;
                 if (cmd.StartsWith("\"", StringComparison.Ordinal) && cmd.Count(T => T == '\"') > 1)
@@ -399,10 +407,17 @@ namespace SizeOnDisk.ViewModel
                 if (!(this is VMFolder))
                     workingDirectory = this.Parent.Path;
 
-                parameters = Regex.Replace(parameters, "%1", this.Path, RegexOptions.IgnoreCase);
-                parameters = Regex.Replace(parameters, "%l", this.Path, RegexOptions.IgnoreCase);
-                parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
-                parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
+                if (parameters.Contains('%'))
+                {
+                    parameters = Regex.Replace(parameters, "%1", this.Path, RegexOptions.IgnoreCase);
+                    parameters = Regex.Replace(parameters, "%l", this.Path, RegexOptions.IgnoreCase);
+                    parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
+                    parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
+                }
+                else
+                {
+                    parameters = string.Concat(parameters, "\"", this.Path, "\"");
+                }
 
                 ShellHelper.ShellExecute(cmd, parameters);
             }
@@ -446,7 +461,8 @@ namespace SizeOnDisk.ViewModel
 
                         foreach (ShellCommandVerb verb in soft.Verbs)
                         {
-                            if (!verb.Verb.ToUpperInvariant().Contains("NEW") && !string.IsNullOrEmpty(verb.Command))
+                            //TODO ------------------------>
+                            if (!verb.Verb.ToUpperInvariant().Contains("NEW"))// && !string.IsNullOrEmpty(verb.Command))
                             {
                                 DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
                                 {

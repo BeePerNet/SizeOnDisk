@@ -164,7 +164,9 @@ namespace SizeOnDisk.Shell
                 Name = id
             };
 
-            string name = verbkey.GetValue(string.Empty, string.Empty).ToString();
+            string name = verbkey.GetValue("MUIVerb", string.Empty).ToString();
+            if (string.IsNullOrEmpty(name))
+                name = verbkey.GetValue(string.Empty, string.Empty).ToString();
             if (name.StartsWith("@", StringComparison.Ordinal))
             {
                 StringBuilder outBuff = new StringBuilder(1024);
@@ -183,15 +185,54 @@ namespace SizeOnDisk.Shell
                     verb.Name = name;
             }
 
+            if (id.ToUpperInvariant() == "RUNASUSER")
+            {
+                verb.Command = "cmd:runasuser";
+                return verb;
+            }
+
             RegistryKey cmd = verbkey.OpenSubKey("command");
             if (cmd != null)
             {
                 verb.Command = cmd.GetValue(string.Empty, string.Empty).ToString();
+                if (string.IsNullOrEmpty(verb.Command))
+                {
+                    name = cmd.GetValue("DelegateExecute", string.Empty).ToString();
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        cmd = Registry.ClassesRoot.OpenSubKey("CLSID\\" + name);
+                        if (cmd != null)
+                        {
+                            cmd = cmd.OpenSubKey("LocalServer32");
+                            if (cmd != null)
+                            {
+                                name = cmd.GetValue(string.Empty, string.Empty).ToString();
+                                if (!string.IsNullOrEmpty(name))
+                                    verb.Command = name;
+                            }
+                            if (string.IsNullOrEmpty(name))
+                            {
+                                cmd = cmd.OpenSubKey("InProcServer32");
+                                if (cmd != null)
+                                {
+                                    name = cmd.GetValue(string.Empty, string.Empty).ToString();
+                                    if (!string.IsNullOrEmpty(name))
+                                        verb.Command = "dll:" + name;
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
             if (string.IsNullOrEmpty(verb.Command))
             {
                 if (!string.IsNullOrEmpty(appUserModeId))
                     verb.Command = "Id:" + appUserModeId;
+            }
+            if (string.IsNullOrEmpty(verb.Command))
+            {
+
             }
             return verb;
         }
@@ -481,7 +522,7 @@ namespace SizeOnDisk.Shell
 
             Process.Start(application, parameters);
         }*/
-        public static void ShellExecuteRunAs(string filename)
+        public static void ShellExecuteOpenAs(string filename)
         {
             ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL {filename}");
         }
