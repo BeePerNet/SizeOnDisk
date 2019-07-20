@@ -75,6 +75,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixBalExtension">
+      <HintPath>$(WixExtDir)\WixBalExtension.dll</HintPath>
+      <Name>WixBalExtension</Name>
+    </WixExtension>
     <WixExtension Include="WixUIExtension">
       <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
       <Name>WixUIExtension</Name>
@@ -85,8 +93,8 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CreateEmbedLangTransform.cmd" />
-    <Content Include="mergeall.cmd" />
+    <None Include="CreateEmbedLangTransform.cmd" />
+    <None Include="mergeall.cmd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="pt.wxl" />

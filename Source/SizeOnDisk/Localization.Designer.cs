@@ -196,20 +196,20 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Files.
-        /// </summary>
-        public static string FileTotal {
-            get {
-                return ResourceManager.GetString("FileTotal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à File size.
         /// </summary>
         public static string FileSize {
             get {
                 return ResourceManager.GetString("FileSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Files.
+        /// </summary>
+        public static string FileTotal {
+            get {
+                return ResourceManager.GetString("FileTotal", resourceCulture);
             }
         }
         
