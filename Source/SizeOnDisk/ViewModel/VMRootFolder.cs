@@ -15,20 +15,16 @@ namespace SizeOnDisk.ViewModel
     {
         #region fields
 
-        private Stopwatch _Runwatch = new Stopwatch();
-        long _HardDriveUsage;
-        long _HardDriveFree;
-        TaskExecutionState _ExecutionState = TaskExecutionState.Running;
-        private readonly string _HardDrivePath;
+        private readonly Stopwatch _Runwatch = new Stopwatch();
+        private long _HardDriveUsage;
+        private long _HardDriveFree;
+        private TaskExecutionState _ExecutionState = TaskExecutionState.Running;
 
         #endregion fields
 
         #region properties
 
-        public string HardDrivePath
-        {
-            get { return _HardDrivePath; }
-        }
+        public string HardDrivePath { get; }
 
         public TimeSpan RunTime
         {
@@ -74,7 +70,7 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name, path, IOHelper.GetClusterSize(path), dispatcher)
         {
             this.ExecutionState = TaskExecutionState.Running;
-            _HardDrivePath = System.IO.Path.GetPathRoot(path);
+            HardDrivePath = System.IO.Path.GetPathRoot(path);
         }
 
         #endregion creator
@@ -90,9 +86,9 @@ namespace SizeOnDisk.ViewModel
             (this.Parent as VMRootHierarchy).SelectedTreeItem = folder;
             (this.Parent as VMRootHierarchy).SelectedListItem = folder;
         }
-        protected override void SelectListItem(VMFile file)
+        protected override void SelectListItem(VMFile selected)
         {
-            (this.Parent as VMRootHierarchy).SelectedListItem = file;
+            (this.Parent as VMRootHierarchy).SelectedListItem = selected;
         }
 
 
@@ -105,7 +101,7 @@ namespace SizeOnDisk.ViewModel
                 _Runwatch.Restart();
                 this.OnPropertyChanged(nameof(RunTime));
 
-                DriveInfo info = new DriveInfo(_HardDrivePath);
+                DriveInfo info = new DriveInfo(HardDrivePath);
                 this.HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
                 this.HardDriveFree = info.AvailableFreeSpace;
 
@@ -141,7 +137,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     Interval = new TimeSpan(0, 0, 1)
                 };
-                _Timer.Tick += new EventHandler(_timer_Tick);
+                _Timer.Tick += new EventHandler(TimerTick);
             }
             this.StopAsync();
             ParallelOptions parallelOptions = new ParallelOptions();
@@ -175,7 +171,7 @@ namespace SizeOnDisk.ViewModel
             _Task.Start();
         }
 
-        void _timer_Tick(object sender, EventArgs e)
+        private void TimerTick(object sender, EventArgs e)
         {
             this.OnPropertyChanged(nameof(RunTime));
             this.RefreshCount();
@@ -233,15 +229,7 @@ namespace SizeOnDisk.ViewModel
             Dispose(false);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            // tell the GC that the Finalize process no longer needs
-            // to be run for this object.
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposeManagedResources)
+        protected override void Dispose(bool disposeManagedResources)
         {
             // process only if mananged and unmanaged resources have
             // not been disposed of.
@@ -251,7 +239,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     // dispose managed resources
                     this.Stop();
-                                       
+
                     if (_CancellationTokenSource != null)
                     {
                         _CancellationTokenSource.Dispose();

@@ -15,7 +15,7 @@ using WPFByYourCommand.Commands;
 namespace SizeOnDisk.ViewModel
 {
     [DebuggerDisplay("{GetType().Name}: {Name}")]
-    public class VMFile : CommandViewModel
+    public class VMFile : CommandViewModel, IDisposable
     {
         public static readonly RoutedCommandEx OpenCommand = new RoutedCommandEx("open", "loc:PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
         public static readonly RoutedCommandEx EditCommand = new RoutedCommandEx("edit", "loc:Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "loc:EditKey"));
@@ -279,8 +279,7 @@ namespace SizeOnDisk.ViewModel
             if (file == null)
                 return;
 
-            RoutedCommand command = e.Command as RoutedCommand;
-            if (command == null)
+            if (!(e.Command is RoutedCommand command))
                 return;
 
             bool isFolder = file is VMFolder;
@@ -332,8 +331,7 @@ namespace SizeOnDisk.ViewModel
             if (file == null)
                 throw new ArgumentNullException("e", "OriginalSource is not VMFile");
 
-            RoutedCommand command = e.Command as RoutedCommand;
-            if (command == null)
+            if (!(e.Command is RoutedCommand command))
                 throw new ArgumentNullException("e", "Command is not RoutedCommand");
 
             bool isFolder = file is VMFolder;
@@ -357,7 +355,7 @@ namespace SizeOnDisk.ViewModel
 
         private void ExecuteCommand(DirectCommand command, object parameter)
         {
-            if (command.Tag.StartsWith("Id:", StringComparison.InvariantCulture))
+            if (command.Tag.StartsWith("Id:", StringComparison.Ordinal))
             {
                 string cmd = command.Tag.Substring(3);
                 //ShellHelper.Activate(cmd, this.Path);
@@ -368,7 +366,7 @@ namespace SizeOnDisk.ViewModel
                 string cmd = command.Tag;
                 string parameters = string.Empty;
                 int pos = 1;
-                if (cmd.StartsWith("\"") && cmd.Count(T => T == '\"') > 1)
+                if (cmd.StartsWith("\"", StringComparison.Ordinal) && cmd.Count(T => T == '\"') > 1)
                 {
                     while (pos < cmd.Length)
                     {
@@ -401,43 +399,50 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        private string[] _Verbs;
-        public string[] Verbs { get { return _Verbs; } set { SetProperty(ref _Verbs, value); } }
+        private IEnumerable<string> _Verbs;
+        public IEnumerable<string> Verbs { get { return _Verbs; } set { SetProperty(ref _Verbs, value); } }
 
         public IEnumerable<ICommand> FileCommands
         {
             get
             {
-                List<ICommand> commands = new List<ICommand>();
-                commands.Add(VMFile.OpenCommand);
-                commands.Add(VMFile.EditCommand);
-                commands.Add(VMFile.OpenAsCommand);
-                commands.Add(VMFile.PrintCommand);
+                List<ICommand> commands = new List<ICommand>
+                {
+                    VMFile.OpenCommand,
+                    VMFile.EditCommand,
+                    VMFile.OpenAsCommand,
+                    VMFile.PrintCommand
+                };
 
-                ShellHelper.ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
-                Verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
-                if (Verbs.Length > 0)
+                ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
+                string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
+                this.Verbs = verbs;
+                if (verbs.Length > 0)
                 {
                     commands.Add(SeparatorDummyCommand.Instance);
-                    foreach (ShellHelper.ShellCommandSoftware soft in root.Softwares)
+                    foreach (ShellCommandSoftware soft in root.Softwares)
                     {
                         ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
 
                         if (soft.Icon != null)
                         {
-                            Image image = new Image();
-                            image.Source = soft.Icon;
-                            image.Width = 16;
-                            image.Height = 16;
+                            Image image = new Image
+                            {
+                                Source = soft.Icon,
+                                Width = 16,
+                                Height = 16
+                            };
                             parent.Icon = image;
                         }
 
-                        foreach (ShellHelper.ShellCommandVerb verb in soft.Verbs)
+                        foreach (ShellCommandVerb verb in soft.Verbs)
                         {
-                            if (!verb.Verb.ToLowerInvariant().Contains("new") && !string.IsNullOrEmpty(verb.Command))
+                            if (!verb.Verb.ToUpperInvariant().Contains("NEW") && !string.IsNullOrEmpty(verb.Command))
                             {
-                                DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
-                                cmd.Tag = verb.Command;
+                                DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
+                                {
+                                    Tag = verb.Command
+                                };
                                 parent.Childs.Add(cmd);
                             }
                         }
@@ -459,6 +464,25 @@ namespace SizeOnDisk.ViewModel
                 commands.Add(VMFile.PropertiesCommand);
                 return commands;
             }
+        }
+
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+                if (Details != null)
+                    this.Details.Dispose();
+            }
+            // free native resources
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

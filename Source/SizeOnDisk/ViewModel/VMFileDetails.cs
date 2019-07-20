@@ -1,24 +1,25 @@
 ﻿using SizeOnDisk.Shell;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFileDetails : ObservableObject
+    public class VMFileDetails : ObservableObject, IDisposable
     {
         private string _FileType;
         private DateTime? _CreationTime;
         private DateTime? _LastAccessTime;
         private DateTime? _LastWriteTime;
-        VMFile _vmFile;
+        private readonly VMFile _vmFile;
 
         public VMFileDetails(VMFile vmFile)
         {
             _vmFile = vmFile;
         }
+
+        Task task;
 
         public LittleFileInfo Load()
         {
@@ -39,11 +40,12 @@ namespace SizeOnDisk.ViewModel
             this._icon = ShellHelper.GetIcon(_vmFile.Path, 16);
             this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
 
-            new Task(() =>
+            task = new Task(() =>
             {
                 _thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
                 this.OnPropertyChanged(nameof(Thumbnail));
-            }).Start();
+            });
+            task.Start();
 
             return fileInfo;
         }
@@ -107,6 +109,22 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+                if (this.task != null)
+                    this.task.Dispose();
+            }
+            // free native resources
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
     }
 }

@@ -14,7 +14,7 @@ namespace SizeOnDisk.ViewModel
     public class VMRootHierarchy : VMFolder
     {
 
-        void _timer_Tick(object sender, EventArgs e)
+        void TimerTick(object sender, EventArgs e)
         {
             RunningThreads = Process.GetCurrentProcess().Threads.Count;
         }
@@ -52,7 +52,7 @@ namespace SizeOnDisk.ViewModel
             set { SetProperty(ref _SelectedListItem, value); }
         }
 
-        private DispatcherTimer _Timer;
+        private readonly DispatcherTimer _Timer;
 
         public VMRootHierarchy() : base(null, null, null, 0, Dispatcher.CurrentDispatcher)
         {
@@ -70,7 +70,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     Interval = new TimeSpan(0, 0, 1)
                 };
-                _Timer.Tick += new EventHandler(_timer_Tick);
+                _Timer.Tick += new EventHandler(TimerTick);
                 _Timer.Start();
             }
         }

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.Shell
 {
@@ -9,7 +10,6 @@ namespace SizeOnDisk.Shell
 
     internal class OpenFolderDialog
     {
-
         /// <summary>
         /// Gets/sets folder in which dialog will be open.
         /// </summary>
@@ -41,24 +41,21 @@ namespace SizeOnDisk.Shell
         private bool ShowVistaDialog(IWin32Window owner)
         {
             var frm = (ShellHelper.SafeNativeMethods.IFileDialog)(new ShellHelper.SafeNativeMethods.FileOpenDialogRCW());
-            ShellHelper.SafeNativeMethods.FileOpenOptions options;
-            frm.GetOptions(out options);
+            frm.GetOptions(out ShellHelper.SafeNativeMethods.FileOpenOptions options);
             options |= ShellHelper.SafeNativeMethods.FileOpenOptions.PickFolders | ShellHelper.SafeNativeMethods.FileOpenOptions.ForceFilesystem | ShellHelper.SafeNativeMethods.FileOpenOptions.NoValidate | ShellHelper.SafeNativeMethods.FileOpenOptions.NoTestFileCreate | ShellHelper.SafeNativeMethods.FileOpenOptions.DontAddToRecent;
             frm.SetOptions(options);
             if (this.InitialFolder != null)
             {
-                ShellHelper.SafeNativeMethods.IShellItem directoryShellItem;
-                var riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
-                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.InitialFolder, IntPtr.Zero, ref riid, out directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
+                Guid riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
+                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.InitialFolder, IntPtr.Zero, ref riid, out ShellHelper.SafeNativeMethods.IShellItem directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                 {
                     frm.SetFolder(directoryShellItem);
                 }
             }
             if (this.DefaultFolder != null)
             {
-                ShellHelper.SafeNativeMethods.IShellItem directoryShellItem;
-                var riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
-                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.DefaultFolder, IntPtr.Zero, ref riid, out directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
+                Guid riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
+                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.DefaultFolder, IntPtr.Zero, ref riid, out ShellHelper.SafeNativeMethods.IShellItem directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                 {
                     frm.SetDefaultFolder(directoryShellItem);
                 }
@@ -66,11 +63,9 @@ namespace SizeOnDisk.Shell
 
             if (frm.Show(owner.Handle) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
             {
-                ShellHelper.SafeNativeMethods.IShellItem shellItem;
-                if (frm.GetResult(out shellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
+                if (frm.GetResult(out ShellHelper.SafeNativeMethods.IShellItem shellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                 {
-                    IntPtr pszString;
-                    if (shellItem.GetDisplayName(ShellHelper.SafeNativeMethods.SIGDN.SIGDN_FILESYSPATH, out pszString) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
+                    if (shellItem.GetDisplayName(ShellHelper.SafeNativeMethods.SIGDN.SIGDN_FILESYSPATH, out IntPtr pszString) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                     {
                         if (pszString != IntPtr.Zero)
                         {
@@ -101,7 +96,7 @@ namespace SizeOnDisk.Shell
                 //frm.FileName = "any";
                 if (this.InitialFolder != null) { frm.InitialDirectory = this.InitialFolder; }
                 //frm.OverwritePrompt = false;
-                frm.Title = "Select Folder";
+                frm.Title = LocExtension.GetLocalizedValue<string>("ChooseFolder");
                 frm.ValidateNames = false;
                 if (frm.ShowDialog(owner) == DialogResult.OK)
                 {

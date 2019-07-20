@@ -16,7 +16,7 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMFolder : VMFile
     {
-        private uint clusterSize;
+        private readonly uint clusterSize;
 
         public void PermanentDeleteAllSelectedFiles()
         {
@@ -76,7 +76,7 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        private object _myCollectionLock = new object();
+        private readonly object _myCollectionLock = new object();
 
         protected VMFolder(VMFolder parent, string name, string path, uint clusterSize, Dispatcher dispatcher)
             : base(parent, name, path)
@@ -89,12 +89,12 @@ namespace SizeOnDisk.ViewModel
             {
                 BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
                 BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
-            }), DispatcherPriority.DataBind);
+            }), DispatcherPriority.Normal);
         }
 
         [DesignOnly(true)]
         internal VMFolder(VMFolder parent, string name, string path)
-            : base(parent, name, path)
+            : base(parent, name, path, true)
         {
             RefreshCount();
         }
@@ -200,8 +200,10 @@ namespace SizeOnDisk.ViewModel
                             this.FillChildList();
 
                             Parallel.ForEach(this.Childs, (T) => T.RefreshOnView());
-                        });
-                        thread.IsBackground = true;
+                        })
+                        {
+                            IsBackground = true
+                        };
                         //thread.Priority = ThreadPriority.Highest;
                         thread.Start();
                     }

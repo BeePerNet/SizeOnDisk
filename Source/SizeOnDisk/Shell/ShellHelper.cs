@@ -15,7 +15,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
@@ -34,22 +33,18 @@ namespace SizeOnDisk.Shell
         {
             SafeNativeMethods.ApplicationActivationManager appActiveManager = new SafeNativeMethods.ApplicationActivationManager();//Class not registered
             //IApplicationActivationManager iappActiveManager = (IApplicationActivationManager)appActiveManager;
-            uint pid;
-            appActiveManager.ActivateApplication(appId, arguments, SafeNativeMethods.ActivateOptions.None, out pid);
+            appActiveManager.ActivateApplication(appId, arguments, SafeNativeMethods.ActivateOptions.None, out uint pid);
         }
 
         public static void Activate(string appId, string file, string verb)
         {
             SafeNativeMethods.ApplicationActivationManager appActiveManager = new SafeNativeMethods.ApplicationActivationManager();//Class not registered
-            SafeNativeMethods.IShellItem pShellItem;
-            SafeNativeMethods.IShellItemArray pShellItemArray = null;
             Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
-            if (SafeNativeMethods.SHCreateItemFromParsingName(file, IntPtr.Zero, ref guid, out pShellItem) == (int)SafeNativeMethods.HResult.Ok)
+            if (SafeNativeMethods.SHCreateItemFromParsingName(file, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem pShellItem) == (int)SafeNativeMethods.HResult.Ok)
             {
-                if (SafeNativeMethods.SHCreateShellItemArrayFromShellItem(pShellItem, typeof(SafeNativeMethods.IShellItemArray).GUID, out pShellItemArray) == (int)SafeNativeMethods.HResult.Ok)
+                if (SafeNativeMethods.SHCreateShellItemArrayFromShellItem(pShellItem, typeof(SafeNativeMethods.IShellItemArray).GUID, out SafeNativeMethods.IShellItemArray pShellItemArray) == (int)SafeNativeMethods.HResult.Ok)
                 {
-                    uint pid;
-                    appActiveManager.ActivateForFile(appId, pShellItemArray, verb, out pid);
+                    appActiveManager.ActivateForFile(appId, pShellItemArray, verb, out uint pid);
                 }
             }
         }
@@ -76,29 +71,9 @@ namespace SizeOnDisk.Shell
             return associations[extension];
         }
 
-        public class ShellCommandRoot
-        {
-            public string ContentType;
-            public string PerceivedType;
-            public ShellCommandSoftware Default;
-            public IList<ShellCommandSoftware> Softwares = new List<ShellCommandSoftware>();
-        }
 
-        public class ShellCommandSoftware
-        {
-            public string Name;
-            public string Id;
-            public BitmapSource Icon;
-            public ShellCommandVerb Default;
-            public IList<ShellCommandVerb> Verbs = new List<ShellCommandVerb>();
-        }
 
-        public class ShellCommandVerb
-        {
-            public string Verb;
-            public string Name;
-            public string Command;
-        }
+
 
         private static BitmapSource GetIcon(string value)
         {
@@ -107,12 +82,12 @@ namespace SizeOnDisk.Shell
                 string[] values = value.Split(',');
                 if (values != null && values.Length == 2)
                 {
-                    return SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                    return SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1], CultureInfo.InvariantCulture));
                 }
                 else if (values != null && values.Length == 1)
                 {
                     string icon = values[0];
-                    if (values[0].StartsWith("@{"))
+                    if (values[0].StartsWith("@{", StringComparison.Ordinal))
                     {
                         StringBuilder outBuff = new StringBuilder(1024);
                         if (SafeNativeMethods.SHLoadIndirectString(icon, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
@@ -123,7 +98,7 @@ namespace SizeOnDisk.Shell
                                 values = outBuff.ToString().Split(',');
                                 if (values != null && values.Length == 2)
                                 {
-                                    return SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1]));
+                                    return SafeNativeMethods.ExtractIconFromDLL(values[0], int.Parse(values[1], CultureInfo.InvariantCulture));
                                 }
                             }
                             else
@@ -149,12 +124,12 @@ namespace SizeOnDisk.Shell
                 string[] values = value.Split(',');
                 if (values != null && values.Length == 2)
                 {
-                    return SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1]));
+                    return SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1], CultureInfo.InvariantCulture));
                 }
                 else if (values != null && values.Length == 1)
                 {
                     string text = values[0];
-                    if (values[0].StartsWith("@{"))
+                    if (values[0].StartsWith("@{", StringComparison.Ordinal))
                     {
                         StringBuilder outBuff = new StringBuilder(1024);
                         if (SafeNativeMethods.SHLoadIndirectString(text, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
@@ -164,7 +139,7 @@ namespace SizeOnDisk.Shell
                             {
                                 values = outBuff.ToString().Split(',');
                                 if (values != null && values.Length == 2)
-                                    return SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1]));
+                                    return SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1], CultureInfo.InvariantCulture));
                             }
                             else
                             {
@@ -183,12 +158,14 @@ namespace SizeOnDisk.Shell
 
         private static ShellCommandVerb GetVerb(RegistryKey verbkey, string id, string appUserModeId)
         {
-            ShellCommandVerb verb = new ShellCommandVerb();
-            verb.Verb = id;
-            verb.Name = id;
+            ShellCommandVerb verb = new ShellCommandVerb
+            {
+                Verb = id,
+                Name = id
+            };
 
             string name = verbkey.GetValue(string.Empty, string.Empty).ToString();
-            if (name.StartsWith("@"))
+            if (name.StartsWith("@", StringComparison.Ordinal))
             {
                 StringBuilder outBuff = new StringBuilder(1024);
                 if (SafeNativeMethods.SHLoadIndirectString(name, outBuff, outBuff.Capacity, IntPtr.Zero) == 0)
@@ -235,8 +212,10 @@ namespace SizeOnDisk.Shell
 
         private static ShellCommandSoftware GetSoftware(RegistryKey appkey, string id)
         {
-            ShellCommandSoftware soft = new ShellCommandSoftware();
-            soft.Id = id;
+            ShellCommandSoftware soft = new ShellCommandSoftware
+            {
+                Id = id
+            };
 
             RegistryKey subkey;
 
@@ -463,15 +442,9 @@ namespace SizeOnDisk.Shell
         }*/
 
 
-
-
-        private readonly static Dictionary<string, string> verbReplacementList;
-
         [SuppressMessage("Microsoft.Performance", "CA1810")]
         static ShellHelper()
         {
-            verbReplacementList = new Dictionary<string, string>();
-            verbReplacementList.Add("print", "printto");
         }
 
         #region public functions
@@ -483,7 +456,7 @@ namespace SizeOnDisk.Shell
 
         public static string FileExtentionInfo(AssocStr assocStr, string doctype)
         {
-            uint pcchOut = 0;
+            IntPtr pcchOut = IntPtr.Zero;
             if (SafeNativeMethods.AssocQueryString(AssocF.Verify, assocStr, doctype, null, null, ref pcchOut) != 1)
                 return null;
             StringBuilder pszOut = new StringBuilder((int)pcchOut);
@@ -511,15 +484,17 @@ namespace SizeOnDisk.Shell
 
         public static void ShellExecute(string fileName, string verb, string parameters, IntPtr ownerWindow)
         {
-            SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO();
-            info.hwnd = ownerWindow;
-            info.lpVerb = verb;
-            info.lpFile = fileName;
-            info.lpParameters = parameters;
-            info.nShow = SafeNativeMethods.SW_SHOW;
-            info.fMask = (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_FLAG_NO_UI
+            SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO
+            {
+                hwnd = ownerWindow,
+                lpVerb = verb,
+                lpFile = fileName,
+                lpParameters = parameters,
+                nShow = SafeNativeMethods.SW_SHOW,
+                fMask = (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_FLAG_NO_UI
                 | (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_UNICODE
-                | (!string.IsNullOrWhiteSpace(verb) && (verb != "find") ? (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_INVOKEIDLIST : 0);
+                | (!string.IsNullOrWhiteSpace(verb) && (verb != "find") ? (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_INVOKEIDLIST : 0)
+            };
             info.cbSize = Marshal.SizeOf(info);
             SafeNativeMethods.ShellExecuteEx(ref info);
             if (info.hInstApp.ToInt64() <= 32)
@@ -552,12 +527,14 @@ namespace SizeOnDisk.Shell
             Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
             int retCode = SafeNativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem nativeShellItem);
             if (retCode < 0)
-                throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
+                throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
 
 
-            SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size();
-            nativeSIZE.Width = Convert.ToInt32(size);
-            nativeSIZE.Height = Convert.ToInt32(size);
+            SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size
+            {
+                Width = Convert.ToInt32(size),
+                Height = Convert.ToInt32(size)
+            };
 
             SafeNativeMethods.SIIGBF options = SafeNativeMethods.SIIGBF.ResizeToFit;
             if (!thumbnail)
@@ -613,9 +590,10 @@ namespace SizeOnDisk.Shell
         //[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Execution)]
         public static void Restart(bool runAsAdministrator)
         {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo();
-
-            processStartInfo.FileName = Assembly.GetExecutingAssembly().Location;
+            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            {
+                FileName = Assembly.GetExecutingAssembly().Location
+            };
             if (runAsAdministrator)
             {
                 processStartInfo.Verb = "runas";
@@ -637,48 +615,49 @@ namespace SizeOnDisk.Shell
             }
         }
 
-        public static long? GetCompressedFileSize(string filename)
+        public static long? GetCompressedFileSize(string fileName)
         {
-            SafeNativeMethods.FILE_STANDARD_INFO dirinfo;
-            using (SafeFileHandle handle = SafeNativeMethods.OpenHandle(filename))
+            using (SafeFileHandle handle = SafeNativeMethods.OpenHandle(fileName))
             {
                 if (handle != null)
                 {
 
-                    bool result = SafeNativeMethods.GetFileInformationByHandleEx(handle, SafeNativeMethods.FILE_INFO_BY_HANDLE_CLASS.FileStandardInfo, out dirinfo, (uint)Marshal.SizeOf(typeof(SafeNativeMethods.FILE_STANDARD_INFO)));
-                    //bool result = SafeNativeMethods.GetFileInformationByHandleEx(handle, SafeNativeMethods.FILE_INFO_BY_HANDLE_CLASS.FileAllocationInfo, out dirinfo, (uint)Marshal.SizeOf(typeof(SafeNativeMethods.FILE_ID_BOTH_DIR_INFO)));
-                    int win32Error = Marshal.GetLastWin32Error();
-                    if (win32Error != 0)
-                        throw new Win32Exception(win32Error);
-                    return dirinfo.AllocationSize.ToInt64();
+                    if (!SafeNativeMethods.GetFileInformationByHandleEx(handle, SafeNativeMethods.FILE_INFO_BY_HANDLE_CLASS.FileStandardInfo, out SafeNativeMethods.FILE_STANDARD_INFO dirinfo, (uint)Marshal.SizeOf(typeof(SafeNativeMethods.FILE_STANDARD_INFO))))
+                    {
+                        int win32Error = Marshal.GetLastWin32Error();
+                        if (win32Error != 0)
+                            throw new Win32Exception(win32Error);
+                        return dirinfo.AllocationSize.ToInt64();
+                    }
                 }
             }
             return null;
         }
 
         [Flags]
-        public enum AssocF : uint
+        public enum AssocF : int
         {
             None = 0,
-            Init_NoRemapCLSID = 0x1,
-            Init_ByExeName = 0x2,
-            Open_ByExeName = 0x2,
-            Init_DefaultToStar = 0x4,
-            Init_DefaultToFolder = 0x8,
+            InitNoRemapClsid = 0x1,
+            InitByExeName = 0x2,
+            OpenByExeName = 0x2,
+            InitDefaultToStar = 0x4,
+            InitDefaultToFolder = 0x8,
             NoUserSettings = 0x10,
             NoTruncate = 0x20,
             Verify = 0x40,
             RemapRunDll = 0x80,
             NoFixUps = 0x100,
             IgnoreBaseClass = 0x200,
-            Init_IgnoreUnknown = 0x400,
-            Init_FixedProgId = 0x800,
+            InitIgnoreUnknown = 0x400,
+            InitFixedProgId = 0x800,
             IsProtocol = 0x1000,
             InitForFile = 0x2000,
         }
 
         public enum AssocStr
         {
+            None = 0,
             Command = 1,
             Executable,
             FriendlyDocName,
@@ -699,8 +678,8 @@ namespace SizeOnDisk.Shell
             DelegateExecute,
             SupportedUriProtocols,
             // The values below ('Max' excluded) have been introduced in W10 1511
-            ProgID,
-            AppID,
+            ProgId,
+            AppId,
             AppPublisher,
             AppIconReference,
             Max
@@ -764,22 +743,11 @@ namespace SizeOnDisk.Shell
             [StructLayout(LayoutKind.Sequential, Pack = 4)]
             public struct REFPROPERTYKEY
             {
-                private Guid fmtid;
-                private int pid;
-                public Guid FormatId
-                {
-                    get
-                    {
-                        return this.fmtid;
-                    }
-                }
-                public int PropertyId
-                {
-                    get
-                    {
-                        return this.pid;
-                    }
-                }
+                private readonly Guid fmtid;
+                private readonly int pid;
+                public Guid FormatId => this.fmtid;
+                public int PropertyId => this.pid;
+
                 public REFPROPERTYKEY(Guid formatId, int propertyId)
                 {
                     this.fmtid = formatId;
@@ -824,9 +792,6 @@ namespace SizeOnDisk.Shell
                 ASSOC_FILTER_RECOMMENDED = 0x00000001
             }
 
-            [DllImport("Shell32", EntryPoint = "SHAssocEnumHandlers", PreserveSig = false)]
-            public extern static void SHAssocEnumHandlers([MarshalAs(UnmanagedType.LPWStr)] string pszExtra, ASSOC_FILTER afFilter, [Out] out IntPtr ppEnumHandler);
-
             // IEnumAssocHandlers
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Unicode)]
             internal delegate int FuncNext(IntPtr refer, int celt, [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Interface, SizeParamIndex = 1)] IntPtr[] rgelt, [Out] out int pceltFetched);
@@ -844,19 +809,12 @@ namespace SizeOnDisk.Shell
             internal static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
 
 
-            [DllImport("Shlwapi.dll", EntryPoint = "AssocQueryStringW", CharSet = CharSet.Auto, ExactSpelling = true, SetLastError = true, ThrowOnUnmappableChar = true)]
-            internal static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, [In][Out] ref uint pcchOut);
-
-
-            [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
-            internal static extern void SHEvaluateSystemCommandTemplate(
-               string template,
-               [Out] out string application,
-               [Out] out string commandLine,
-               [Out] out string parameters);
+            [DllImport("Shlwapi.dll", EntryPoint = "AssocQueryStringW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true, ThrowOnUnmappableChar = true)]
+            internal static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, [In][Out] ref IntPtr pcchOut);
 
 
             [DllImport("kernel32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool GetFileInformationByHandleEx(SafeFileHandle hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, out FILE_STANDARD_INFO dirInfo, uint dwBufferSize);
 
             // .NET classes representing runtime callable wrappers.
@@ -906,18 +864,16 @@ namespace SizeOnDisk.Shell
             [StructLayout(LayoutKind.Sequential)]
             internal struct Size
             {
-                private int width;
-                private int height;
 
                 /// <summary>
                 /// Width
                 /// </summary>
-                public int Width { get { return width; } set { width = value; } }
+                public int Width { get; set; }
 
                 /// <summary>
                 /// Height
                 /// </summary>
-                public int Height { get { return height; } set { height = value; } }
+                public int Height { get; set; }
             };
 
 
@@ -1029,26 +985,17 @@ namespace SizeOnDisk.Shell
 
             #endregion
 
-            [DllImport("shell32.dll", EntryPoint = "ExtractIconW",
-                CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
-            private static extern IntPtr ExtractIcon(IntPtr hInst, string lpszExeFileName, int nIconIndex);
-
             [DllImport("user32.dll", EntryPoint = "DestroyIcon",
-                CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
+                SetLastError = true, ExactSpelling = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
             private static extern bool DestroyIcon(IntPtr hIcon);
 
-            [DllImport("Shell32.dll")]
-            public static extern int ExtractIconEx(
-    string libName,
-    int iconIndex,
-    IntPtr[] largeIcon,
-    IntPtr[] smallIcon,
-    uint nIcons
-);
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+            static extern uint ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
 
             public static BitmapSource ExtractIconFromDLL(string file, int index)
             {
-                if (file.StartsWith("@%"))
+                if (file.StartsWith("@%", StringComparison.Ordinal))
                     file = file.Substring(1);
 
                 IntPtr[] handles = new IntPtr[1];
@@ -1091,10 +1038,10 @@ namespace SizeOnDisk.Shell
             }
 
 
-            [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+            [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode, ThrowOnUnmappableChar = true, BestFitMapping = false)]
             private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
 
-            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            [DllImport("user32.dll", CharSet = CharSet.Unicode)]
             private static extern int LoadString(IntPtr hInstance, int ID, StringBuilder lpBuffer, int nBufferMax);
 
             [DllImport("kernel32.dll", SetLastError = true)]
@@ -1103,12 +1050,18 @@ namespace SizeOnDisk.Shell
 
             public static string ExtractStringFromDLL(string file, int number)
             {
-                if (file.StartsWith("@"))
+                if (file.StartsWith("@", StringComparison.Ordinal))
                     file = file.Substring(1);
                 IntPtr lib = LoadLibrary(file);
                 StringBuilder result = new StringBuilder(256);
-                LoadString(lib, number, result, result.Capacity);
-                FreeLibrary(lib);
+                try
+                {
+                    int r = LoadString(lib, number, result, result.Capacity);
+                }
+                finally
+                {
+                    FreeLibrary(lib);
+                }
                 return result.ToString();
             }
 

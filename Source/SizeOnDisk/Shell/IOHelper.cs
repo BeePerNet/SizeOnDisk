@@ -19,6 +19,7 @@ namespace SizeOnDisk.Shell
         internal static class SafeNativeMethods
         {
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+            [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool FindNextFile(SafeFindHandle hFindFile, [Out] WIN32_FIND_DATA lpFindFileData);
 
 
