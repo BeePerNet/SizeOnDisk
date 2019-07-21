@@ -26,6 +26,7 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx DeleteCommand = new RoutedCommandEx("delete", "loc:PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin_Empty.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
         public static readonly RoutedCommandEx PermanentDeleteCommand = new RoutedCommandEx("permanentdelete", "loc:PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "loc:PermanentDeleteKey"));
         public static readonly RoutedCommandEx PropertiesCommand = new RoutedCommandEx("properties", "loc:PresentationCore:ExceptionStringTable:PropertiesText", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
+        public static readonly RoutedCommandEx OpenAsTextCommand = new RoutedCommandEx("openastext", "Open As Text", typeof(VMFile));
 
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -33,6 +34,7 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(OpenAsTextCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(PrintCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(ExploreCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(FindCommand, CallShellCommand, CanCallShellCommand));
@@ -303,12 +305,12 @@ namespace SizeOnDisk.ViewModel
                 e.CanExecute = true;
                 return;
             }
-            if (command == FindCommand && !isFolder)
+            if (command == OpenCommand && isFolder)
             {
                 e.CanExecute = true;
                 return;
             }
-            if (command == OpenCommand && isFolder)
+            if ((command == FindCommand || command == OpenAsTextCommand) && !isFolder)
             {
                 e.CanExecute = true;
                 return;
@@ -334,6 +336,9 @@ namespace SizeOnDisk.ViewModel
             if (!(e.Command is RoutedCommand command))
                 throw new ArgumentNullException("e", "Command is not RoutedCommand");
 
+            if ((e.Command as IMenuCommand)?.Tag != null)
+                file.ExecuteCommand(command as IMenuCommand, e);
+
             if (command == OpenAsCommand)
             {
                 ShellHelper.ShellExecuteOpenAs(file.Path);
@@ -353,12 +358,12 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Commands
 
-        private bool CanExecuteCommand(DirectCommand command, object parameter)
+        private bool CanExecuteCommand(IMenuCommand command, object parameter)
         {
             return !this.IsProtected && !string.IsNullOrEmpty(command.Tag);
         }
 
-        private void ExecuteCommand(DirectCommand command, object parameter)
+        private void ExecuteCommand(IMenuCommand command, object parameter)
         {
             string cmd = command.Tag;
             if (cmd.StartsWith("Id:", StringComparison.Ordinal))
@@ -369,7 +374,7 @@ namespace SizeOnDisk.ViewModel
             else if (cmd.StartsWith("cmd:", StringComparison.OrdinalIgnoreCase))
             {
                 cmd = cmd.Substring(4);
-                ShellHelper.ShellExecute(this.Path, null, cmd);
+                ShellHelper.ShellExecute(cmd, $"\"{this.Path}\"");
             }
             else if (cmd.StartsWith("dll:", StringComparison.OrdinalIgnoreCase))
             {
@@ -435,6 +440,7 @@ namespace SizeOnDisk.ViewModel
                     VMFile.OpenCommand,
                     VMFile.EditCommand,
                     VMFile.OpenAsCommand,
+                    VMFile.OpenAsTextCommand,
                     VMFile.PrintCommand
                 };
 
@@ -490,6 +496,8 @@ namespace SizeOnDisk.ViewModel
                 return commands;
             }
         }
+
+
 
 
 

@@ -35,7 +35,7 @@ namespace SizeOnDisk
             this.RunAsAdmin.Visibility = (UserAccessControlHelper.SupportUserAccessControl ? Visibility.Visible : Visibility.Collapsed);
             this.RunAsAdmin.IsEnabled = !UserAccessControlHelper.IsProcessElevated;
             _RootHierarchy = this.DataContext as VMRootHierarchy;
-
+            DefaultEditors.InitializeDefaultHandlers(VMFile.OpenAsTextCommand);
 
 
             //CanExecuteRoutedEventHandler _handler = new CanExecuteRoutedEventHandler(OnCanExecuteRoutedEventHandler);

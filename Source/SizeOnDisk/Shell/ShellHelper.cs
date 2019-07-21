@@ -32,7 +32,6 @@ namespace SizeOnDisk.Shell
         public static void Activate(string appId, string arguments)
         {
             SafeNativeMethods.ApplicationActivationManager appActiveManager = new SafeNativeMethods.ApplicationActivationManager();//Class not registered
-            //IApplicationActivationManager iappActiveManager = (IApplicationActivationManager)appActiveManager;
             appActiveManager.ActivateApplication(appId, arguments, SafeNativeMethods.ActivateOptions.None, out uint pid);
         }
 
@@ -508,57 +507,23 @@ namespace SizeOnDisk.Shell
             return pszOut.ToString();
         }
 
-        /*public static void VerbExecute(string command)
-        {
-            uint bufferSize = 260;
-            var buffer = new StringBuilder((int)bufferSize);
-            SafeNativeMethods.AssocQueryString(AssocF.IsProtocol, AssocStr.Command, "http", "open", buffer, ref bufferSize);
-            var template = buffer.ToString();
-
-            string application, commandLine, parameters;
-            SafeNativeMethods.SHEvaluateSystemCommandTemplate(template, out application, out commandLine, out parameters);
-
-            parameters = parameters.Replace("%1", "\"? " + command + "\"");
-
-            Process.Start(application, parameters);
-        }*/
         public static void ShellExecuteOpenAs(string filename)
         {
             ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL {filename}");
         }
 
-
         public static void ShellExecute(string fileName, string arguments = null, string verb = null)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo()
+            new Process
             {
-                FileName = fileName,
-                Verb = verb,
-                Arguments = arguments,
-                CreateNoWindow = true,
-            };
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
-
-            /*SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO
-            {
-                hwnd = ownerWindow,
-                lpVerb = verb,
-                lpFile = fileName,
-                lpParameters = parameters,
-                nShow = SafeNativeMethods.SW_SHOW,
-                fMask = (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_FLAG_NO_UI
-                | (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_UNICODE
-                | (!string.IsNullOrWhiteSpace(verb) && (verb != "find") ? (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_INVOKEIDLIST : 0)
-            };
-            info.cbSize = Marshal.SizeOf(info);
-            SafeNativeMethods.ShellExecuteEx(ref info);
-            if (info.hInstApp.ToInt64() <= 32)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Invalid operation ({1}) on file {0}", fileName,
-                    (SafeNativeMethods.ShellExecuteReturnCodes)info.hInstApp.ToInt32()));
-            }*/
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = fileName,
+                    Verb = verb,
+                    Arguments = arguments,
+                    CreateNoWindow = true,
+                }
+            }.Start();
         }
 
 

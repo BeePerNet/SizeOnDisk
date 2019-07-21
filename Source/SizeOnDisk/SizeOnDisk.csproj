@@ -181,6 +181,7 @@
     <Compile Include="Utilities\UserAccessControlHelper.cs" />
     <Compile Include="Shell\IOHelper.cs" />
     <Compile Include="Utilities\WrapperIWin32Window.cs" />
+    <Compile Include="ViewModel\DefaultEditors.cs" />
     <Compile Include="ViewModel\TaskExecutionState.cs" />
     <Compile Include="ViewModel\VMFileDetails.cs" />
     <Compile Include="ViewModel\VMOptions.cs" />
