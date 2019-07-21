@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
@@ -21,12 +20,11 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx EditCommand = new RoutedCommandEx("edit", "loc:Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "loc:EditKey"));
         public static readonly RoutedCommandEx OpenAsCommand = new RoutedCommandEx("openas", "loc:OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "loc:OpenAsKey"));
         public static readonly RoutedCommandEx PrintCommand = new RoutedCommandEx("print", "loc:PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
-        public static readonly RoutedCommandEx ExploreCommand = new RoutedCommandEx("explore", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Folder.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
+        public static readonly RoutedCommandEx ExploreCommand = new RoutedCommandEx("select", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Folder.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
         public static readonly RoutedCommandEx FindCommand = new RoutedCommandEx("find", "loc:PresentationCore:ExceptionStringTable:FindText", "pack://application:,,,/SizeOnDisk;component/Icons/SearchFolderHS.png", typeof(VMFile), new KeyGesture(Key.F, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:FindKeyDisplayString"));
         public static readonly RoutedCommandEx DeleteCommand = new RoutedCommandEx("delete", "loc:PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin_Empty.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
         public static readonly RoutedCommandEx PermanentDeleteCommand = new RoutedCommandEx("permanentdelete", "loc:PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "loc:PermanentDeleteKey"));
         public static readonly RoutedCommandEx PropertiesCommand = new RoutedCommandEx("properties", "loc:PresentationCore:ExceptionStringTable:PropertiesText", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
-        public static readonly RoutedCommandEx OpenAsTextCommand = new RoutedCommandEx("openastext", "Open As Text", typeof(VMFile));
 
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -34,10 +32,9 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(OpenAsTextCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(PrintCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(ExploreCommand, CallShellCommand, CanCallShellCommand));
-            bindingCollection.Add(new CommandBinding(FindCommand, CallShellCommand, CanCallShellCommand));
+            //bindingCollection.Add(new CommandBinding(FindCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(DeleteCommand, CallDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand, CanCallShellCommand));
@@ -285,12 +282,7 @@ namespace SizeOnDisk.ViewModel
                 return;
 
             bool isFolder = file is VMFolder;
-            if (command == PropertiesCommand)
-            {
-                e.CanExecute = true;
-                return;
-            }
-            if (command == ExploreCommand)
+            if (command == PropertiesCommand || command == ExploreCommand || command == FindCommand)
             {
                 e.CanExecute = true;
                 return;
@@ -306,11 +298,6 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
             if (command == OpenCommand && isFolder)
-            {
-                e.CanExecute = true;
-                return;
-            }
-            if ((command == FindCommand || command == OpenAsTextCommand) && !isFolder)
             {
                 e.CanExecute = true;
                 return;
@@ -337,21 +324,23 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException("e", "Command is not RoutedCommand");
 
             if ((e.Command as IMenuCommand)?.Tag != null)
+            {
                 file.ExecuteCommand(command as IMenuCommand, e);
+                return;
+            }
 
             if (command == OpenAsCommand)
             {
-                ShellHelper.ShellExecuteOpenAs(file.Path);
+                ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL \"{file.Path}\"");
                 return;
             }
-            bool isFolder = file is VMFolder;
-            if (isFolder && command == OpenCommand)
+            if (command == ExploreCommand)
             {
-                ShellHelper.ShellExecute(file.Path, null, OpenCommand.Name.ToLowerInvariant());
+                ShellHelper.ShellExecute("explorer.exe", $"/select,\"{file.Path}\"");
                 return;
             }
             string path = file.Path;
-            if ((e.Command == ExploreCommand || e.Command == FindCommand) && (!isFolder || file.IsProtected))
+            if (e.Command == FindCommand && (!(file is VMFolder) || file.IsProtected))
                 path = file.Parent.Path;
             ShellHelper.ShellExecute(path, null, command.Name.ToLowerInvariant());
         }
@@ -382,32 +371,9 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                string parameters = string.Empty;
-                int pos = 1;
-                if (cmd.StartsWith("\"", StringComparison.Ordinal) && cmd.Count(T => T == '\"') > 1)
-                {
-                    while (pos < cmd.Length)
-                    {
-                        pos = cmd.IndexOf('\"', pos);
-                        if (pos < 0 || pos >= cmd.Length)
-                            pos = cmd.Length;
-                        else if (cmd[pos + 1] != '\"')
-                        {
-                            parameters = cmd.Substring(pos + 1);
-                            cmd = cmd.Substring(0, pos + 1);
-                            pos = cmd.Length;
-                        }
-                    }
-                }
-                else
-                {
-                    pos = cmd.IndexOf(' ');
-                    if (pos > 0 && pos < cmd.Length)
-                    {
-                        parameters = cmd.Substring(pos + 1);
-                        cmd = cmd.Substring(0, pos + 1);
-                    }
-                }
+                Tuple<string, string> cmdParam = ShellHelper.SplitCommandAndParameters(cmd);
+                string parameters = cmdParam.Item2;
+
                 string workingDirectory = this.Path;
                 if (!(this is VMFolder))
                     workingDirectory = this.Parent.Path;
@@ -424,7 +390,7 @@ namespace SizeOnDisk.ViewModel
                     parameters = string.Concat(parameters, "\"", this.Path, "\"");
                 }
 
-                ShellHelper.ShellExecute(cmd, parameters);
+                ShellHelper.ShellExecute(cmdParam.Item1, parameters);
             }
         }
 
@@ -440,29 +406,49 @@ namespace SizeOnDisk.ViewModel
                     VMFile.OpenCommand,
                     VMFile.EditCommand,
                     VMFile.OpenAsCommand,
-                    VMFile.OpenAsTextCommand,
-                    VMFile.PrintCommand
+                    VMFile.ExploreCommand,
+                    VMFile.PrintCommand,
+                    SeparatorDummyCommand.Instance
                 };
+
+                bool added = false;
+                foreach (ShellCommandSoftware item in DefaultEditors.Editors)
+                {
+                    added = true;
+                    DirectCommand command = new DirectCommand(item.Id, item.Id, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
+                    command.Tag = item.Name;
+
+                    if (item.Icon != null)
+                    {
+                        command.Icon = new Image
+                        {
+                            Source = item.Icon,
+                            Width = 16,
+                            Height = 16
+                        };
+                    }
+                    commands.Add(command);
+                }
+                if (added)
+                    commands.Add(SeparatorDummyCommand.Instance);
 
                 ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
                 string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
                 this.Verbs = verbs;
                 if (verbs.Length > 0)
                 {
-                    commands.Add(SeparatorDummyCommand.Instance);
                     foreach (ShellCommandSoftware soft in root.Softwares)
                     {
                         ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
 
                         if (soft.Icon != null)
                         {
-                            Image image = new Image
+                            parent.Icon = new Image
                             {
                                 Source = soft.Icon,
                                 Width = 16,
                                 Height = 16
                             };
-                            parent.Icon = image;
                         }
 
                         foreach (ShellCommandVerb verb in soft.Verbs)
@@ -483,11 +469,10 @@ namespace SizeOnDisk.ViewModel
                             commands.Add(parent);
                         }
                     }
+                    commands.Add(SeparatorDummyCommand.Instance);
                 }
 
-                commands.Add(SeparatorDummyCommand.Instance);
-                commands.Add(VMFile.ExploreCommand);
-                commands.Add(VMFile.FindCommand);
+                //commands.Add(VMFile.FindCommand);
                 commands.Add(SeparatorDummyCommand.Instance);
                 commands.Add(VMFile.DeleteCommand);
                 commands.Add(VMFile.PermanentDeleteCommand);
@@ -496,10 +481,6 @@ namespace SizeOnDisk.ViewModel
                 return commands;
             }
         }
-
-
-
-
 
         protected virtual void Dispose(bool disposing)
         {

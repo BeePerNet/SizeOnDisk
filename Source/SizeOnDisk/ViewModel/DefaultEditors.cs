@@ -11,71 +11,77 @@ namespace SizeOnDisk.ViewModel
 {
     public static class DefaultEditors
     {
-        private enum FileType
+        private static IEnumerable<ShellCommandSoftware> list = null;
+        private static object _lock = new object();
+
+        public static IEnumerable<ShellCommandSoftware> Editors
         {
-            Text, Binary
-        }
-        private enum ExecutableType
-        {
-            SoftwareKey,
-            File
-        }
-
-
-        private static readonly List<Tuple<FileType, ExecutableType, string, string>> editors = new List<Tuple<FileType, ExecutableType, string, string>>();
-
-        static DefaultEditors()
-        {
-            editors.Add(new Tuple<FileType, ExecutableType, string, string>(FileType.Text, ExecutableType.SoftwareKey, @"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Notepad++", "notepad++.exe"));
-            editors.Add(new Tuple<FileType, ExecutableType, string, string>(FileType.Text, ExecutableType.SoftwareKey, @"HKEY_LOCAL_MACHINE\SOFTWARE\Notepad++", "notepad++.exe"));
-            editors.Add(new Tuple<FileType, ExecutableType, string, string>(FileType.Text, ExecutableType.File, @"%SystemRoot%\system32\NOTEPAD.EXE", string.Empty));
-        }
-
-        private static bool IsInitialized = false;
-
-        public static void InitializeDefaultHandlers(RoutedCommandEx textCommand)
-        {
-            if (!IsInitialized)
+            get
             {
-                bool found = false;
-                foreach (Tuple<FileType, ExecutableType, string, string> item in editors.Where(T => T.Item1 == FileType.Text))
+                if (list == null)
                 {
-                    switch (item.Item2)
+                    lock (_lock)
                     {
-                        case ExecutableType.SoftwareKey:
-                            string value = Registry.GetValue(item.Item3, string.Empty, string.Empty).ToString();
-                            if (!string.IsNullOrEmpty(value))
+                        if (list == null)
+                        {
+                            List<ShellCommandSoftware> newlist = new List<ShellCommandSoftware>();
+                            IEnumerable<DefaultEditorItem> editorlist = MainConfiguration.Instance?.Editors;
+                            if (editorlist == null)
                             {
-                                string path = string.Concat(value, "\\", item.Item4);
-                                textCommand.Icon = new Image()
-                                {
-                                    Source = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(path, 0),
-                                    Width = 16,
-                                    Height = 16
-                                };
-                                textCommand.Tag = "cmd:" + path;
-                                found = true;
+                                editorlist = new List<DefaultEditorItem>();
                             }
-                            break;
-                        case ExecutableType.File:
-                            if (File.Exists(item.Item3))
+                            foreach (string mainType in editorlist.Select(T => T.Display).Distinct())
                             {
-                                textCommand.Icon = new Image()
+                                foreach (DefaultEditorItem item in editorlist.Where(T => T.Display == mainType))
                                 {
-                                    Source = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(item.Item3, 0),
-                                    Width = 16,
-                                    Height = 16
-                                };
-                                textCommand.Tag = "cmd:" + item.Item3;
-                                found = true;
+                                    bool found = false;
+                                    ShellCommandSoftware command = new ShellCommandSoftware();
+                                    command.Id = item.Display;
+                                    switch (item.Definition)
+                                    {
+                                        case DefaultEditorDefinitionType.ApplicationKey:
+                                            string key = Registry.GetValue($@"HKEY_CLASSES_ROOT\Applications\{item.Parameter1}\shell\open\command", string.Empty, string.Empty).ToString();
+                                            if (!string.IsNullOrEmpty(key))
+                                            {
+                                                command.Icon = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(ShellHelper.SplitCommandAndParameters(key).Item1, 0);
+                                                command.Name = key;
+                                                found = true;
+                                            }
+                                            break;
+                                        case DefaultEditorDefinitionType.SoftwareKey:
+                                            string value = Registry.GetValue(item.Parameter1, string.Empty, string.Empty).ToString();
+                                            if (!string.IsNullOrEmpty(value))
+                                            {
+                                                string path = string.Concat(value, "\\", item.Parameter2);
+                                                command.Icon = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(path, 0);
+                                                command.Name = path;
+                                                found = true;
+                                            }
+                                            break;
+                                        case DefaultEditorDefinitionType.File:
+                                            if (File.Exists(item.Parameter1))
+                                            {
+                                                command.Icon = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(item.Parameter1, 0);
+                                                command.Name = item.Parameter1;
+                                                found = true;
+                                            }
+                                            break;
+                                    }
+                                    if (found)
+                                    {
+                                        newlist.Add(command);
+                                        break;
+                                    }
+                                }
                             }
-                            break;
+                            list = newlist;
+                        }
                     }
-                    if (found) break;
                 }
-                IsInitialized = true;
+                return list;
             }
         }
+
 
     }
 }

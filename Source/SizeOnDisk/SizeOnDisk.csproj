@@ -160,6 +160,8 @@
     <Compile Include="Legend.xaml.cs">
       <DependentUpon>Legend.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainConfiguration.cs" />
+    <Compile Include="MainConfigurationSection.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -181,6 +183,8 @@
     <Compile Include="Utilities\UserAccessControlHelper.cs" />
     <Compile Include="Shell\IOHelper.cs" />
     <Compile Include="Utilities\WrapperIWin32Window.cs" />
+    <Compile Include="ViewModel\DefaultEditorDefinitionType.cs" />
+    <Compile Include="ViewModel\DefaultEditorItem.cs" />
     <Compile Include="ViewModel\DefaultEditors.cs" />
     <Compile Include="ViewModel\TaskExecutionState.cs" />
     <Compile Include="ViewModel\VMFileDetails.cs" />
@@ -334,6 +338,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Recycle_Bin_Empty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="DefaultConfiguration.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

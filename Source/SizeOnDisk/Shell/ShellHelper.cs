@@ -496,6 +496,32 @@ namespace SizeOnDisk.Shell
 
         #region public functions
 
+        public static void ShellExecute(string fileName, string parameters = null, string verb = null)
+        {
+
+            IntPtr window = new WindowInteropHelper(Application.Current.MainWindow)?.Handle ?? IntPtr.Zero;
+
+            SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO
+            {
+                hwnd = window,
+                lpVerb = verb,
+                lpFile = fileName,
+                lpParameters = parameters,
+                nShow = (int)SafeNativeMethods.ShowCommands.SW_SHOW,
+                fMask = (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_FLAG_NO_UI
+                | (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_UNICODE
+                | (!string.IsNullOrWhiteSpace(verb) && (verb != "find") ? (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_INVOKEIDLIST : 0)
+            };
+            info.cbSize = Marshal.SizeOf(info);
+            SafeNativeMethods.ShellExecuteEx(ref info);
+            if (info.hInstApp.ToInt64() <= 32)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Invalid operation ({1}) on file {0}", fileName,
+                    (SafeNativeMethods.ShellExecuteReturnCodes)info.hInstApp.ToInt32()));
+            }
+        }
+
+
         public static string FileExtentionInfo(AssocStr assocStr, string doctype)
         {
             IntPtr pcchOut = IntPtr.Zero;
@@ -507,23 +533,35 @@ namespace SizeOnDisk.Shell
             return pszOut.ToString();
         }
 
-        public static void ShellExecuteOpenAs(string filename)
+        public static Tuple<string, string> SplitCommandAndParameters(string cmd)
         {
-            ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL {filename}");
-        }
-
-        public static void ShellExecute(string fileName, string arguments = null, string verb = null)
-        {
-            new Process
+            string parameters = string.Empty;
+            int pos = 1;
+            if (cmd.StartsWith("\"", StringComparison.Ordinal) && cmd.Count(T => T == '\"') > 1)
             {
-                StartInfo = new ProcessStartInfo()
+                while (pos < cmd.Length)
                 {
-                    FileName = fileName,
-                    Verb = verb,
-                    Arguments = arguments,
-                    CreateNoWindow = true,
+                    pos = cmd.IndexOf('\"', pos);
+                    if (pos < 0 || pos >= cmd.Length)
+                        pos = cmd.Length;
+                    else if (cmd[pos + 1] != '\"')
+                    {
+                        parameters = cmd.Substring(pos + 1);
+                        cmd = cmd.Substring(1, pos - 1);
+                        pos = cmd.Length;
+                    }
                 }
-            }.Start();
+            }
+            else
+            {
+                pos = cmd.IndexOf(' ');
+                if (pos > 0 && pos < cmd.Length)
+                {
+                    parameters = cmd.Substring(pos + 1);
+                    cmd = cmd.Substring(0, pos);
+                }
+            }
+            return new Tuple<string, string>(cmd, parameters);
         }
 
 
@@ -836,28 +874,6 @@ namespace SizeOnDisk.Shell
             IntPtr pbc,
             ref Guid riid,
             [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
-
-
-
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-            internal struct SHELLEXECUTEINFO
-            {
-                public int cbSize;
-                public uint fMask;
-                public IntPtr hwnd;
-                public string lpVerb;
-                public string lpFile;
-                public string lpParameters;
-                public string lpDirectory;
-                public int nShow;
-                public IntPtr hInstApp;
-                public IntPtr lpIDList;
-                public string lpClass;
-                public IntPtr hkeyClass;
-                public uint dwHotKey;
-                public IntPtr hIcon;
-                public IntPtr hProcess;
-            }
 
             /// <summary>
             /// A Wrapper for a SIZE struct
@@ -1223,36 +1239,77 @@ namespace SizeOnDisk.Shell
                 MaximumFileInfoByHandlesClass
             }
 
+            [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+            public static extern bool ShellExecuteEx(ref SHELLEXECUTEINFO lpExecInfo);
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct SHELLEXECUTEINFO
+            {
+                public int cbSize;
+                public uint fMask;
+                public IntPtr hwnd;
+                [MarshalAs(UnmanagedType.LPTStr)]
+                public string lpVerb;
+                [MarshalAs(UnmanagedType.LPTStr)]
+                public string lpFile;
+                [MarshalAs(UnmanagedType.LPTStr)]
+                public string lpParameters;
+                [MarshalAs(UnmanagedType.LPTStr)]
+                public string lpDirectory;
+                public int nShow;
+                public IntPtr hInstApp;
+                public IntPtr lpIDList;
+                [MarshalAs(UnmanagedType.LPTStr)]
+                public string lpClass;
+                public IntPtr hkeyClass;
+                public uint dwHotKey;
+                public IntPtr hIcon;
+                public IntPtr hProcess;
+            }
+
+
+            public enum ShowCommands : int
+            {
+                SW_HIDE = 0,
+                SW_SHOWNORMAL = 1,
+                SW_NORMAL = 1,
+                SW_SHOWMINIMIZED = 2,
+                SW_SHOWMAXIMIZED = 3,
+                SW_MAXIMIZE = 3,
+                SW_SHOWNOACTIVATE = 4,
+                SW_SHOW = 5,
+                SW_MINIMIZE = 6,
+                SW_SHOWMINNOACTIVE = 7,
+                SW_SHOWNA = 8,
+                SW_RESTORE = 9,
+                SW_SHOWDEFAULT = 10,
+                SW_FORCEMINIMIZE = 11,
+                SW_MAX = 11
+            }
 
             [Flags]
-            internal enum ShellExecuteFlags : uint
+            public enum ShellExecuteFlags : uint
             {
-                SEE_MASK_CLASSNAME = 0x00000001,        // Use the class name given by the lpClass member. 
-                SEE_MASK_CLASSKEY = 0x00000003,     // Use the class key given by the hkeyClass member.
-                SEE_MASK_IDLIST = 0x00000004,       // Use the item identifier list given by the lpIDList member. 
-                                                    // The lpIDList member must point to an ITEMIDLIST structure.
-                SEE_MASK_INVOKEIDLIST = 0x0000000c,     // Use the IContextMenu interface of the selected item's 
-                                                        // shortcut menu handler.
-                SEE_MASK_ICON = 0x00000010,     // Use the icon given by the hIcon member.
-                SEE_MASK_HOTKEY = 0x00000020,       // Use the hot key given by the dwHotKey member.
-                SEE_MASK_NOCLOSEPROCESS = 0x00000040,       // Use to indicate that the hProcess member receives the 
-                                                            // process handle. 
-                SEE_MASK_CONNECTNETDRV = 0x00000080,        // Validate the share and connect to a drive letter.
-                SEE_MASK_FLAG_DDEWAIT = 0x00000100,     // Wait for the Dynamic Data Exchange (DDE) conversation to 
-                                                        // terminate before returning
-                SEE_MASK_DOENVSUBST = 0x00000200,       // Expand any environment variables specified in the string 
-                                                        // given by the lpDirectory or lpFile member. 
-                SEE_MASK_FLAG_NO_UI = 0x00000400,       // Do not display an error message box if an error occurs. 
-                SEE_MASK_UNICODE = 0x00004000,      // Use this flag to indicate a Unicode application.
-                SEE_MASK_NO_CONSOLE = 0x00008000,       // Use to create a console for the new process instead of 
-                                                        // having it inherit the parent's console.
+                SEE_MASK_DEFAULT = 0x00000000,
+                SEE_MASK_CLASSNAME = 0x00000001,
+                SEE_MASK_CLASSKEY = 0x00000003,
+                SEE_MASK_IDLIST = 0x00000004,
+                SEE_MASK_INVOKEIDLIST = 0x0000000c,   // Note SEE_MASK_INVOKEIDLIST(0xC) implies SEE_MASK_IDLIST(0x04)
+                SEE_MASK_HOTKEY = 0x00000020,
+                SEE_MASK_NOCLOSEPROCESS = 0x00000040,
+                SEE_MASK_CONNECTNETDRV = 0x00000080,
+                SEE_MASK_NOASYNC = 0x00000100,
+                SEE_MASK_FLAG_DDEWAIT = SEE_MASK_NOASYNC,
+                SEE_MASK_DOENVSUBST = 0x00000200,
+                SEE_MASK_FLAG_NO_UI = 0x00000400,
+                SEE_MASK_UNICODE = 0x00004000,
+                SEE_MASK_NO_CONSOLE = 0x00008000,
                 SEE_MASK_ASYNCOK = 0x00100000,
-                SEE_MASK_HMONITOR = 0x00200000,     // Use this flag when specifying a monitor on 
-                                                    // multi-monitor systems.
+                SEE_MASK_HMONITOR = 0x00200000,
+                SEE_MASK_NOZONECHECKS = 0x00800000,
                 SEE_MASK_NOQUERYCLASSSTORE = 0x01000000,
                 SEE_MASK_WAITFORINPUTIDLE = 0x02000000,
-                SEE_MASK_FLAG_LOG_USAGE = 0x04000000        // Keep track of the number of times this application has 
-                                                            // been launched. 
+                SEE_MASK_FLAG_LOG_USAGE = 0x04000000,
             }
 
             internal enum ShellExecuteReturnCodes

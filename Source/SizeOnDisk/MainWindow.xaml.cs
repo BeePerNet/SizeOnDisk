@@ -35,30 +35,7 @@ namespace SizeOnDisk
             this.RunAsAdmin.Visibility = (UserAccessControlHelper.SupportUserAccessControl ? Visibility.Visible : Visibility.Collapsed);
             this.RunAsAdmin.IsEnabled = !UserAccessControlHelper.IsProcessElevated;
             _RootHierarchy = this.DataContext as VMRootHierarchy;
-            DefaultEditors.InitializeDefaultHandlers(VMFile.OpenAsTextCommand);
-
-
-            //CanExecuteRoutedEventHandler _handler = new CanExecuteRoutedEventHandler(OnCanExecuteRoutedEventHandler);
-
-            //EventManager.RegisterClassHandler(typeof(DataGrid), CommandManager.CanExecuteEvent, _handler);
-
-            //EventManager.RegisterClassHandler(typeof(DataGrid), CommandManager.RemoveCanExecuteHandler, DataGrid.
         }
-
-        /*void OnCanExecuteRoutedEventHandler(object sender, CanExecuteRoutedEventArgs e)
-        {
-            RoutedCommand routedCommand = (e.Command as RoutedCommand);
-
-            if (routedCommand != null)
-            {
-                if (routedCommand.Name == "Delete")
-                {
-                    e.CanExecute = false;
-                    e.Handled = false;
-                }
-            }
-
-        }*/
 
 
         private VMRootHierarchy _RootHierarchy;

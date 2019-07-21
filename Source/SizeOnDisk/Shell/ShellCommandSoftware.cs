@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media.Imaging;
-using SizeOnDisk.Shell;
 
 namespace SizeOnDisk.Shell
 {
