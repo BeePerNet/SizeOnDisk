@@ -108,14 +108,18 @@
                     <Button.Content>
                         <Image Width="16"
                            Height="16"
-                           Source="/SizeOnDisk;component/Icons/OptionsHS.png" />
+                           Source="/SizeOnDisk;component/Icons/Options.png" />
                     </Button.Content>
                 </Button>
                 <Button 
                     Margin="2"
                     Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
                     Click="AboutButton_Click">
-                    <TextBlock Text="?" />
+                    <Button.Content>
+                        <Image Width="16"
+                           Height="16"
+                           Source="/SizeOnDisk;component/Icons/Help.png" />
+                    </Button.Content>
                 </Button>
             </ToolBar>
         </ToolBarTray>
