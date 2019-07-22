@@ -84,12 +84,6 @@ namespace SizeOnDisk.ViewModel
             this.clusterSize = clusterSize;
             _Dispatcher = dispatcher;
             FileTotal = null;
-
-            dispatcher.BeginInvoke(new Action(() =>
-            {
-                BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
-                BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
-            }), DispatcherPriority.Normal);
         }
 
         [DesignOnly(true)]
@@ -318,6 +312,12 @@ namespace SizeOnDisk.ViewModel
                 this.OnPropertyChanged(nameof(this.Folders));
                 this.Childs = currentChilds;
                 this.OnPropertyChanged(nameof(this.Childs));
+
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
+                    BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
+                }), DispatcherPriority.Normal);
             }
         }
 
