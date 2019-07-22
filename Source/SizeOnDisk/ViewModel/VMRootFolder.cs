@@ -54,13 +54,15 @@ namespace SizeOnDisk.ViewModel
         internal VMRootFolder(VMRootHierarchy parent, string name, string path)
             : base(parent, name, path)
         {
-            VMFolder newFolder = new VMFolder(this, "Folder 1", "\\\\Root Folder\\Folder 1");
+            VMFolder newFolder = new VMFolder(this, "Folder1", "\\\\Root Folder\\Folder1");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            newFolder = new VMFolder(this, "Folder 2", "\\\\Root Folder\\Folder 2");
+            newFolder = new VMFolder(this, "Folder2", "\\\\Root Folder\\Folder2");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            VMFile newFile = new VMFile(this, "File 1", "\\\\Root Folder\\File 1");
+            VMFile newFile = new VMFile(this, "File1.txt", "\\\\Root Folder\\File1.txt");
+            this.Childs.Add(newFile);
+            newFile = new VMFile(this, "File2.42", "\\\\Root Folder\\File2.42");
             this.Childs.Add(newFile);
             this.RefreshCount();
             this._ExecutionState = TaskExecutionState.Designing;
