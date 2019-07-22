@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,8 @@ namespace SizeOnDisk.Shell
 {
     public static class ShellHelper
     {
+
+
         private static ConcurrentDictionary<string, string> associations = new ConcurrentDictionary<string, string>();
         private static string currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 
@@ -70,8 +73,81 @@ namespace SizeOnDisk.Shell
             return associations[extension];
         }
 
+        public static BitmapSource GetIcon(string path, int size = 16, bool thumbnail = false, bool cache = false)
+        {
+            // Create a native shellitem from our path
+            Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
+            int retCode = SafeNativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem nativeShellItem);
+            if (retCode < 0)
+                throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
 
 
+            SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size
+            {
+                Width = Convert.ToInt32(size),
+                Height = Convert.ToInt32(size)
+            };
+
+            SafeNativeMethods.SIIGBF options = SafeNativeMethods.SIIGBF.ResizeToFit;
+            if (!thumbnail)
+                options = SafeNativeMethods.SIIGBF.IconOnly;
+            if (cache)
+                options |= SafeNativeMethods.SIIGBF.MemoryOnly;
+
+            IntPtr hBitmap = IntPtr.Zero;
+            //GCHandle handle;
+            try
+            {
+                retCode = ((SafeNativeMethods.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, options, out hBitmap);
+                if (retCode < 0)
+                    return null;
+                //handle = GCHandle.Alloc(hBitmap, GCHandleType.Normal);
+
+                //throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(nativeShellItem);
+            }
+
+            try
+            {
+
+
+
+                //Bitmap bmp = Bitmap.FromHbitmap(hBitmap);
+
+                //Bitmap bmp = Drawing.GetBitmapFromHBitmap(hBitmap);
+
+                //bmp.MakeTransparent();
+
+                //if (Bitmap.GetPixelFormatSize(bmp.PixelFormat) < 32)
+                    //return bmp;
+
+                //return Drawing.CreateAlphaBitmap(bmp, PixelFormat.Format32bppArgb);
+
+                // return a System.Media.Imaging.BitmapSource
+                // Use interop to create a BitmapSource from hBitmap.
+                BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
+                    hBitmap,
+                    IntPtr.Zero,
+                    System.Windows.Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
+
+                returnValue.Freeze();
+
+                return returnValue;
+            }
+            finally
+            {
+                //handle.Free();
+                // delete HBitmap to avoid memory leaks
+                SafeNativeMethods.DeleteObject(hBitmap);
+            }
+        }
+
+        [DllImport("gdi32.dll")]
+        static extern int GetObject(IntPtr hgdiobj, int cbBuffer, IntPtr lpvObject);
 
 
         private static BitmapSource GetIcon(string value)
@@ -179,7 +255,7 @@ namespace SizeOnDisk.Shell
                 name = LocExtension.GetLocalizedValue<string>($"PresentationCore:ExceptionStringTable:{id}Text");
                 if (!string.IsNullOrEmpty(name))
                     verb.Name = name;
-                name = LocExtension.GetLocalizedValue<string>($"{id}");
+                name = LocExtension.GetLocalizedValue<string>(id);
                 if (!string.IsNullOrEmpty(name))
                     verb.Name = name;
             }
@@ -565,60 +641,6 @@ namespace SizeOnDisk.Shell
         }
 
 
-        public static BitmapSource GetIcon(string path, int size = 16, bool thumbnail = false, bool cache = false)
-        {
-            // Create a native shellitem from our path
-            Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
-            int retCode = SafeNativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem nativeShellItem);
-            if (retCode < 0)
-                throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
-
-
-            SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size
-            {
-                Width = Convert.ToInt32(size),
-                Height = Convert.ToInt32(size)
-            };
-
-            SafeNativeMethods.SIIGBF options = SafeNativeMethods.SIIGBF.ResizeToFit;
-            if (!thumbnail)
-                options = SafeNativeMethods.SIIGBF.IconOnly;
-            if (cache)
-                options |= SafeNativeMethods.SIIGBF.MemoryOnly;
-
-            IntPtr hBitmap = IntPtr.Zero;
-            try
-            {
-                retCode = ((SafeNativeMethods.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, options, out hBitmap);
-                if (retCode < 0)
-                    return null;
-                //throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
-            }
-            finally
-            {
-                Marshal.ReleaseComObject(nativeShellItem);
-            }
-
-            try
-            {
-                // return a System.Media.Imaging.BitmapSource
-                // Use interop to create a BitmapSource from hBitmap.
-                BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
-                    hBitmap,
-                    IntPtr.Zero,
-                    System.Windows.Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-
-                returnValue.Freeze();
-
-                return returnValue;
-            }
-            finally
-            {
-                // delete HBitmap to avoid memory leaks
-                SafeNativeMethods.DeleteObject(hBitmap);
-            }
-        }
 
 
         #endregion public functions
@@ -1045,7 +1067,7 @@ namespace SizeOnDisk.Shell
                         throw new Win32Exception();
                     }
 
-                    return wpfBitmap;                    //returnValue.Freeze();
+                    return wpfBitmap;
                 }
                 finally
                 {
@@ -1053,7 +1075,6 @@ namespace SizeOnDisk.Shell
                     DestroyIcon(hIcon);
                 }
             }
-
 
             [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode, ThrowOnUnmappableChar = true, BestFitMapping = false)]
             private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);

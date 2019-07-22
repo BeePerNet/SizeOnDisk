@@ -1,4 +1,5 @@
 ﻿using SizeOnDisk.Shell;
+using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
+using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -20,7 +22,7 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx EditCommand = new RoutedCommandEx("edit", "loc:Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "loc:EditKey"));
         public static readonly RoutedCommandEx OpenAsCommand = new RoutedCommandEx("openas", "loc:OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "loc:OpenAsKey"));
         public static readonly RoutedCommandEx PrintCommand = new RoutedCommandEx("print", "loc:PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
-        public static readonly RoutedCommandEx ExploreCommand = new RoutedCommandEx("select", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Folder.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
+        public static readonly RoutedCommandEx ExploreCommand = new RoutedCommandEx("select", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Explore.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
         public static readonly RoutedCommandEx FindCommand = new RoutedCommandEx("find", "loc:PresentationCore:ExceptionStringTable:FindText", "pack://application:,,,/SizeOnDisk;component/Icons/SearchFolderHS.png", typeof(VMFile), new KeyGesture(Key.F, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:FindKeyDisplayString"));
         public static readonly RoutedCommandEx DeleteCommand = new RoutedCommandEx("delete", "loc:PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
         public static readonly RoutedCommandEx PermanentDeleteCommand = new RoutedCommandEx("permanentdelete", "loc:PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "loc:PermanentDeleteKey"));
@@ -103,6 +105,7 @@ namespace SizeOnDisk.ViewModel
                 Path = newPath;
                 this.OnPropertyChanged(nameof(Name));
                 this.OnPropertyChanged(nameof(Path));
+                this.RefreshOnView();
             }
         }
 
@@ -394,6 +397,9 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+
+
+
         private IEnumerable<string> _Verbs;
         public IEnumerable<string> Verbs { get { return _Verbs; } set { SetProperty(ref _Verbs, value); } }
 
@@ -415,7 +421,13 @@ namespace SizeOnDisk.ViewModel
                 foreach (ShellCommandSoftware item in DefaultEditors.Editors)
                 {
                     added = true;
-                    DirectCommand command = new DirectCommand(item.Id, item.Id, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
+                    string display = item.Id;
+                    if (display.StartsWith("loc:"))
+                        display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
+                    if (string.IsNullOrEmpty(display))
+                        display = item.Id;
+
+                    DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
                     command.Tag = item.Name;
 
                     if (item.Icon != null)
@@ -456,7 +468,7 @@ namespace SizeOnDisk.ViewModel
                             //TODO ------------------------>
                             if (!verb.Verb.ToUpperInvariant().Contains("NEW"))// && !string.IsNullOrEmpty(verb.Command))
                             {
-                                DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", ""), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
+                                DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", "_"), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
                                 {
                                     Tag = verb.Command
                                 };

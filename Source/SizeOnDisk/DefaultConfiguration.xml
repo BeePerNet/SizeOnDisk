@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SizeOnDisk>
   <editors>
-    <editor display="Open as text"
+    <editor display="loc:OpenAsText"
             definition="ApplicationKey"
             parameter1="Notepad++.exe"/>
-    <editor display="Open as text"
+    <editor display="loc:OpenAsText"
             definition="ApplicationKey"
             parameter1="TextPad.exe"/>
-    <editor display="Open as text"
+    <editor display="loc:OpenAsText"
             definition="ApplicationKey"
             parameter1="notepad.exe"/>
   </editors>

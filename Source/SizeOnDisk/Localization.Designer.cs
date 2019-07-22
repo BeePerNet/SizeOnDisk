@@ -196,6 +196,15 @@ namespace SizeOnDisk {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Number of files.
+        /// </summary>
+        public static string Files {
+            get {
+                return ResourceManager.GetString("Files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à File size.
         /// </summary>
         public static string FileSize {
@@ -228,6 +237,15 @@ namespace SizeOnDisk {
         public static string Finished {
             get {
                 return ResourceManager.GetString("Finished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Number of folders.
+        /// </summary>
+        public static string Folders {
+            get {
+                return ResourceManager.GetString("Folders", resourceCulture);
             }
         }
         
@@ -321,6 +339,15 @@ namespace SizeOnDisk {
         public static string OpenAsKey {
             get {
                 return ResourceManager.GetString("OpenAsKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Open as text.
+        /// </summary>
+        public static string OpenAsText {
+            get {
+                return ResourceManager.GetString("OpenAsText", resourceCulture);
             }
         }
         

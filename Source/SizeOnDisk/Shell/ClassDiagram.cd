@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SizeOnDisk.Shell.IOHelper">
+    <Position X="0.75" Y="0.5" Width="3.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="SizeOnDisk.Shell.IOHelper.SafeNativeMethods">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\IOHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="SizeOnDisk.Shell.IOHelper.SHFILEOPSTRUCT" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\IOHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="SizeOnDisk.Shell.IOHelper.WIN32_FILE_ATTRIBUTE_DATA" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\IOHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="SizeOnDisk.Shell.IOHelper.WIN32_FIND_DATA" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\IOHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="SizeOnDisk.Shell.IOHelper.FileOperationFlags" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\IOHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="SizeOnDisk.Shell.IOHelper.FileOperationType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\IOHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="SizeOnDisk.Shell.IOHelper.SafeFindHandle" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\IOHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAQBAAAgAAAA=</HashCode>
+      <FileName>Shell\IOHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SizeOnDisk.Shell.ShellHelper">
+    <Position X="4.75" Y="0.5" Width="4" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="SizeOnDisk.Shell.ShellHelper.ShellIconSize" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="SizeOnDisk.Shell.ShellHelper.AssocF" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="SizeOnDisk.Shell.ShellHelper.AssocStr" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods">
+        <NestedTypes>
+          <Delegate Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FuncGetUiName" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Delegate>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.GETPROPERTYSTOREFLAGS" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Interface Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.IShellItem" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Interface>
+          <Interface Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.IApplicationActivationManager" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Interface>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.HResult" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FILE_INFO_BY_HANDLE_CLASS" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Struct Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.REFPROPERTYKEY" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Struct>
+          <Interface Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.IFileDialog" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Interface>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.SIATTRIBFLAGS" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.ShellExecuteReturnCodes" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.SIGDN" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.ActivateOptions" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Interface Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.IShellItemArray" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Interface>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FileOpenOptions" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Class Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FileOpenDialogRCW" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Class>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.SIIGBF" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Delegate Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FuncGetName" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Delegate>
+          <Struct Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.Size" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Struct>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.ASSOC_FILTER" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Class Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.ApplicationActivationManager" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+            <Lollipop Position="0.2" />
+          </Class>
+          <Struct Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FILE_ID_BOTH_DIR_INFO" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Struct>
+          <Struct Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.LargeInteger" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Struct>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.ShowCommands" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Interface Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.IShellItemImageFactory" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Interface>
+          <Enum Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.ShellExecuteFlags" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Enum>
+          <Delegate Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FuncNext" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Delegate>
+          <Struct Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.SHELLEXECUTEINFO" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Struct>
+          <Class Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.SECURITY_ATTRIBUTES" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Class>
+          <Struct Name="SizeOnDisk.Shell.ShellHelper.SafeNativeMethods.FILE_STANDARD_INFO" Collapsed="true">
+            <TypeIdentifier>
+              <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+            </TypeIdentifier>
+          </Struct>
+        </NestedTypes>
+        <TypeIdentifier>
+          <NewMemberFileName>Shell\ShellHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>GBARgQAAAACAAABIAAAAAAAAQAAAgAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Shell\ShellHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

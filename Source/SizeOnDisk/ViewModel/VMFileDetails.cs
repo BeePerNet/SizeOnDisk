@@ -1,4 +1,5 @@
 ﻿using SizeOnDisk.Shell;
+using SizeOnDisk.Utilities;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;

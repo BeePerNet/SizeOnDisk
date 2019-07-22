@@ -296,6 +296,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Shell\ClassDiagram.cd" />
     <None Include="SizeOnDisk.ruleset" />
     <None Include="ViewModel\ClassDiagram.cd" />
   </ItemGroup>
@@ -347,6 +348,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Help.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Explore.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Close.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
