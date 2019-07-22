@@ -88,6 +88,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        public virtual string Extension
+        {
+            get
+            {
+                return System.IO.Path.GetExtension(Name).Remove(0, 1);
+            }
+        }
+
         public void Rename(string newName)
         {
             if (this.Name != newName)
@@ -105,6 +113,7 @@ namespace SizeOnDisk.ViewModel
                 Path = newPath;
                 this.OnPropertyChanged(nameof(Name));
                 this.OnPropertyChanged(nameof(Path));
+                this.OnPropertyChanged(nameof(Extension));
                 this.RefreshOnView();
             }
         }

@@ -238,6 +238,10 @@
                                         Header="{lex:Loc Name}"
                                         Binding="{Binding Name}"
                                         ElementStyle="{StaticResource ColoredName}" />
+                    <DataGridTextColumn SortMemberPath="Extension"
+                                        Header="Ext"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Extension}" />
                     <DataGridTextColumn SortMemberPath="Details.FileType"
                                         Header="{lex:Loc FileType}"
                                         IsReadOnly="True"

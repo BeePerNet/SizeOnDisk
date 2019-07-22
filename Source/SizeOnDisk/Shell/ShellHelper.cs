@@ -514,7 +514,7 @@ namespace SizeOnDisk.Shell
                     cmd = cmd.Substring(0, pos);
                 }
             }
-            return new Tuple<string, string>(cmd, parameters);
+            return new Tuple<string, string>(cmd.Trim(), parameters.Trim());
         }
 
 

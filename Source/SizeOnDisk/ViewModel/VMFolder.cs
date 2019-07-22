@@ -127,6 +127,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        public override string Extension
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
 
 
         private long? _FileTotal = 1;
