@@ -1,5 +1,4 @@
 ﻿using SizeOnDisk.Shell;
-using SizeOnDisk.Utilities;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -9,10 +8,6 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMFileDetails : ObservableObject, IDisposable
     {
-        private string _FileType;
-        private DateTime? _CreationTime;
-        private DateTime? _LastAccessTime;
-        private DateTime? _LastWriteTime;
         private readonly VMFile _vmFile;
 
         public VMFileDetails(VMFile vmFile)
@@ -26,24 +21,24 @@ namespace SizeOnDisk.ViewModel
         {
             if (_vmFile is VMFolder)
             {
-                _FileType = string.Empty;
+                FileType = string.Empty;
             }
             else
             {
-                _FileType = ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
+                FileType = ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
             }
 
             LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
-            this._CreationTime = fileInfo.CreationTime;
-            this._LastAccessTime = fileInfo.LastAccessTime;
-            this._LastWriteTime = fileInfo.LastWriteTime;
+            this.CreationTime = fileInfo.CreationTime;
+            this.LastAccessTime = fileInfo.LastAccessTime;
+            this.LastWriteTime = fileInfo.LastWriteTime;
 
-            this._icon = ShellHelper.GetIcon(_vmFile.Path, 16);
-            this._thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+            this.Icon = ShellHelper.GetIcon(_vmFile.Path, 16);
+            this.Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
 
             task = new Task(() =>
             {
-                _thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+                Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
                 this.OnPropertyChanged(nameof(Thumbnail));
             });
             task.Start();
@@ -51,64 +46,14 @@ namespace SizeOnDisk.ViewModel
             return fileInfo;
         }
 
-        public string FileType
-        {
-            get
-            {
-                return _FileType;
-            }
-        }
+        public string FileType { get; private set; }
+        public DateTime? CreationTime { get; private set; }
+        public DateTime? LastAccessTime { get; private set; }
+        public DateTime? LastWriteTime { get; private set; }
+        public BitmapSource Icon { get; private set; } = null;
 
-
-        public DateTime? CreationTime
-        {
-            get
-            {
-                return _CreationTime;
-            }
-        }
-        public DateTime? LastAccessTime
-        {
-            get
-            {
-                return _LastAccessTime;
-            }
-        }
-        public DateTime? LastWriteTime
-        {
-            get
-            {
-                return _LastWriteTime;
-            }
-        }
-
-        BitmapSource _icon = null;
-        public BitmapSource Icon
-        {
-            get
-            {
-                return _icon;
-            }
-        }
-
-        /*BitmapSource _bigicon = null;
-        public BitmapSource BigIcon
-        {
-            get
-            {
-                return _bigicon;
-            }
-        }*/
-
-        BitmapSource _thumbnail = null;
         //Seems to have problems with VOB
-        public BitmapSource Thumbnail
-        {
-            get
-            {
-                return _thumbnail;
-            }
-        }
+        public BitmapSource Thumbnail { get; private set; } = null;
 
         protected virtual void Dispose(bool disposing)
         {

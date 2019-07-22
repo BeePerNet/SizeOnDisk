@@ -11,100 +11,49 @@ namespace SizeOnDisk.Shell
     [SecurityCritical]
     public class LittleFileInfo
     {
-        long? _CompressedSize = null;
-        IOHelper.WIN32_FILE_ATTRIBUTE_DATA _data;
-
-        string _FileName;
-        string _Path;
+        private IOHelper.WIN32_FILE_ATTRIBUTE_DATA _data;
 
         internal LittleFileInfo(string path, string filename)
         {
-            _FileName = FileName;
-            _Path = path;
+            FileName = FileName;
+            Path = path;
             string fullfilename = filename;
             if (string.IsNullOrEmpty(path))
-                _Path = filename;
+                Path = filename;
             else
                 fullfilename = System.IO.Path.Combine(path, filename);
             fullfilename = string.Concat("\\\\?\\", fullfilename);
             IOHelper.FillAttributeInfo(fullfilename, ref _data);
             if ((this.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
                 if ((this.Attributes & FileAttributes.Directory) == 0)
-                {
-                    _CompressedSize = IOHelper.GetCompressedFileSize(fullfilename);
-                }
+                    CompressedSize = IOHelper.GetCompressedFileSize(fullfilename);
         }
 
         internal LittleFileInfo(string path, string filename, IOHelper.WIN32_FILE_ATTRIBUTE_DATA data)
         {
-            _FileName = filename;
-            _Path = path;
+            FileName = filename;
+            Path = path;
             _data = data;
             if ((this.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
                 if ((this.Attributes & FileAttributes.Directory) == 0)
-                {
-                    string fullfilename = string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename));
-                    _CompressedSize = IOHelper.GetCompressedFileSize(fullfilename);
-                }
+                    CompressedSize = IOHelper.GetCompressedFileSize(string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename)));
         }
 
-        public bool IsFolder
-        {
-            get
-            {
-                return (_data.fileAttributes & (int)FileAttributes.Directory) > 0;
-            }
-        }
+        public bool IsFolder => (_data.fileAttributes & (int)FileAttributes.Directory) > 0;
 
-        public long Size
-        {
-            get
-            {
-                return ((long)_data.fileSizeHigh << 32) + _data.fileSizeLow;
-            }
-        }
+        public long Size => ((long)_data.fileSizeHigh << 32) + _data.fileSizeLow;
 
-        public long? CompressedSize
-        {
-            get
-            {
-                return _CompressedSize;
-            }
-        }
+        public long? CompressedSize { get; } = null;
 
-        public FileAttributes Attributes
-        {
-            get
-            {
-                return (FileAttributes)_data.fileAttributes;
-            }
-        }
+        public FileAttributes Attributes => (FileAttributes)_data.fileAttributes;
 
-        public DateTime CreationTime
-        {
-            get
-            {
-                return DateTime.FromFileTime(((long)_data.ftCreationTimeHigh << 32) + _data.ftCreationTimeLow);
-            }
-        }
+        public DateTime CreationTime => DateTime.FromFileTime(((long)_data.ftCreationTimeHigh << 32) + _data.ftCreationTimeLow);
 
-        public DateTime LastAccessTime
-        {
-            get
-            {
-                return DateTime.FromFileTime(((long)_data.ftLastAccessTimeHigh << 32) + _data.ftLastAccessTimeLow);
-            }
-        }
+        public DateTime LastAccessTime => DateTime.FromFileTime(((long)_data.ftLastAccessTimeHigh << 32) + _data.ftLastAccessTimeLow);
 
-        public DateTime LastWriteTime
-        {
-            get
-            {
-                return DateTime.FromFileTime(((long)_data.ftLastWriteTimeHigh << 32) + _data.ftLastWriteTimeLow);
-            }
-        }
+        public DateTime LastWriteTime => DateTime.FromFileTime(((long)_data.ftLastWriteTimeHigh << 32) + _data.ftLastWriteTimeLow);
 
-        public string FileName { get => _FileName; }
-        public string Path { get => _Path; }
+        public string FileName { get; }
+        public string Path { get; }
     }
 }

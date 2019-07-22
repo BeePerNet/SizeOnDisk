@@ -55,7 +55,6 @@ namespace SizeOnDisk.Shell
         {
             if (string.IsNullOrWhiteSpace(extension))
                 return string.Empty;
-            //return ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyDocName, extension);
             if (currentCulture != CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
             {
                 associations = new ConcurrentDictionary<string, string>();
@@ -95,37 +94,18 @@ namespace SizeOnDisk.Shell
                 options |= SafeNativeMethods.SIIGBF.MemoryOnly;
 
             IntPtr hBitmap = IntPtr.Zero;
-            //GCHandle handle;
             try
             {
                 retCode = ((SafeNativeMethods.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, options, out hBitmap);
                 if (retCode < 0)
                     return null;
-                //handle = GCHandle.Alloc(hBitmap, GCHandleType.Normal);
-
-                //throw new Exception("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
             }
             finally
             {
                 Marshal.ReleaseComObject(nativeShellItem);
             }
-
             try
             {
-
-
-
-                //Bitmap bmp = Bitmap.FromHbitmap(hBitmap);
-
-                //Bitmap bmp = Drawing.GetBitmapFromHBitmap(hBitmap);
-
-                //bmp.MakeTransparent();
-
-                //if (Bitmap.GetPixelFormatSize(bmp.PixelFormat) < 32)
-                    //return bmp;
-
-                //return Drawing.CreateAlphaBitmap(bmp, PixelFormat.Format32bppArgb);
-
                 // return a System.Media.Imaging.BitmapSource
                 // Use interop to create a BitmapSource from hBitmap.
                 BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
@@ -140,14 +120,10 @@ namespace SizeOnDisk.Shell
             }
             finally
             {
-                //handle.Free();
                 // delete HBitmap to avoid memory leaks
                 SafeNativeMethods.DeleteObject(hBitmap);
             }
         }
-
-        [DllImport("gdi32.dll")]
-        static extern int GetObject(IntPtr hgdiobj, int cbBuffer, IntPtr lpvObject);
 
 
         private static BitmapSource GetIcon(string value)
@@ -312,18 +288,6 @@ namespace SizeOnDisk.Shell
             return verb;
         }
 
-        public enum ShellIconSize
-        {
-            SmallIcon, LargeIcon
-        }
-
-
-
-
-
-
-
-
 
 
         private static ShellCommandSoftware GetSoftware(RegistryKey appkey, string id)
@@ -416,9 +380,7 @@ namespace SizeOnDisk.Shell
             return soft;
         }
 
-
-
-
+               
         public static ShellCommandRoot GetShellCommands(string path, bool isDirectory)
         {
             ShellCommandRoot result = new ShellCommandRoot();
@@ -484,91 +446,6 @@ namespace SizeOnDisk.Shell
             return result;
         }
 
-
-        /*public static void Test()
-{
-    List<(string, string)> items = new List<(string, string)>();
-
-    const string extension = ".jpg";
-
-    IntPtr pEnumAssocHandlers;
-    SafeNativeMethods.SHAssocEnumHandlers(extension, SafeNativeMethods.ASSOC_FILTER.ASSOC_FILTER_RECOMMENDED, out pEnumAssocHandlers);
-
-    IntPtr pFuncNext = Marshal.ReadIntPtr(Marshal.ReadIntPtr(pEnumAssocHandlers) + 3 * sizeof(int));
-    SafeNativeMethods.FuncNext next = (SafeNativeMethods.FuncNext)Marshal.GetDelegateForFunctionPointer(pFuncNext, typeof(SafeNativeMethods.FuncNext));
-
-    IntPtr[] pArrayAssocHandlers = new IntPtr[255];
-    int num;
-
-    int resNext = next(pEnumAssocHandlers, 255, pArrayAssocHandlers, out num);
-    if (resNext == 0)
-    {
-        for (int i = 0; i < num; i++)
-        {
-            IntPtr pAssocHandler = pArrayAssocHandlers[i];
-            IntPtr pFuncGetName = Marshal.ReadIntPtr(Marshal.ReadIntPtr(pAssocHandler) + 3 * sizeof(int));
-            SafeNativeMethods.FuncGetName getName = (SafeNativeMethods.FuncGetName)Marshal.GetDelegateForFunctionPointer(pFuncGetName, typeof(SafeNativeMethods.FuncGetName));
-            IntPtr pName;
-            int resGetName = getName(pAssocHandler, out pName);
-            string path = Marshal.PtrToStringUni(pName);
-
-            IntPtr pFuncGetUiName = Marshal.ReadIntPtr(Marshal.ReadIntPtr(pAssocHandler) + 4 * sizeof(int));
-            SafeNativeMethods.FuncGetUiName getUiName = (SafeNativeMethods.FuncGetUiName)Marshal.GetDelegateForFunctionPointer(pFuncGetUiName, typeof(SafeNativeMethods.FuncGetUiName));
-            IntPtr pUiName;
-            int resGetUiName = getUiName(pAssocHandler, out pUiName);
-            string uiname = Marshal.PtrToStringUni(pUiName);
-
-            Marshal.Release(pArrayAssocHandlers[i]);
-
-            items.Add((path, uiname));
-        }
-    }
-    Marshal.Release(pEnumAssocHandlers);
-}*/
-
-
-
-
-
-        /*public static Icon GetIconForExtension(string extension, ShellIconSize size = ShellIconSize.SmallIcon)
-        {
-            RegistryKey keyForExt = Registry.ClassesRoot.OpenSubKey(extension);
-            if (keyForExt == null) return null;
-
-            string className = Convert.ToString(keyForExt.GetValue(null));
-            RegistryKey keyForClass = Registry.ClassesRoot.OpenSubKey(className);
-            if (keyForClass == null) return null;
-
-            RegistryKey keyForIcon = keyForClass.OpenSubKey("DefaultIcon");
-            if (keyForIcon == null)
-            {
-                RegistryKey keyForCLSID = keyForClass.OpenSubKey("CLSID");
-                if (keyForCLSID == null) return null;
-
-                string clsid = "CLSID\\"
-                    + Convert.ToString(keyForCLSID.GetValue(null))
-                    + "\\DefaultIcon";
-                keyForIcon = Registry.ClassesRoot.OpenSubKey(clsid);
-                if (keyForIcon == null) return null;
-            }
-
-            string[] defaultIcon = Convert.ToString(keyForIcon.GetValue(null)).Split(',');
-            int index = (defaultIcon.Length > 1) ? Int32.Parse(defaultIcon[1]) : 0;
-
-            IntPtr[] handles = new IntPtr[1];
-            if (SafeNativeMethods.ExtractIconEx(defaultIcon[0], index,
-                (size == ShellIconSize.LargeIcon) ? handles : null,
-                (size == ShellIconSize.SmallIcon) ? handles : null, 1) > 0)
-                return Icon.FromHandle(handles[0]);
-            else
-                return null;
-        }*/
-
-
-        [SuppressMessage("Microsoft.Performance", "CA1810")]
-        static ShellHelper()
-        {
-        }
 
         #region public functions
 
@@ -681,24 +558,6 @@ namespace SizeOnDisk.Shell
             }
         }
 
-        public static long? GetCompressedFileSize(string fileName)
-        {
-            using (SafeFileHandle handle = SafeNativeMethods.OpenHandle(fileName))
-            {
-                if (handle != null)
-                {
-
-                    if (!SafeNativeMethods.GetFileInformationByHandleEx(handle, SafeNativeMethods.FILE_INFO_BY_HANDLE_CLASS.FileStandardInfo, out SafeNativeMethods.FILE_STANDARD_INFO dirinfo, (uint)Marshal.SizeOf(typeof(SafeNativeMethods.FILE_STANDARD_INFO))))
-                    {
-                        int win32Error = Marshal.GetLastWin32Error();
-                        if (win32Error != 0)
-                            throw new Win32Exception(win32Error);
-                        return dirinfo.AllocationSize.ToInt64();
-                    }
-                }
-            }
-            return null;
-        }
 
         [Flags]
         public enum AssocF : int
@@ -851,25 +710,6 @@ namespace SizeOnDisk.Shell
             public static extern int SHCreateShellItemArrayFromShellItem(IShellItem psi, [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid, out IShellItemArray ppv);
 
 
-            [Flags]
-            public enum ASSOC_FILTER
-            {
-                ASSOC_FILTER_NONE = 0x00000000,
-                ASSOC_FILTER_RECOMMENDED = 0x00000001
-            }
-
-            // IEnumAssocHandlers
-            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Unicode)]
-            internal delegate int FuncNext(IntPtr refer, int celt, [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Interface, SizeParamIndex = 1)] IntPtr[] rgelt, [Out] out int pceltFetched);
-
-            // IAssocHandler
-            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Unicode)]
-            internal delegate int FuncGetName(IntPtr refer, out IntPtr ppsz);
-
-            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Unicode)]
-            internal delegate int FuncGetUiName(IntPtr refer, out IntPtr ppsz);
-
-
 
             [DllImport("shlwapi.dll", BestFitMapping = false, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true, ThrowOnUnmappableChar = true)]
             internal static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
@@ -878,12 +718,6 @@ namespace SizeOnDisk.Shell
             [DllImport("Shlwapi.dll", EntryPoint = "AssocQueryStringW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true, ThrowOnUnmappableChar = true)]
             internal static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, [In][Out] ref IntPtr pcchOut);
 
-
-            [DllImport("kernel32.dll", SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool GetFileInformationByHandleEx(SafeFileHandle hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, out FILE_STANDARD_INFO dirInfo, uint dwBufferSize);
-
-            // .NET classes representing runtime callable wrappers.
 
             [DllImport("gdi32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
@@ -1115,55 +949,6 @@ namespace SizeOnDisk.Shell
                 [Out] out IntPtr phbm);
             }
 
-            [DllImport("kernel32.dll")]
-            internal static extern int GetFileType(SafeFileHandle handle);
-
-            [SecurityCritical]
-            internal static SafeFileHandle OpenHandle(string path)
-            {
-                /*string fullPathInternal = Path.GetFullPathInternal(path);
-                string pathRoot = Path.GetPathRoot(fullPathInternal);
-                if (pathRoot == fullPathInternal && (int)pathRoot[1] == (int)Path.VolumeSeparatorChar)
-                    throw new ArgumentException(Environment.GetResourceString("Arg_PathIsVolume"));
-                FileIOPermission.QuickDemand(FileIOPermissionAccess.Write, Directory.GetDemandDir(fullPathInternal, true), false, false);*/
-                //SafeFileHandle file = SafeCreateFile(path, 1073741824, FileShare.Write | FileShare.Delete, (SECURITY_ATTRIBUTES)null, FileMode.Open, 33554432, IntPtr.Zero);
-                SafeFileHandle file = SafeCreateFile(path, 0, FileShare.ReadWrite | FileShare.Delete, (SECURITY_ATTRIBUTES)null, FileMode.Open, 0, IntPtr.Zero);
-                if (file.IsInvalid)
-                    //throw new Win32Exception();
-                    return null;
-                //__Error.WinIOError(Marshal.GetLastWin32Error(), fullPathInternal);
-                return file;
-            }
-
-            [SecurityCritical]
-            internal static SafeFileHandle SafeCreateFile(
-        string lpFileName,
-        int dwDesiredAccess,
-        FileShare dwShareMode,
-        SECURITY_ATTRIBUTES securityAttrs,
-        FileMode dwCreationDisposition,
-        int dwFlagsAndAttributes,
-        IntPtr hTemplateFile)
-            {
-                SafeFileHandle file = CreateFile(lpFileName, dwDesiredAccess, dwShareMode, securityAttrs, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
-                if (!file.IsInvalid && GetFileType(file) != 1)
-                {
-                    file.Dispose();
-                    throw new NotSupportedException("NotSupported_FileStreamOnNonFiles");
-                }
-                return file;
-            }
-
-            [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true, BestFitMapping = false)]
-            internal static extern SafeFileHandle CreateFile(
-        string lpFileName,
-        int dwDesiredAccess,
-        FileShare dwShareMode,
-        SECURITY_ATTRIBUTES securityAttrs,
-        FileMode dwCreationDisposition,
-        int dwFlagsAndAttributes,
-        IntPtr hTemplateFile);
-
 
             [StructLayout(LayoutKind.Explicit)]
             internal struct LargeInteger
@@ -1191,73 +976,6 @@ namespace SizeOnDisk.Shell
                     };
                 }
 
-            }
-
-            [StructLayout(LayoutKind.Sequential)]
-            internal class SECURITY_ATTRIBUTES
-            {
-                internal unsafe byte* pSecurityDescriptor = (byte*)null;
-                internal int nLength;
-                internal int bInheritHandle;
-            }
-
-
-            [StructLayout(LayoutKind.Sequential)]
-            internal struct FILE_STANDARD_INFO
-            {
-                public LargeInteger AllocationSize;
-                public LargeInteger EndOfFile;
-                public uint NumberOfLinks;
-                public bool DeletePending;
-                public bool Directory;
-            }
-
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-            internal struct FILE_ID_BOTH_DIR_INFO
-            {
-                public uint NextEntryOffset;
-                public uint FileIndex;
-                public LargeInteger CreationTime;
-                public LargeInteger LastAccessTime;
-                public LargeInteger LastWriteTime;
-                public LargeInteger ChangeTime;
-                public LargeInteger EndOfFile;
-                public LargeInteger AllocationSize;
-                public uint FileAttributes;
-                public uint FileNameLength;
-                public uint EaSize;
-                public char ShortNameLength;
-                [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 12)]
-                public string ShortName;
-                public LargeInteger FileId;
-                [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 1)]
-                public string FileName;
-            }
-
-            public enum FILE_INFO_BY_HANDLE_CLASS
-            {
-                FileBasicInfo = 0,
-                FileStandardInfo = 1,
-                FileNameInfo = 2,
-                FileRenameInfo = 3,
-                FileDispositionInfo = 4,
-                FileAllocationInfo = 5,
-                FileEndOfFileInfo = 6,
-                FileStreamInfo = 7,
-                FileCompressionInfo = 8,
-                FileAttributeTagInfo = 9,
-                FileIdBothDirectoryInfo = 10,// 0x0A
-                FileIdBothDirectoryRestartInfo = 11, // 0xB
-                FileIoPriorityHintInfo = 12, // 0xC
-                FileRemoteProtocolInfo = 13, // 0xD
-                FileFullDirectoryInfo = 14, // 0xE
-                FileFullDirectoryRestartInfo = 15, // 0xF
-                FileStorageInfo = 16, // 0x10
-                FileAlignmentInfo = 17, // 0x11
-                FileIdInfo = 18, // 0x12
-                FileIdExtdDirectoryInfo = 19, // 0x13
-                FileIdExtdDirectoryRestartInfo = 20, // 0x14
-                MaximumFileInfoByHandlesClass
             }
 
             [DllImport("shell32.dll", CharSet = CharSet.Auto)]

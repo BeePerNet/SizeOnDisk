@@ -29,13 +29,8 @@ namespace SizeOnDisk.Shell
         internal bool ShowDialog(IWin32Window owner)
         {
             if (Environment.OSVersion.Version.Major >= 6)
-            {
                 return ShowVistaDialog(owner);
-            }
-            else
-            {
-                return ShowLegacyDialog(owner);
-            }
+            return ShowLegacyDialog(owner);
         }
 
         private bool ShowVistaDialog(IWin32Window owner)

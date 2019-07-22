@@ -47,34 +47,11 @@ namespace SizeOnDisk.Shell
                out uint lpSectorsPerCluster, out uint lpBytesPerSector, out uint lpNumberOfFreeClusters,
                out uint lpTotalNumberOfClusters);
 
-            //Unused because we need logical drive geometry
-            /*[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-            out long lpFreeBytesAvailable,
-            out long lpTotalNumberOfBytes,
-            out long lpTotalNumberOfFreeBytes);*/
-
-            /*[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success), DllImport("kernel32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool FindClose(IntPtr handle);*/
-
             [DllImport("shell32.dll", CharSet = CharSet.Auto)]
             private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 
-            /*private static void DemandDirectoryPermission(string fullDirectoryPath, FileIOPermissionAccess access)
-            {
-                if (!(fullDirectoryPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal) | fullDirectoryPath.EndsWith(Path.AltDirectorySeparatorChar.ToString(), StringComparison.Ordinal)))
-                {
-                    fullDirectoryPath = fullDirectoryPath + Path.DirectorySeparatorChar;
-                }
-                new FileIOPermission(access, fullDirectoryPath).Demand();
-            }*/
-
             private static SHFILEOPSTRUCT GetShellOperationInfo(FileOperationType OperationType, FileOperationFlags OperationFlags, string[] SourcePath)
-            {
-                return GetShellOperationInfo(OperationType, OperationFlags, SourcePath, null);
-            }
+                => GetShellOperationInfo(OperationType, OperationFlags, SourcePath, null);
 
             private static string GetShellPath(string[] FullPaths)
             {
@@ -85,7 +62,6 @@ namespace SizeOnDisk.Shell
                 }
                 return builder.ToString();
             }
-
 
             private static SHFILEOPSTRUCT GetShellOperationInfo(FileOperationType OperationType, FileOperationFlags OperationFlags, string[] SourcePaths, string TargetPath)
             {
@@ -174,9 +150,7 @@ namespace SizeOnDisk.Shell
             /// <param name="path">Location of directory or file to recycle</param>
             /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
             public static bool MoveToRecycleBin(params string[] path)
-            {
-                return ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, path);
-            }
+                => ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, path);
 
 
             /// <summary>
@@ -185,9 +159,7 @@ namespace SizeOnDisk.Shell
             /// <param name="path">Location of directory or file to recycle</param>
             /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
             public static bool PermanentDelete(params string[] path)
-            {
-                return ShellDeleteOperation(0, path);
-            }
+                => ShellDeleteOperation(0, path);
 
         }
 
@@ -333,58 +305,11 @@ namespace SizeOnDisk.Shell
         {
             // Methods
             internal SafeFindHandle()
-                : base(true)
-            {
-            }
+                : base(true) { }
 
             protected override bool ReleaseHandle()
-            {
-                return SafeNativeMethods.FindClose(base.handle);
-            }
+                => SafeNativeMethods.FindClose(base.handle);
         }
-
-        /*[SecurityCritical]
-        internal static void WinIOError(int errorCode, string maybeFullPath)
-        {
-            bool isInvalidPath = errorCode == 123 || errorCode == 161;
-            string displayablePath = __Error.GetDisplayablePath(maybeFullPath, isInvalidPath);
-            switch (errorCode)
-            {
-                case 2:
-                    if (displayablePath.Length == 0)
-                        throw new FileNotFoundException(Environment.GetResourceString("IO.FileNotFound"));
-                    throw new FileNotFoundException(Environment.GetResourceString("IO.FileNotFound_FileName", (object)displayablePath), displayablePath);
-                case 3:
-                    if (displayablePath.Length == 0)
-                        throw new DirectoryNotFoundException(Environment.GetResourceString("IO.PathNotFound_NoPathName"));
-                    throw new DirectoryNotFoundException(Environment.GetResourceString("IO.PathNotFound_Path", (object)displayablePath));
-                case 5:
-                    if (displayablePath.Length == 0)
-                        throw new UnauthorizedAccessException(Environment.GetResourceString("UnauthorizedAccess_IODenied_NoPathName"));
-                    throw new UnauthorizedAccessException(Environment.GetResourceString("UnauthorizedAccess_IODenied_Path", (object)displayablePath));
-                case 15:
-                    throw new DriveNotFoundException(Environment.GetResourceString("IO.DriveNotFound_Drive", (object)displayablePath));
-                case 32:
-                    if (displayablePath.Length == 0)
-                        throw new IOException(Environment.GetResourceString("IO.IO_SharingViolation_NoFileName"), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
-                    throw new IOException(Environment.GetResourceString("IO.IO_SharingViolation_File", (object)displayablePath), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
-                case 80:
-                    if (displayablePath.Length != 0)
-                        throw new IOException(Environment.GetResourceString("IO.IO_FileExists_Name", (object)displayablePath), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
-                    break;
-                case 87:
-                    throw new IOException(Win32Native.GetMessage(errorCode), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
-                case 183:
-                    if (displayablePath.Length != 0)
-                        throw new IOException(Environment.GetResourceString("IO.IO_AlreadyExists_Name", (object)displayablePath), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
-                    break;
-                case 206:
-                    throw new PathTooLongException(Environment.GetResourceString("IO.PathTooLong"));
-                case 995:
-                    throw new OperationCanceledException();
-            }
-            throw new IOException(Win32Native.GetMessage(errorCode), Win32Native.MakeHRFromErrorCode(errorCode), maybeFullPath);
-        }*/
 
 
         public static IEnumerable<LittleFileInfo> GetFiles(string folderPath)
@@ -504,8 +429,6 @@ namespace SizeOnDisk.Shell
         /// <param name="data">The file attribute structure to fill</param>
         public static long? GetCompressedFileSize(string filename)
         {
-            //return ShellHelper.GetCompressedFileSize(filename);
-
             uint losize = SafeNativeMethods.GetCompressedFileSize(filename, out uint hosize);
             int error = Marshal.GetLastWin32Error();
             if (hosize == 0 && losize == 0xFFFFFFFF && error != 0)
