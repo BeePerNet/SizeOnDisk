@@ -12,6 +12,8 @@
         lex:ResxLocalizationProvider.DefaultDictionary="Localization"
         lex:LocalizeDictionary.DesignCulture="fr"
         cmd:CommandBehavior.Context="{Binding}"
+        MinWidth="350"
+        MinHeight="200"
         Height="500"
         Width="1050"
         Title="{Binding Path=SelectedTreeItem.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
@@ -65,7 +67,6 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ToolBarTray  Grid.Row="0">
             <ToolBar>
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Margin="2" />
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.RefreshCommand}" Margin="2" />
@@ -122,7 +123,6 @@
                     </Button.Content>
                 </Button>
             </ToolBar>
-        </ToolBarTray>
         <TextBox Grid.Row="1" Text="{Binding SelectedListItem.Path,Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
