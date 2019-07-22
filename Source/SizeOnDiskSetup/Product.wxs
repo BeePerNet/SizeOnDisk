@@ -49,6 +49,16 @@
               KeyPath="yes"
               Vital="yes" />
       </Component>
+      <Component Id="ConfigurationFileComponent"
+                 Guid="*">
+        <File Id="ConfigurationFile"
+              Name="SizeOnDisk.exe.config"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)/SizeOnDisk.exe.config"
+              KeyPath="yes"
+              Checksum="yes"
+              Vital="no" />
+      </Component>
       <Component Id="XAMLMarkupComponent"
                  Guid="*">
         <File Id="XAMLMarkupFile"
@@ -237,6 +247,7 @@
     </DirectoryRef>
     <Feature Id="ProductFeature" Absent="disallow"
              Title="SizeOnDisk required files"
+              AllowAdvertise="no"
              Level="1"
              ConfigurableDirectory="INSTALLDIR">
       <ComponentRef Id="ApplicationFileComponent" />
@@ -245,53 +256,69 @@
       <ComponentRef Id="ApplicationFileShortcutComponent" />
       <ComponentRef Id="ByYourCommandComponent" />
     </Feature>
+    <Feature Id="ConfigurationFeature"
+             Title="SizeOnDisk configuration file"
+             Level="2"
+              AllowAdvertise="no"
+             ConfigurableDirectory="INSTALLDIR">
+      <ComponentRef Id="ConfigurationFileComponent" />
+    </Feature>
     <Feature Id="LanguagesFeature"
              Title="Languages"
+              AllowAdvertise="no"
              Level="1">
       <Feature Id="LanguageDEFeature"
                Title="Deutsch"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguageDEFileComponent" />
         <Condition Level="1">SystemLanguageID = 1031 OR SystemLanguageID = 3079 OR SystemLanguageID = 5127 OR SystemLanguageID = 4103 OR SystemLanguageID = 2055</Condition>
       </Feature>
       <Feature Id="LanguageESFeature"
                Title="!(loc.Espanol)"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguageESFileComponent" />
         <Condition Level="1">SystemLanguageID = 1034 OR SystemLanguageID = 3082 OR SystemLanguageID = 11274 OR SystemLanguageID = 16394 OR SystemLanguageID = 13322 OR SystemLanguageID = 9226 OR SystemLanguageID = 5130 OR SystemLanguageID = 7178 OR SystemLanguageID = 12298 OR SystemLanguageID = 17418 OR SystemLanguageID = 4106 OR SystemLanguageID = 18442 OR SystemLanguageID = 22538 OR SystemLanguageID = 2058 OR SystemLanguageID = 19466 OR SystemLanguageID = 6154 OR SystemLanguageID = 15370 OR SystemLanguageID = 10250 OR SystemLanguageID = 20490 OR SystemLanguageID = 21514 OR SystemLanguageID = 14346 OR SystemLanguageID = 8202</Condition>
       </Feature>
       <Feature Id="LanguageFAFeature"
                Title="Farsi"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguageFAFileComponent" />
         <Condition Level="1">SystemLanguageID = 1065</Condition>
       </Feature>
       <Feature Id="LanguageFRFeature"
                Title="!(loc.Francais)"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguageFRFileComponent" />
         <Condition Level="1">SystemLanguageID = 1036 OR SystemLanguageID = 2060 OR SystemLanguageID = 11276 OR SystemLanguageID = 3084 OR SystemLanguageID = 9228 OR SystemLanguageID = 12300 OR SystemLanguageID = 15372 OR SystemLanguageID = 5132 OR SystemLanguageID = 13324 OR SystemLanguageID = 6156 OR SystemLanguageID = 14348 OR SystemLanguageID = 58380 OR SystemLanguageID = 8204 OR SystemLanguageID = 10252 OR SystemLanguageID = 4108 OR SystemLanguageID = 7180</Condition>
       </Feature>
       <Feature Id="LanguageITFeature"
                Title="Italiano"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguageITFileComponent" />
         <Condition Level="1">SystemLanguageID = 1040 OR SystemLanguageID = 2064</Condition>
       </Feature>
       <Feature Id="LanguagePTFeature"
                Title="!(loc.Portugues)"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguagePTFileComponent" />
         <Condition Level="1">SystemLanguageID = 1046 OR SystemLanguageID = 2070</Condition>
       </Feature>
       <Feature Id="LanguageRUFeature"
                Title="Russian"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguageRUFileComponent" />
         <Condition Level="1">SystemLanguageID = 1049 OR SystemLanguageID = 2073</Condition>
       </Feature>
       <Feature Id="LanguageSVFeature"
                Title="Svenska"
+              AllowAdvertise="no"
                Level="2">
         <ComponentRef Id="LanguageSVFileComponent" />
         <Condition Level="1">SystemLanguageID = 1053 OR SystemLanguageID = 2077</Condition>
