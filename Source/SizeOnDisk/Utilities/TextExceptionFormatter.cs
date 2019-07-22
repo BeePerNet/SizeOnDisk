@@ -22,6 +22,15 @@ namespace SizeOnDisk.Utilities
         private StringBuilder stringBuilder = new StringBuilder(1024);
         private static readonly ArrayList IgnoredProperties = new ArrayList(new string[] { "Source", "Message", "HelpLink", "InnerException", "StackTrace" });
 
+
+        public static Exception GetInnerException(Exception ex)
+        {
+            while (ex.InnerException != null)
+                ex = ex.InnerException;
+            return ex;
+        }
+
+
         // Methods
         public TextExceptionFormatter(Exception exception)
         {

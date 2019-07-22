@@ -5,8 +5,9 @@ namespace SizeOnDisk.ViewModel
     {
         Ready = 0,
         Running = 1,
-        Canceled = 2,
-        Finished = 3,
+        Canceling = 2,
+        Canceled = 3,
+        Finished = 4,
         Designing = 42
     }
 }

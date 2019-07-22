@@ -30,6 +30,8 @@ namespace SizeOnDisk.Converters
                         return Localization.Ready;
                     case TaskExecutionState.Running:
                         return Localization.Calculating;
+                    case TaskExecutionState.Canceling:
+                        return "Cancelling";
                     default:
                         return value.ToString();
                 }

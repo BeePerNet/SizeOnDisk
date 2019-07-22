@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
@@ -92,29 +93,53 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return System.IO.Path.GetExtension(Name).Remove(0, 1);
+                return System.IO.Path.GetExtension(Name).Replace(".", "");
             }
+        }
+
+        protected void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions =  null)
+        {
+            try
+            {
+                action(parallelOptions);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception ex)
+            {
+                ExceptionBox.ShowException(ex);
+            }
+        }
+
+        protected virtual void ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
+        {
+            Parent.ExecuteTaskAsync(action, highpriority);
         }
 
         public void Rename(string newName)
         {
             if (this.Name != newName)
             {
-                string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Path), newName);
-                if (this is VMFolder)
+                ExecuteTask((parallelOptions) =>
                 {
-                    File.Move(this.Path, newPath);
-                }
-                else
-                {
-                    Directory.Move(this.Path, newPath);
-                }
-                _Name = newName;
-                Path = newPath;
-                this.OnPropertyChanged(nameof(Name));
-                this.OnPropertyChanged(nameof(Path));
-                this.OnPropertyChanged(nameof(Extension));
-                this.RefreshOnView();
+                    string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Path), newName);
+                    if (this is VMFolder)
+                    {
+                        File.Move(this.Path, newPath);
+                    }
+                    else
+                    {
+                        Directory.Move(this.Path, newPath);
+                    }
+                    _Name = newName;
+                    Path = newPath;
+                    this.OnPropertyChanged(nameof(Name));
+                    this.OnPropertyChanged(nameof(Path));
+                    this.OnPropertyChanged(nameof(Extension));
+                    this.RefreshOnView();
+                });
+                this.Parent.RefreshAfterCommand();
             }
         }
 
@@ -183,11 +208,6 @@ namespace SizeOnDisk.ViewModel
         {
             this.Attributes = fileInfo.Attributes;
             this.FileSize = fileInfo.Size;
-            /*this.DiskSize = ((((fileInfo.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed ?
-                fileInfo.CompressedSize : this.FileSize)
-                + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;*/
-            //            if ((this.Attributes & FileAttributes.Normal) != FileAttributes.Normal)
-            //              this.DiskSize = 0;
             this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
         }
 
@@ -237,12 +257,13 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
+                file.ExecuteTask((parallelOptions) =>
                 {
-                    file.Parent.FillChildList();
-                    file.Parent.RefreshCount();
-                    file.Parent.RefreshParents();
-                }
+                    if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
+                    {
+                        file.Parent.RefreshAfterCommand();
+                    }
+                });
             }
         }
 
@@ -260,12 +281,13 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
+                file.ExecuteTask((parallelOptions) =>
                 {
-                    file.Parent.FillChildList();
-                    file.Parent.RefreshCount();
-                    file.Parent.RefreshParents();
-                }
+                    if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
+                    {
+                        file.Parent.RefreshAfterCommand();
+                    }
+                });
             }
         }
 

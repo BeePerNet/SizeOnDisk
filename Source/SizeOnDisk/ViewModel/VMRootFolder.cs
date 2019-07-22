@@ -18,7 +18,7 @@ namespace SizeOnDisk.ViewModel
         private readonly Stopwatch _Runwatch = new Stopwatch();
         private long _HardDriveUsage;
         private long _HardDriveFree;
-        private TaskExecutionState _ExecutionState = TaskExecutionState.Running;
+        private TaskExecutionState _ExecutionState = TaskExecutionState.Ready;
 
         #endregion fields
 
@@ -71,8 +71,8 @@ namespace SizeOnDisk.ViewModel
         internal VMRootFolder(VMRootHierarchy parent, string name, string path, Dispatcher dispatcher)
             : base(parent, name, path, IOHelper.GetClusterSize(path), dispatcher)
         {
-            this.ExecutionState = TaskExecutionState.Running;
             HardDrivePath = System.IO.Path.GetPathRoot(path);
+            _isTreeSelected = true;
         }
 
         #endregion creator
@@ -99,16 +99,11 @@ namespace SizeOnDisk.ViewModel
         {
             try
             {
-                this.ExecutionState = TaskExecutionState.Running;
                 _Runwatch.Restart();
-                this.OnPropertyChanged(nameof(RunTime));
 
                 DriveInfo info = new DriveInfo(HardDrivePath);
                 this.HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
                 this.HardDriveFree = info.AvailableFreeSpace;
-
-                this.IsExpanded = true;
-                this.IsTreeSelected = true;
 
                 base.Refresh(parallelOptions);
             }
@@ -117,7 +112,6 @@ namespace SizeOnDisk.ViewModel
                 _Runwatch.Stop();
                 this.OnPropertyChanged(nameof(RunTime));
                 this.ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
-
             }
         }
 
@@ -126,81 +120,148 @@ namespace SizeOnDisk.ViewModel
         #region Task
 
         private DispatcherTimer _Timer;
-        private Task _Task;
+        private ParallelOptions _ParallelOptions;
         private CancellationTokenSource _CancellationTokenSource;
+        private object _lock = new object();
+
+        private ParallelOptions GetParallelOptions()
+        {
+            if (_CancellationTokenSource != null)
+            {
+                if (!_CancellationTokenSource.Token.CanBeCanceled)
+                {
+                    _ParallelOptions = null;
+                }
+            }
+            if (_ParallelOptions == null)
+            {
+                lock (_lock)
+                {
+                    if (_ParallelOptions == null)
+                    {
+                        ParallelOptions parallelOptions = new ParallelOptions();
+                        _CancellationTokenSource = new CancellationTokenSource();
+                        parallelOptions.CancellationToken = _CancellationTokenSource.Token;
+                        _ParallelOptions = parallelOptions;
+                    }
+                }
+            }
+            return _ParallelOptions;
+        }
+
+
+        private void RootExecuteTaskAsyncHighPriority(Action<ParallelOptions> action)
+        {
+            ParallelOptions parallelOptions = GetParallelOptions();
+            new Thread(() =>
+            {
+                ExecuteTask(action, parallelOptions);
+            })
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.Highest
+            }.Start();
+        }
+
+        protected override void ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
+        {
+            if (highpriority)
+                RootExecuteTaskAsyncHighPriority(action);
+            ParallelOptions parallelOptions = GetParallelOptions();
+            Task.Run(() => ExecuteTask(action, parallelOptions), parallelOptions.CancellationToken);
+        }
 
         [SuppressMessage("Microsoft.Design", "CA1031")]
         public void RefreshAsync()
         {
+            this.Stop()?.Wait();
+
             this.ExecutionState = TaskExecutionState.Running;
             if (_Timer == null)
             {
-                _Timer = new DispatcherTimer(DispatcherPriority.DataBind)
+                _Timer = new DispatcherTimer(DispatcherPriority.DataBind, Dispatcher)
                 {
                     Interval = new TimeSpan(0, 0, 1)
                 };
                 _Timer.Tick += new EventHandler(TimerTick);
             }
-            this.StopAsync();
-            ParallelOptions parallelOptions = new ParallelOptions();
-            _CancellationTokenSource = new CancellationTokenSource();
-            parallelOptions.CancellationToken = _CancellationTokenSource.Token;
-            _Task = new Task(() =>
+
+            ExecuteTaskAsync((parallelOptions) =>
             {
                 try
                 {
-                    try
-                    {
-                        _Timer.Start();
-                        //this.RefreshOnView();
-                        this.Refresh(parallelOptions);
-                    }
-                    finally
-                    {
-                        _Timer.Stop();
-                        _Task = null;
-                        _CancellationTokenSource = null;
-                    }
-                }
-                catch (OperationCanceledException)
-                {
+                    _Timer.Start();
+                    this.Refresh(parallelOptions);
+                    this.ExecutionState = TaskExecutionState.Finished;
                 }
                 catch (Exception ex)
                 {
                     ExceptionBox.ShowException(ex);
                 }
-            }, parallelOptions.CancellationToken, TaskCreationOptions.LongRunning);
-            _Task.Start();
+                finally
+                {
+                    _Timer.Stop();
+                }
+            });
         }
 
         private void TimerTick(object sender, EventArgs e)
         {
-            this.OnPropertyChanged(nameof(RunTime));
-            this.RefreshCount();
-        }
-
-        public void Stop()
-        {
-            if (_Task != null && _CancellationTokenSource != null)
+            try
             {
-                StopAsync();
-                if (_Task != null)
-                {
-                    _Task.Wait();
-                }
+                this.OnPropertyChanged(nameof(RunTime));
+                this.RefreshCount();
+            }
+            catch (Exception ex)
+            {
+                ExceptionBox.ShowException(ex);
             }
         }
 
-        public void StopAsync()
+        public Task Stop()
         {
-            if (_Task != null && _Task.Status == TaskStatus.Running)
+            try
             {
-                if (_CancellationTokenSource != null && !_CancellationTokenSource.IsCancellationRequested)
+                if (_CancellationTokenSource != null && _CancellationTokenSource.Token.CanBeCanceled)
                 {
-                    _CancellationTokenSource.Cancel();
+                    this.ExecutionState = TaskExecutionState.Canceling;
+
+                    CancellationTokenSource cts;
+                    lock (_lock)
+                    {
+                        cts = _CancellationTokenSource;
+                        if (!_ParallelOptions.CancellationToken.CanBeCanceled)
+                            cts = null;
+                        _CancellationTokenSource = null;
+                        _ParallelOptions = null;
+                    }
+                    if (cts != null)
+                    {
+                        cts.Cancel(true);
+                        Task task = Task.Run(() =>
+                        {
+                            try
+                            {
+                                cts.Token.WaitHandle.WaitOne();
+                            }
+                            catch (Exception ex)
+                            {
+                                ExceptionBox.ShowException(ex);
+                            }
+                            finally
+                            {
+                                this.ExecutionState = TaskExecutionState.Canceled;
+                            }
+                        });
+                        return task;
+                    }
                 }
-                this.ExecutionState = TaskExecutionState.Canceled;
             }
+            catch (Exception ex)
+            {
+                ExceptionBox.ShowException(ex);
+            }
+            return null;
         }
 
         public TaskExecutionState ExecutionState
@@ -246,11 +307,6 @@ namespace SizeOnDisk.ViewModel
                     {
                         _CancellationTokenSource.Dispose();
                         _CancellationTokenSource = null;
-                    }
-                    if (_Task != null)
-                    {
-                        _Task.Dispose();
-                        _Task = null;
                     }
                 }
 

@@ -14,7 +14,7 @@
         cmd:CommandBehavior.Context="{Binding}"
         MinWidth="350"
         MinHeight="200"
-        Height="500"
+        Height="600"
         Width="1050"
         Title="{Binding Path=SelectedTreeItem.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"

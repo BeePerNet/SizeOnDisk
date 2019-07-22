@@ -56,6 +56,7 @@ namespace SizeOnDisk.ViewModel
 
         public VMRootHierarchy() : base(null, null, null, 0, Dispatcher.CurrentDispatcher)
         {
+            this.IsExpanded = true;
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder", "\\\\Root Folder");
@@ -80,8 +81,15 @@ namespace SizeOnDisk.ViewModel
         public void AddRootFolder(string path)
         {
             VMRootFolder newFolder = new VMRootFolder(this, path, path, this.Dispatcher);
-            //this.Childs.Add(newFolder);
+            //No need on root: this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
+
+            this.SelectedRootFolder = newFolder;
+            this.SelectedTreeItem = newFolder;
+            this.SelectedListItem = newFolder;
+            newFolder.IsExpanded = true;
+            newFolder.IsTreeSelected = true;
+
             newFolder.RefreshAsync();
         }
 
@@ -102,7 +110,7 @@ namespace SizeOnDisk.ViewModel
         public void StopAsync()
         {
             foreach (VMRootFolder folder in this.Folders)
-                folder.StopAsync();
+                folder.Stop();
         }
 
         #endregion function
@@ -120,7 +128,10 @@ namespace SizeOnDisk.ViewModel
         internal void RefreshIsRunning()
         {
             this.OnPropertyChanged(nameof(IsRunning));
-            CommandManager.InvalidateRequerySuggested();
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                CommandManager.InvalidateRequerySuggested();
+            }));
         }
 
         public static readonly RoutedCommandEx OpenFolderCommand = new RoutedCommandEx("openfolder", "loc:ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "loc:Insert"));
@@ -140,14 +151,6 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(StopCommand, CallStopCommand, CanCallStopCommand));
             bindingCollection.Add(new CommandBinding(CloseCommand, CallCloseCommand, CanCallCommand));
         }
-
-        /*public override void AddInputModels(InputBindingCollection bindingCollection)
-        {
-            if (bindingCollection == null)
-                throw new ArgumentNullException("bindingCollection", "bindingCollection is null");
-            base.AddInputModels(bindingCollection);
-            bindingCollection.Add(new InputBinding(RefreshCommand, RefreshCommand.KeyGesture));
-        }*/
 
         private void CallOpenCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -169,7 +172,7 @@ namespace SizeOnDisk.ViewModel
         private void CallStopCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            this.SelectedRootFolder.StopAsync();
+            this.SelectedRootFolder.Stop();
         }
 
         private void CallCloseCommand(object sender, ExecutedRoutedEventArgs e)
