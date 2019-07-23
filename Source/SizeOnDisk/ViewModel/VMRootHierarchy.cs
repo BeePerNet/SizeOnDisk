@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
@@ -67,6 +68,8 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
+                BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
+                BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
                 _Timer = new DispatcherTimer(DispatcherPriority.DataBind)
                 {
                     Interval = new TimeSpan(0, 0, 1)
@@ -89,6 +92,9 @@ namespace SizeOnDisk.ViewModel
             this.SelectedListItem = newFolder;
             newFolder.IsExpanded = true;
             newFolder.IsTreeSelected = true;
+
+            BindingOperations.EnableCollectionSynchronization(newFolder.Childs, newFolder._myCollectionLock);
+            BindingOperations.EnableCollectionSynchronization(newFolder.Folders, newFolder._myCollectionLock);
 
             newFolder.RefreshAsync();
         }

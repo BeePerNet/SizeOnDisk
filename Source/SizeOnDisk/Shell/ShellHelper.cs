@@ -380,7 +380,7 @@ namespace SizeOnDisk.Shell
             return soft;
         }
 
-               
+
         public static ShellCommandRoot GetShellCommands(string path, bool isDirectory)
         {
             ShellCommandRoot result = new ShellCommandRoot();
@@ -449,7 +449,7 @@ namespace SizeOnDisk.Shell
 
         #region public functions
 
-        public static void ShellExecute(string fileName, string parameters = null, string verb = null)
+        public static void ShellExecute(string fileName, string parameters = null, string verb = null, bool normal = false, ShellExecuteFlags? flags = null)
         {
 
             IntPtr window = new WindowInteropHelper(Application.Current.MainWindow)?.Handle ?? IntPtr.Zero;
@@ -460,12 +460,13 @@ namespace SizeOnDisk.Shell
                 lpVerb = verb,
                 lpFile = fileName,
                 lpParameters = parameters,
-                nShow = (int)SafeNativeMethods.ShowCommands.SW_SHOW,
-                fMask = (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_FLAG_NO_UI
-                | (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_UNICODE
-                | (!string.IsNullOrWhiteSpace(verb) && (verb != "find") ? (uint)SafeNativeMethods.ShellExecuteFlags.SEE_MASK_INVOKEIDLIST : 0)
+                nShow = (int)(normal ? SafeNativeMethods.ShowCommands.SW_NORMAL : SafeNativeMethods.ShowCommands.SW_SHOW)
             };
             info.cbSize = Marshal.SizeOf(info);
+            if (!flags.HasValue)
+                flags = !string.IsNullOrWhiteSpace(verb) && (verb != "find") ? ShellExecuteFlags.SEE_MASK_INVOKEIDLIST : ShellExecuteFlags.SEE_MASK_DEFAULT;
+            flags = flags | ShellExecuteFlags.SEE_MASK_FLAG_NO_UI | ShellExecuteFlags.SEE_MASK_UNICODE;
+            info.fMask = (uint)flags;
             SafeNativeMethods.ShellExecuteEx(ref info);
             if (info.hInstApp.ToInt64() <= 32)
             {
@@ -610,6 +611,30 @@ namespace SizeOnDisk.Shell
             Max
         }
 
+        [Flags]
+        public enum ShellExecuteFlags : uint
+        {
+            SEE_MASK_DEFAULT = 0x00000000,
+            SEE_MASK_CLASSNAME = 0x00000001,
+            SEE_MASK_CLASSKEY = 0x00000003,
+            SEE_MASK_IDLIST = 0x00000004,
+            SEE_MASK_INVOKEIDLIST = 0x0000000c,   // Note SEE_MASK_INVOKEIDLIST(0xC) implies SEE_MASK_IDLIST(0x04)
+            SEE_MASK_HOTKEY = 0x00000020,
+            SEE_MASK_NOCLOSEPROCESS = 0x00000040,
+            SEE_MASK_CONNECTNETDRV = 0x00000080,
+            SEE_MASK_NOASYNC = 0x00000100,
+            SEE_MASK_FLAG_DDEWAIT = SEE_MASK_NOASYNC,
+            SEE_MASK_DOENVSUBST = 0x00000200,
+            SEE_MASK_FLAG_NO_UI = 0x00000400,
+            SEE_MASK_UNICODE = 0x00004000,
+            SEE_MASK_NO_CONSOLE = 0x00008000,
+            SEE_MASK_ASYNCOK = 0x00100000,
+            SEE_MASK_HMONITOR = 0x00200000,
+            SEE_MASK_NOZONECHECKS = 0x00800000,
+            SEE_MASK_NOQUERYCLASSSTORE = 0x01000000,
+            SEE_MASK_WAITFORINPUTIDLE = 0x02000000,
+            SEE_MASK_FLAG_LOG_USAGE = 0x04000000,
+        }
 
 
         internal static class SafeNativeMethods
@@ -977,8 +1002,25 @@ namespace SizeOnDisk.Shell
                 }
 
             }
-
-            [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+            /*
+            "open"        - Opens a file or a application
+            "openas"    - Opens dialog when no program is associated to the extension
+            "opennew"    - see MSDN
+            "runas"    - In Windows 7 and Vista, opens the UAC dialog and in others, open the Run as... Dialog
+            "null"     - Specifies that the operation is the default for the selected file type.
+            "edit"        - Opens the default text editor for the file.    
+            "explore"    - Opens the Windows Explorer in the folder specified in lpDirectory.
+            "properties"    - Opens the properties window of the file.
+            "copy"        - see MSDN
+            "cut"        - see MSDN
+            "paste"    - see MSDN
+            "pastelink"    - pastes a shortcut
+            "delete"    - see MSDN
+            "print"    - Start printing the file with the default application.
+            "printto"    - see MSDN
+            "find"        - Start a search
+            */
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
             public static extern bool ShellExecuteEx(ref SHELLEXECUTEINFO lpExecInfo);
 
             [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -1026,30 +1068,6 @@ namespace SizeOnDisk.Shell
                 SW_MAX = 11
             }
 
-            [Flags]
-            public enum ShellExecuteFlags : uint
-            {
-                SEE_MASK_DEFAULT = 0x00000000,
-                SEE_MASK_CLASSNAME = 0x00000001,
-                SEE_MASK_CLASSKEY = 0x00000003,
-                SEE_MASK_IDLIST = 0x00000004,
-                SEE_MASK_INVOKEIDLIST = 0x0000000c,   // Note SEE_MASK_INVOKEIDLIST(0xC) implies SEE_MASK_IDLIST(0x04)
-                SEE_MASK_HOTKEY = 0x00000020,
-                SEE_MASK_NOCLOSEPROCESS = 0x00000040,
-                SEE_MASK_CONNECTNETDRV = 0x00000080,
-                SEE_MASK_NOASYNC = 0x00000100,
-                SEE_MASK_FLAG_DDEWAIT = SEE_MASK_NOASYNC,
-                SEE_MASK_DOENVSUBST = 0x00000200,
-                SEE_MASK_FLAG_NO_UI = 0x00000400,
-                SEE_MASK_UNICODE = 0x00004000,
-                SEE_MASK_NO_CONSOLE = 0x00008000,
-                SEE_MASK_ASYNCOK = 0x00100000,
-                SEE_MASK_HMONITOR = 0x00200000,
-                SEE_MASK_NOZONECHECKS = 0x00800000,
-                SEE_MASK_NOQUERYCLASSSTORE = 0x01000000,
-                SEE_MASK_WAITFORINPUTIDLE = 0x02000000,
-                SEE_MASK_FLAG_LOG_USAGE = 0x04000000,
-            }
 
             internal enum ShellExecuteReturnCodes
             {

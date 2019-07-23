@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 
@@ -77,7 +78,7 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        private readonly object _myCollectionLock = new object();
+        internal readonly object _myCollectionLock = new object();
 
         protected VMFolder(VMFolder parent, string name, string path, uint clusterSize, Dispatcher dispatcher)
             : base(parent, name, path)

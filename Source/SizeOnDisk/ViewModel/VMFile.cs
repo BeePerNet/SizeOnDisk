@@ -97,7 +97,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        protected void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions =  null)
+        protected void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions = null)
         {
             try
             {
@@ -365,7 +365,7 @@ namespace SizeOnDisk.ViewModel
 
             if (command == OpenAsCommand)
             {
-                ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL \"{file.Path}\"");
+                ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL {file.Path}");
                 return;
             }
             if (command == ExploreCommand)
