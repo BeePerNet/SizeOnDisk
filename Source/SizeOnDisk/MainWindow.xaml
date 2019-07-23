@@ -195,7 +195,10 @@
                                 <RowDefinition SharedSizeGroup="Icons" MinHeight="96" />
                                 <RowDefinition SharedSizeGroup="Names" />
                             </Grid.RowDefinitions>
-                            <cmd:AutoDisablingImage Margin="0" Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter},ConverterParameter=Hidden}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Canvas Width="96" Height="96" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
+                                <Image Panel.ZIndex="42" Canvas.Left="0" Canvas.Bottom="0" Source="Icons/Shortcut-big.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
+                                <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Canvas>
                             <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
                         </Grid>
                     </DataTemplate>
@@ -230,7 +233,10 @@
                     <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <cmd:AutoDisablingImage Source="{Binding Details.Icon}" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}" />
+                                <Canvas Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
+                                    <Image Panel.ZIndex="42" Canvas.Left="0" Canvas.Bottom="0" Source="Icons/Shortcut-small.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
+                                    <cmd:AutoDisablingImage Source="{Binding Details.Icon}"  />
+                                </Canvas>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

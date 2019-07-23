@@ -503,6 +503,8 @@ namespace SizeOnDisk.ViewModel
                                 {
                                     Tag = verb.Command
                                 };
+                                if (verb.Verb.ToUpperInvariant().Contains("PRINT"))
+                                    cmd.Icon = PrintCommand.Icon;
                                 parent.Childs.Add(cmd);
                             }
                         }
