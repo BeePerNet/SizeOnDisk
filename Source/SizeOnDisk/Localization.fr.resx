@@ -397,6 +397,6 @@
     <value>Nombre de dossiers</value>
   </data>
   <data name="OpenAsText" xml:space="preserve">
-    <value>Ouvrir le texte</value>
+    <value>Ouvrir en tant que texte</value>
   </data>
 </root>

@@ -209,6 +209,15 @@ namespace SizeOnDisk.Shell
 
         private static ShellCommandVerb GetVerb(RegistryKey verbkey, string id, string appUserModeId)
         {
+            if (id.ToUpperInvariant() == "RUNAS")
+                return null;
+            //We are not taking DDE
+            RegistryKey cmd = verbkey.OpenSubKey("ddeexec");
+            if (cmd != null && !string.IsNullOrEmpty(cmd.GetValue(string.Empty, string.Empty).ToString()))
+            {
+                return null;
+            }
+
             ShellCommandVerb verb = new ShellCommandVerb
             {
                 Verb = id,
@@ -228,12 +237,17 @@ namespace SizeOnDisk.Shell
             }
             else
             {
-                name = LocExtension.GetLocalizedValue<string>($"PresentationCore:ExceptionStringTable:{id}Text");
-                if (!string.IsNullOrEmpty(name))
+                string locname = LocExtension.GetLocalizedValue<string>($"PresentationCore:ExceptionStringTable:{id}Text");
+                if (string.IsNullOrEmpty(locname))
+                    locname = LocExtension.GetLocalizedValue<string>(id);
+                if (!string.IsNullOrEmpty(locname))
+                {
+                    verb.Name = locname;
+                }
+                else if (!string.IsNullOrEmpty(name))
+                {
                     verb.Name = name;
-                name = LocExtension.GetLocalizedValue<string>(id);
-                if (!string.IsNullOrEmpty(name))
-                    verb.Name = name;
+                }
             }
 
             if (id.ToUpperInvariant() == "RUNASUSER")
@@ -242,7 +256,7 @@ namespace SizeOnDisk.Shell
                 return verb;
             }
 
-            RegistryKey cmd = verbkey.OpenSubKey("command");
+            cmd = verbkey.OpenSubKey("command");
             if (cmd != null)
             {
                 verb.Command = cmd.GetValue(string.Empty, string.Empty).ToString();
@@ -281,6 +295,7 @@ namespace SizeOnDisk.Shell
                 if (!string.IsNullOrEmpty(appUserModeId))
                     verb.Command = "Id:" + appUserModeId;
             }
+
             if (string.IsNullOrEmpty(verb.Command))
             {
 
@@ -294,28 +309,36 @@ namespace SizeOnDisk.Shell
         {
             ShellCommandSoftware soft = new ShellCommandSoftware
             {
-                Id = id
+                Id = id,
+                Name = id
             };
 
             RegistryKey subkey;
 
-            soft.Name = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyAppName, id);
+            string name = appkey.GetValue(string.Empty, string.Empty).ToString();
+            if (string.IsNullOrEmpty(name))
+            {
+                name = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.FriendlyAppName, id);
+            }
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = appkey.GetValue("FriendlyTypeName", string.Empty).ToString();
+                name = GetText(name);
+            }
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = appkey.GetValue("DisplayName", string.Empty).ToString();
+                name = GetText(name);
+            }
+            if (!string.IsNullOrEmpty(name))
+                soft.Name = name;
+
             string value = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.DefaultIcon, id);
             soft.Icon = GetIcon(value);
             if (soft.Icon == null)
             {
                 value = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.AppIconReference, id);
                 soft.Icon = GetIcon(value);
-            }
-            if (string.IsNullOrWhiteSpace(soft.Name))
-            {
-                value = appkey.GetValue("FriendlyTypeName", string.Empty).ToString();
-                soft.Name = GetText(value);
-            }
-            if (string.IsNullOrWhiteSpace(soft.Name))
-            {
-                value = appkey.GetValue("DisplayName", string.Empty).ToString();
-                soft.Name = GetText(value);
             }
 
             if (soft.Icon == null)
@@ -363,9 +386,12 @@ namespace SizeOnDisk.Shell
                 {
                     RegistryKey verbkey = subkey.OpenSubKey(appverb);
                     ShellCommandVerb verb = GetVerb(verbkey, appverb, appid);
-                    soft.Verbs.Add(verb);
-                    if (defaultverb == appverb)
-                        soft.Default = verb;
+                    if (verb != null)
+                    {
+                        soft.Verbs.Add(verb);
+                        if (defaultverb == appverb)
+                            soft.Default = verb;
+                    }
                 }
             }
             if (string.IsNullOrEmpty(soft.Name))
@@ -375,6 +401,19 @@ namespace SizeOnDisk.Shell
                     soft.Name = application;
                 else
                     soft.Name = id;
+            }
+
+            if (soft.Verbs.Count <= 0)
+                return null;
+            
+            if (soft.Icon == null)
+            {
+                appid = soft.Verbs.FirstOrDefault(T => T.Command.ToUpperInvariant().Contains(".EXE"))?.Command;
+                if (!string.IsNullOrEmpty(appid))
+                {
+                    appid = SplitCommandAndParameters(appid).Item1;
+                    soft.Icon = GetIcon(appid + ",0");
+                }
             }
 
             return soft;
@@ -426,21 +465,29 @@ namespace SizeOnDisk.Shell
                             string application = appkey.GetValue(string.Empty, string.Empty).ToString();
 
                             ShellCommandSoftware soft = GetSoftware(appkey, subkey);
-                            result.Softwares.Add(soft);
-                            if (application == subkey)
+                            if (soft != null)
                             {
-                                result.Default = soft;
+                                result.Softwares.Add(soft);
+                                if (application == subkey)
+                                {
+                                    result.Default = soft;
+                                }
                             }
                         }
                     }
 
-
-
-
-
-
-
-
+                    subvalues.Clear();
+                    key = extkey.OpenSubKey("OpenWithList");
+                    if (key != null)
+                    {
+                        foreach (string subkey in key.GetSubKeyNames())
+                        {
+                            RegistryKey appkey = Registry.ClassesRoot.OpenSubKey("Applications\\" + subkey);
+                            ShellCommandSoftware soft = GetSoftware(appkey, subkey);
+                            if (soft != null)
+                                result.Softwares.Add(soft);
+                        }
+                    }
                 }
             }
             return result;
@@ -508,11 +555,24 @@ namespace SizeOnDisk.Shell
             }
             else
             {
-                pos = cmd.IndexOf(' ');
+                pos = cmd.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase);
+                if (pos < 0)
+                    pos = cmd.IndexOf(".cmd ", StringComparison.OrdinalIgnoreCase);
+                if (pos < 0)
+                    pos = cmd.IndexOf(".bat ", StringComparison.OrdinalIgnoreCase);
                 if (pos > 0 && pos < cmd.Length)
                 {
-                    parameters = cmd.Substring(pos + 1);
-                    cmd = cmd.Substring(0, pos);
+                    parameters = cmd.Substring(pos + 5);
+                    cmd = cmd.Substring(0, pos + 4);
+                }
+                else
+                {
+                    pos = cmd.IndexOf(' ');
+                    if (pos > 0 && pos < cmd.Length)
+                    {
+                        parameters = cmd.Substring(pos + 1);
+                        cmd = cmd.Substring(0, pos);
+                    }
                 }
             }
             return new Tuple<string, string>(cmd.Trim(), parameters.Trim());
