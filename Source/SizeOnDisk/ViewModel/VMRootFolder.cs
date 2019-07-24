@@ -122,7 +122,7 @@ namespace SizeOnDisk.ViewModel
         private DispatcherTimer _Timer;
         private ParallelOptions _ParallelOptions;
         private CancellationTokenSource _CancellationTokenSource;
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         private ParallelOptions GetParallelOptions()
         {

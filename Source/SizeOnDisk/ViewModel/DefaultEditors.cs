@@ -12,7 +12,7 @@ namespace SizeOnDisk.ViewModel
     public static class DefaultEditors
     {
         private static IEnumerable<ShellCommandSoftware> list = null;
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         public static IEnumerable<ShellCommandSoftware> Editors
         {
@@ -35,8 +35,10 @@ namespace SizeOnDisk.ViewModel
                                 foreach (DefaultEditorItem item in editorlist.Where(T => T.Display == mainType))
                                 {
                                     bool found = false;
-                                    ShellCommandSoftware command = new ShellCommandSoftware();
-                                    command.Id = item.Display;
+                                    ShellCommandSoftware command = new ShellCommandSoftware
+                                    {
+                                        Id = item.Display
+                                    };
                                     switch (item.Definition)
                                     {
                                         case DefaultEditorDefinitionType.ApplicationKey:

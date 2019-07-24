@@ -453,7 +453,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     added = true;
                     string display = item.Id;
-                    if (display.StartsWith("loc:"))
+                    if (display.StartsWith("loc:", StringComparison.OrdinalIgnoreCase))
                         display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
                     if (string.IsNullOrEmpty(display))
                         display = item.Id;

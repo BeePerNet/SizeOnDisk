@@ -1,6 +1,5 @@
 ﻿using SizeOnDisk.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Windows;
@@ -21,7 +20,7 @@ namespace SizeOnDisk
         private const string sectionName = "SizeOnDisk";
 
         private static MainConfiguration internalInstance;
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         public static MainConfiguration Instance
         {
