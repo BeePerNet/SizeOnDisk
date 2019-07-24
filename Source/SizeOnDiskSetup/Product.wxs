@@ -21,20 +21,21 @@
       <UpgradeVersion OnlyDetect="no"
                       Property="PREVIOUSFOUND"
                       Minimum="0.0.0"
+                      MigrateFeatures="yes"
                       IncludeMinimum="yes"
                       Maximum="!(bind.FileVersion.ApplicationFile)"
                       IncludeMaximum="no" />
     </Upgrade>
-    <MajorUpgrade DowngradeErrorMessage="!(loc.HigherVersionDetectedError)" />
+    <MajorUpgrade DowngradeErrorMessage="!(loc.HigherVersionDetectedError)" MigrateFeatures="yes"  />
     <Directory Id="TARGETDIR"
                Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLDIR"
+        <Directory Id="APPLICATIONFOLDER"
                    Name="SizeOnDisk" />
       </Directory>
       <Directory Id="ProgramMenuFolder" />
     </Directory>
-    <DirectoryRef Id="INSTALLDIR">
+    <DirectoryRef Id="APPLICATIONFOLDER">
       <Component Id="ApplicationFileComponent"
                  Guid="*">
         <CreateFolder />
@@ -91,7 +92,7 @@
         </File>
       </Component>
     </DirectoryRef>
-    <DirectoryRef Id="INSTALLDIR">
+    <DirectoryRef Id="APPLICATIONFOLDER">
       <Directory Id="de"
                  Name="de">
         <Component Id="LanguageDEFileComponent"
@@ -235,7 +236,7 @@
         <Shortcut Id="ApplicationFileShortcut"
                   Name="SizeOnDisk"
                   Description="Shortcut To SizeOnDisk"
-                  Target="[INSTALLDIR]SizeOnDisk.exe"
+                  Target="[APPLICATIONFOLDER]SizeOnDisk.exe"
                   IconIndex="0" />
         <RegistryValue Root="HKCU"
                        Key="Software\SizeOnDisk"
@@ -249,7 +250,7 @@
              Title="SizeOnDisk required files"
               AllowAdvertise="no"
              Level="1"
-             ConfigurableDirectory="INSTALLDIR">
+             ConfigurableDirectory="APPLICATIONFOLDER">
       <ComponentRef Id="ApplicationFileComponent" />
       <ComponentRef Id="XAMLMarkupComponent" />
       <ComponentRef Id="WPFLocalizeComponent" />
@@ -260,7 +261,7 @@
              Title="SizeOnDisk configuration file"
              Level="2"
               AllowAdvertise="no"
-             ConfigurableDirectory="INSTALLDIR">
+             ConfigurableDirectory="APPLICATIONFOLDER">
       <ComponentRef Id="ConfigurationFileComponent" />
     </Feature>
     <Feature Id="LanguagesFeature"
@@ -328,11 +329,8 @@
           SourceFile="Hard_Drive.ico" />
     <Property Id="ARPPRODUCTICON"
               Value="SizeOnDiskIcon" />
-    <Property Id="WIXUI_INSTALLDIR"
-              Value="INSTALLDIR" />
     <Property Id="ARPHELPLINK"
               Value="https://github.com/BeePerNet/SizeOnDisk" />
-    <Property Id="ALLUSERS">2</Property>
     <WixVariable Id="WixUILicenseRtf"
                  Value="License.rtf" />
     <WixVariable Id="WixUIBannerBmp"
@@ -373,14 +371,43 @@
     <Property Id="WixShellExecTarget"
               Value="[#ApplicationFile]" />
 
+    <Property Id="WixAppFolder"
+              Value="WixPerMachineFolder" />
+
+    <Property Id="ApplicationFolderName"
+              Value="SizeOnDisk" />
+
     <CustomAction Id="LaunchApplication"
                   BinaryKey="WixCA"
                   DllEntry="WixShellExec"
                   Impersonate="yes" />
 
     <UI>
-      <UIRef Id="WixUI_FeatureTree" />
-      <UIRef Id="WixUI_ErrorProgressText" />
+      <UIRef Id="WixUI_Advanced" />
+      <Publish Dialog="InstallDirDlg"
+               Control="Next"
+               Event="DoAction"
+               Value="FindRelatedProducts">1</Publish>
+      <Publish Dialog="InstallScopeDlg"
+               Control="Next"
+               Property="MSIINSTALLPERUSER"
+               Value="1"
+               Order="3">WixAppFolder = "WixPerUserFolder"</Publish>
+      <Publish Dialog="InstallScopeDlg"
+               Control="Next"
+               Property="MSIINSTALLPERUSER"
+               Value="{}"
+               Order="2">WixAppFolder = "WixPerMachineFolder"</Publish>
+      <Publish Dialog="InstallScopeDlg"
+               Control="Next"
+               Event="DoAction"
+               Value="WixSetDefaultPerMachineFolder"
+               Order="3">WixAppFolder = "WixPerMachineFolder"    </Publish>
+      <Publish Dialog="InstallScopeDlg"
+               Control="Next"
+               Event="DoAction"
+               Value="WixSetDefaultPerUserFolder"
+               Order="3">WixAppFolder = "WixPerUserFolder"</Publish>
       <Publish Dialog="ExitDialog"
                Control="Finish"
                Event="DoAction"

@@ -97,7 +97,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        protected void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions = null)
+        protected static void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions = null)
         {
             try
             {
@@ -257,7 +257,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                file.ExecuteTask((parallelOptions) =>
+                ExecuteTask((parallelOptions) =>
                 {
                     if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
                     {
@@ -281,7 +281,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                file.ExecuteTask((parallelOptions) =>
+                ExecuteTask((parallelOptions) =>
                 {
                     if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
                     {
