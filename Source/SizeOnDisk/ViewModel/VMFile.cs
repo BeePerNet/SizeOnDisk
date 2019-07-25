@@ -234,8 +234,8 @@ namespace SizeOnDisk.ViewModel
         {
             _Details = new VMFileDetails(this);
             LittleFileInfo fileInfo = _Details.Load();
-            this.Refresh(fileInfo);
             OnPropertyChanged(nameof(Details));
+            this.Refresh(fileInfo);
         }
 
         #endregion functions

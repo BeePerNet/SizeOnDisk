@@ -240,16 +240,13 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn SortMemberPath="Name"
-                                        Header="{lex:Loc Name}"
+                    <DataGridTextColumn Header="{lex:Loc Name}"
                                         Binding="{Binding Name}"
                                         ElementStyle="{StaticResource ColoredName}" />
-                    <DataGridTextColumn SortMemberPath="Extension"
-                                        Header="Ext"
+                    <DataGridTextColumn Header="Ext"
                                         IsReadOnly="True"
                                         Binding="{Binding Extension}" />
-                    <DataGridTextColumn SortMemberPath="Details.FileType"
-                                        Header="{lex:Loc FileType}"
+                    <DataGridTextColumn Header="{lex:Loc FileType}"
                                         IsReadOnly="True"
                                         Binding="{Binding Details.FileType}" />
                     <DataGridTextColumn Binding="{Binding Attributes,Converter={StaticResource FileAttributesConverter}}"
@@ -258,34 +255,27 @@
                     <DataGridTextColumn Header="{lex:Loc FolderTotal}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FolderTotal,StringFormat=N0}"
-                                        SortMemberPath="FolderTotal"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Header="{lex:Loc FileTotal}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FileTotal,StringFormat=N0}"
-                                        SortMemberPath="FileTotal"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Header="{lex:Loc FileSize}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FileSize,Converter={StaticResource SizeConverter}}"
-                                        SortMemberPath="FileSize"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Header="{lex:Loc DiskSize}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding DiskSize,Converter={StaticResource SizeConverter}}"
-                                        SortMemberPath="DiskSize"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Details.CreationTime}"
                                         Header="{lex:Loc DateCreation}"
-                                        SortMemberPath="Details.DateCreation"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Details.LastAccessTime}"
                                         Header="{lex:Loc DateLastAccess}"
-                                        SortMemberPath="Details.DateLastAccess"
                                         IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Details.LastWriteTime}"
                                         Header="{lex:Loc DateLastWrite}"
-                                        SortMemberPath="Details.DateLastWrite"
                                         IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>

@@ -47,9 +47,9 @@ namespace SizeOnDisk.ViewModel
         }
 
         public string FileType { get; private set; }
-        public DateTime? CreationTime { get; private set; }
-        public DateTime? LastAccessTime { get; private set; }
-        public DateTime? LastWriteTime { get; private set; }
+        public DateTime CreationTime { get; private set; }
+        public DateTime LastAccessTime { get; private set; }
+        public DateTime LastWriteTime { get; private set; }
         public BitmapSource Icon { get; private set; } = null;
 
         //Seems to have problems with VOB
