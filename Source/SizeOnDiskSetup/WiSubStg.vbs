@@ -71,6 +71,7 @@ If openMode = msiOpenDatabaseModeReadOnly Then 'If listing storages, simply fetc
 		If message = Empty Then message = name Else message = message & vbNewLine & name
 	Loop
 	Wscript.Echo message
+	Wscript.Echo "Finished 1"
 Else 'If adding a storage, insert a row, else if removing a storage, delete the row
 	Set record = installer.CreateRecord(2)
 	record.StringData(1) = storageName
@@ -86,6 +87,7 @@ Else 'If adding a storage, insert a row, else if removing a storage, delete the 
 	Set view = Nothing
 	Set database = Nothing
 	CheckError
+	Wscript.Echo "Finished 2"
 End If
 
 Sub CheckError

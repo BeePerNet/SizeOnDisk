@@ -331,6 +331,17 @@
               Value="SizeOnDiskIcon" />
     <Property Id="ARPHELPLINK"
               Value="https://github.com/BeePerNet/SizeOnDisk" />
+    <Property Id="APPLICATIONFOLDER"
+              Secure="yes">
+      <RegistrySearch Id="FindInstallLocation"
+                      Root="HKLM"
+                      Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[WIX_UPGRADE_DETECTED]"
+                      Name="InstallLocation"
+                      Type="raw" />
+    </Property>
+    <SetDirectory
+      Id="APPLICATIONFOLDER"
+      Value="[ProgramFilesFolder][ApplicationFolderName]">APPLICATIONFOLDER=""</SetDirectory>
     <WixVariable Id="WixUILicenseRtf"
                  Value="License.rtf" />
     <WixVariable Id="WixUIBannerBmp"
@@ -413,5 +424,29 @@
                Event="DoAction"
                Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
     </UI>
+
+    <CustomAction
+      Id="OverwriteWixSetDefaultPerMachineFolder"
+      Property="WixPerMachineFolder"
+      Value="[APPLICATIONFOLDER]"
+      Execute="immediate"/>
+
+    <CustomAction
+      Id="SetARPINSTALLLOCATION"
+      Property="ARPINSTALLLOCATION"
+      Value="[APPLICATIONFOLDER]"/>
+
+
+    <InstallUISequence>
+      <Custom Action="OverwriteWixSetDefaultPerMachineFolder"
+              After="WixSetDefaultPerMachineFolder" />
+    </InstallUISequence>
+
+    <InstallExecuteSequence>
+      <Custom Action="OverwriteWixSetDefaultPerMachineFolder"
+              After="WixSetDefaultPerMachineFolder" />
+      <Custom Action="SetARPINSTALLLOCATION"
+              After="InstallValidate"/>
+    </InstallExecuteSequence>
   </Product>
 </Wix>
