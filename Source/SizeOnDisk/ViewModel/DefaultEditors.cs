@@ -42,7 +42,7 @@ namespace SizeOnDisk.ViewModel
                                     switch (item.Definition)
                                     {
                                         case DefaultEditorDefinitionType.ApplicationKey:
-                                            string key = Registry.GetValue($@"HKEY_CLASSES_ROOT\Applications\{item.Parameter1}\shell\open\command", string.Empty, string.Empty).ToString();
+                                            string key = Registry.GetValue($@"HKEY_CLASSES_ROOT\Applications\{item.Parameter1}\shell\open\command", string.Empty, string.Empty)?.ToString();
                                             if (!string.IsNullOrEmpty(key))
                                             {
                                                 command.Icon = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(ShellHelper.SplitCommandAndParameters(key).Item1, 0);
@@ -51,7 +51,7 @@ namespace SizeOnDisk.ViewModel
                                             }
                                             break;
                                         case DefaultEditorDefinitionType.SoftwareKey:
-                                            string value = Registry.GetValue(item.Parameter1, string.Empty, string.Empty).ToString();
+                                            string value = Registry.GetValue(item.Parameter1, string.Empty, string.Empty)?.ToString();
                                             if (!string.IsNullOrEmpty(value))
                                             {
                                                 string path = string.Concat(value, "\\", item.Parameter2);

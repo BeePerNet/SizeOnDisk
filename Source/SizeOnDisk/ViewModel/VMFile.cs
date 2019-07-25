@@ -447,82 +447,84 @@ namespace SizeOnDisk.ViewModel
                     VMFile.PrintCommand,
                     SeparatorDummyCommand.Instance
                 };
-
-                bool added = false;
-                foreach (ShellCommandSoftware item in DefaultEditors.Editors)
+                ExecuteTask((parallelOptions) =>
                 {
-                    added = true;
-                    string display = item.Id;
-                    if (display.StartsWith("loc:", StringComparison.OrdinalIgnoreCase))
-                        display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
-                    if (string.IsNullOrEmpty(display))
-                        display = item.Id;
-
-                    DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
-                    command.Tag = item.Name;
-
-                    if (item.Icon != null)
+                    bool added = false;
+                    foreach (ShellCommandSoftware item in DefaultEditors.Editors)
                     {
-                        command.Icon = new Image
-                        {
-                            Source = item.Icon,
-                            Width = 16,
-                            Height = 16
-                        };
-                    }
-                    commands.Add(command);
-                }
-                if (added)
-                    commands.Add(SeparatorDummyCommand.Instance);
+                        added = true;
+                        string display = item.Id;
+                        if (display.StartsWith("loc:", StringComparison.OrdinalIgnoreCase))
+                            display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
+                        if (string.IsNullOrEmpty(display))
+                            display = item.Id;
 
-                ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
-                string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
-                this.Verbs = verbs;
-                if (verbs.Length > 0)
-                {
-                    foreach (ShellCommandSoftware soft in root.Softwares)
-                    {
-                        ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
+                        DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
+                        command.Tag = item.Name;
 
-                        if (soft.Icon != null)
+                        if (item.Icon != null)
                         {
-                            parent.Icon = new Image
+                            command.Icon = new Image
                             {
-                                Source = soft.Icon,
+                                Source = item.Icon,
                                 Width = 16,
                                 Height = 16
                             };
                         }
+                        commands.Add(command);
+                    }
+                    if (added)
+                        commands.Add(SeparatorDummyCommand.Instance);
 
-                        foreach (ShellCommandVerb verb in soft.Verbs)
+                    ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
+                    string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
+                    this.Verbs = verbs;
+                    if (verbs.Length > 0)
+                    {
+                        foreach (ShellCommandSoftware soft in root.Softwares)
                         {
-                            //TODO ------------------------>
-                            if (!verb.Verb.ToUpperInvariant().Contains("NEW"))// && !string.IsNullOrEmpty(verb.Command))
+                            ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
+
+                            if (soft.Icon != null)
                             {
-                                DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", "_"), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
+                                parent.Icon = new Image
                                 {
-                                    Tag = verb.Command
+                                    Source = soft.Icon,
+                                    Width = 16,
+                                    Height = 16
                                 };
-                                if (verb.Verb.ToUpperInvariant().Contains("PRINT"))
-                                    cmd.Icon = PrintCommand.Icon;
-                                parent.Childs.Add(cmd);
+                            }
+
+                            foreach (ShellCommandVerb verb in soft.Verbs)
+                            {
+                                //TODO ------------------------>
+                                if (!verb.Verb.ToUpperInvariant().Contains("NEW"))// && !string.IsNullOrEmpty(verb.Command))
+                                {
+                                    DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", "_"), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
+                                    {
+                                        Tag = verb.Command
+                                    };
+                                    if (verb.Verb.ToUpperInvariant().Contains("PRINT"))
+                                        cmd.Icon = PrintCommand.Icon;
+                                    parent.Childs.Add(cmd);
+                                }
+                            }
+                            //if (parent.Childs.Count == 1)
+                            if (parent.Childs.Count > 0)
+                            {
+                                commands.Add(parent);
                             }
                         }
-                        //if (parent.Childs.Count == 1)
-                        if (parent.Childs.Count > 0)
-                        {
-                            commands.Add(parent);
-                        }
+                        commands.Add(SeparatorDummyCommand.Instance);
                     }
-                    commands.Add(SeparatorDummyCommand.Instance);
-                }
 
-                //commands.Add(VMFile.FindCommand);
-                //commands.Add(SeparatorDummyCommand.Instance);
-                commands.Add(VMFile.DeleteCommand);
-                commands.Add(VMFile.PermanentDeleteCommand);
-                commands.Add(SeparatorDummyCommand.Instance);
-                commands.Add(VMFile.PropertiesCommand);
+                    //commands.Add(VMFile.FindCommand);
+                    //commands.Add(SeparatorDummyCommand.Instance);
+                    commands.Add(VMFile.DeleteCommand);
+                    commands.Add(VMFile.PermanentDeleteCommand);
+                    commands.Add(SeparatorDummyCommand.Instance);
+                    commands.Add(VMFile.PropertiesCommand);
+                });
                 return commands;
             }
         }

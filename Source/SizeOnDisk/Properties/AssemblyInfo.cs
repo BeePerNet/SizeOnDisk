@@ -13,10 +13,10 @@ using System.Runtime.InteropServices;
 #else
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
-[assembly: AssemblyCompany("Sébastien Gariépy")]
+[assembly: AssemblyCompany("SizeOnDisk")]
 [assembly: AssemblyProduct("SizeOnDisk")]
 [assembly: AssemblyCopyright("GNU General Public License v3.0")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Sébastien Gariépy")]
 [assembly: AssemblyCulture("")]
 
 
@@ -57,5 +57,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.2.7.0")]
-[assembly: AssemblyFileVersion("2.2.7.0")]
+[assembly: AssemblyVersion("2.2.8.0")]
+[assembly: AssemblyFileVersion("2.2.8.0")]

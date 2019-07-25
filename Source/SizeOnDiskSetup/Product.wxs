@@ -8,10 +8,10 @@
            Language="!(loc.LANG)"
            Codepage="unicode"
            Version="!(bind.FileVersion.ApplicationFile)"
-           Manufacturer="Sebastien Gariepy"
+           Manufacturer="SizeOnDisk"
            UpgradeCode="9d3f227e-e788-4982-a15a-056152359ef6">
     <Package Description="SizeOnDisk !(bind.FileVersion.ApplicationFile)"
-    Manufacturer="Sebastien Gariepy"
+    Manufacturer="SizeOnDisk"
              InstallerVersion="200"
              Compressed="yes"
              InstallPrivileges='elevated'
