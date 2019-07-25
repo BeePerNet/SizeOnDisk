@@ -78,7 +78,9 @@ namespace SizeOnDisk.Shell
             Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
             int retCode = SafeNativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem nativeShellItem);
             if (retCode < 0)
-                throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
+                //return new BitmapImage(new Uri("pack://application:,,,/SizeOnDisk;component/Icons/File.png"));
+                return null;
+            //throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
 
 
             SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size
