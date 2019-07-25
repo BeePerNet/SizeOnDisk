@@ -11,8 +11,11 @@
            Manufacturer="Sebastien Gariepy"
            UpgradeCode="9d3f227e-e788-4982-a15a-056152359ef6">
     <Package Description="SizeOnDisk !(bind.FileVersion.ApplicationFile)"
+    Manufacturer="Sebastien Gariepy"
              InstallerVersion="200"
              Compressed="yes"
+             InstallPrivileges='elevated'
+             InstallScope='perMachine'
              Languages="!(loc.LANG)" />
     <Media Id="1"
            Cabinet="SizeOnDiskInstaller.cab"
@@ -350,6 +353,9 @@
       Installed OR (VersionNT &gt;= 600)
     </Condition>
 
+    <WixVariable Id="WixUISupportPerUser"
+                 Value="1" />
+
     <PropertyRef Id="WIXNETFX4RELEASEINSTALLED" />
     <!--Property Id="WIX_IS_NETFRAMEWORK_480_OR_LATER_INSTALLED"
               Secure="yes" />
@@ -374,10 +380,6 @@
       <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]>
     </Condition>
 
-
-    <Property Id="ALLUSERS"
-              Value="{}" />
-
     <Property Id="WixAppFolder"
               Value="WixPerMachineFolder" />
 
@@ -386,9 +388,11 @@
 
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT"
               Value="Launch" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX"
+              Value="1" />
 
+    <UIRef Id="WixUI_Advanced" />
     <UI>
-      <UIRef Id="WixUI_Advanced" />
       <Publish Dialog="InstallDirDlg"
                Control="Next"
                Event="DoAction"
@@ -428,12 +432,9 @@
       Value="[APPLICATIONFOLDER]"
       Execute="immediate"/>
 
-    <CustomAction
-      Id="SetARPINSTALLLOCATION"
-      Property="ARPINSTALLLOCATION"
-      Value="[APPLICATIONFOLDER]"/>
-
-
+    <SetProperty Id="ARPINSTALLLOCATION"
+                 Value="[APPLICATIONFOLDER]"
+                 After="CostFinalize" />
 
     <!--Property Id="WixShellExecTarget"
               Value="[#ApplicationFile]" />
@@ -445,7 +446,8 @@
 
     <CustomAction Id="LaunchApplication"
                   FileKey="ApplicationFile"
-                  ExeCommand="/X"
+                  ExeCommand=""
+                  Execute="immediate"
                   Impersonate="yes"
                   Return="asyncNoWait" />
 
@@ -457,8 +459,6 @@
     <InstallExecuteSequence>
       <Custom Action="OverwriteWixSetDefaultPerMachineFolder"
               After="WixSetDefaultPerMachineFolder" />
-      <Custom Action="SetARPINSTALLLOCATION"
-              After="InstallValidate"/>
     </InstallExecuteSequence>
   </Product>
 </Wix>
