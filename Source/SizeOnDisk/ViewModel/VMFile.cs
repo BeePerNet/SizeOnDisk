@@ -97,6 +97,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        public virtual bool IsFile
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         protected static void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions = null)
         {
             try
@@ -124,7 +132,7 @@ namespace SizeOnDisk.ViewModel
                 ExecuteTask((parallelOptions) =>
                 {
                     string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Path), newName);
-                    if (this is VMFolder)
+                    if (this.IsFile)
                     {
                         File.Move(this.Path, newPath);
                     }
@@ -315,7 +323,6 @@ namespace SizeOnDisk.ViewModel
             if (!(e.Command is RoutedCommand command))
                 return;
 
-            bool isFolder = file is VMFolder;
             if (command == PropertiesCommand || command == ExploreCommand || command == FindCommand)
             {
                 e.CanExecute = true;
@@ -331,7 +338,7 @@ namespace SizeOnDisk.ViewModel
                 e.CanExecute = true;
                 return;
             }
-            if (command == OpenCommand && isFolder)
+            if (command == OpenCommand && !file.IsFile)
             {
                 e.CanExecute = true;
                 return;
@@ -374,7 +381,7 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
             string path = file.Path;
-            if (e.Command == FindCommand && (!(file is VMFolder) || file.IsProtected))
+            if (e.Command == FindCommand && (file.IsFile || file.IsProtected))
                 path = file.Parent.Path;
             ShellHelper.ShellExecute(path, null, command.Name.ToLowerInvariant());
         }
@@ -409,7 +416,7 @@ namespace SizeOnDisk.ViewModel
                 string parameters = cmdParam.Item2;
 
                 string workingDirectory = this.Path;
-                if (!(this is VMFolder))
+                if (this.IsFile)
                     workingDirectory = this.Parent.Path;
 
                 if (parameters.Contains('%'))
@@ -476,7 +483,7 @@ namespace SizeOnDisk.ViewModel
                     if (added)
                         commands.Add(SeparatorDummyCommand.Instance);
 
-                    ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, this is VMFolder);
+                    ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, !this.IsFile);
                     string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
                     this.Verbs = verbs;
                     if (verbs.Length > 0)

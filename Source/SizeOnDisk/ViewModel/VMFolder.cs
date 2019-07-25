@@ -31,10 +31,10 @@ namespace SizeOnDisk.ViewModel
                     foreach (VMFile file in files)
                     {
                         bool exists = false;
-                        if (file is VMFolder)
-                            exists = Directory.Exists(file.Path);
-                        else
+                        if (file.IsFile)
                             exists = File.Exists(file.Path);
+                        else
+                            exists = Directory.Exists(file.Path);
                         if (!exists)
                             deletedfiles.Add(file);
                     }
@@ -56,10 +56,10 @@ namespace SizeOnDisk.ViewModel
                     foreach (VMFile file in files)
                     {
                         bool exists = false;
-                        if (file is VMFolder)
-                            exists = Directory.Exists(file.Path);
-                        else
+                        if (file.IsFile)
                             exists = File.Exists(file.Path);
+                        else
+                            exists = Directory.Exists(file.Path);
                         if (!exists)
                             deletedfiles.Add(file);
                     }
@@ -108,6 +108,15 @@ namespace SizeOnDisk.ViewModel
         public ObservableCollection<VMFile> Childs { get; } = new ObservableCollection<VMFile>();
 
         public ObservableCollection<VMFolder> Folders { get; } = new ObservableCollection<VMFolder>();
+
+        public override bool IsFile
+        {
+            get
+            {
+                return false;
+            }
+        }
+
 
         private bool _isExpanded;
 
@@ -158,10 +167,6 @@ namespace SizeOnDisk.ViewModel
             get { return _FolderTotal; }
             protected set { SetProperty(ref _FolderTotal, value); }
         }
-
-
-
-
 
 
 
@@ -283,7 +288,7 @@ namespace SizeOnDisk.ViewModel
                 }
                 foreach (VMFile file in tmpChilds)
                 {
-                    if (file is VMFolder)
+                    if (!file.IsFile)
                         this.Folders.Remove(file as VMFolder);
                     this.Childs.Remove(file);
                     file.Dispose();

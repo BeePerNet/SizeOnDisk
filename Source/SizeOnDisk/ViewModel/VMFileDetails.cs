@@ -19,14 +19,10 @@ namespace SizeOnDisk.ViewModel
 
         public LittleFileInfo Load()
         {
-            if (_vmFile is VMFolder)
-            {
-                FileType = string.Empty;
-            }
-            else
-            {
+            if (_vmFile.IsFile)
                 FileType = ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
-            }
+            else
+                FileType = string.Empty;
 
             LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
             this.CreationTime = fileInfo.CreationTime;
