@@ -236,11 +236,12 @@
         <Shortcut Id="ApplicationFileShortcut"
                   Name="SizeOnDisk"
                   Description="Shortcut To SizeOnDisk"
-                  Target="[APPLICATIONFOLDER]SizeOnDisk.exe"
+                  Target="[#ApplicationFile]"
                   IconIndex="0" />
-        <RegistryValue Root="HKCU"
+        <RemoveFile Id="ApplicationFileShortcut" Name="SizeOnDisk" On="uninstall" />
+        <RegistryValue Root="HKMU"
                        Key="Software\SizeOnDisk"
-                       Name="SizeOnDiskShortcutInstalled"
+                       Name="SizeOnDiskShortcut"
                        Type="integer"
                        Value="1"
                        KeyPath="yes" />
@@ -251,11 +252,11 @@
               AllowAdvertise="no"
              Level="1"
              ConfigurableDirectory="APPLICATIONFOLDER">
-      <ComponentRef Id="ApplicationFileComponent" />
+      <ComponentRef Id="ApplicationFileComponent" Primary="yes" />
       <ComponentRef Id="XAMLMarkupComponent" />
       <ComponentRef Id="WPFLocalizeComponent" />
-      <ComponentRef Id="ApplicationFileShortcutComponent" />
       <ComponentRef Id="ByYourCommandComponent" />
+      <ComponentRef Id="ApplicationFileShortcutComponent" />
     </Feature>
     <Feature Id="ConfigurationFeature"
              Title="SizeOnDisk configuration file"
@@ -337,11 +338,8 @@
                       Root="HKLM"
                       Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[WIX_UPGRADE_DETECTED]"
                       Name="InstallLocation"
-                      Type="raw" />
+                      Type="raw" Win64="no" />
     </Property>
-    <SetDirectory
-      Id="APPLICATIONFOLDER"
-      Value="[ProgramFilesFolder][ApplicationFolderName]">APPLICATIONFOLDER=""</SetDirectory>
     <WixVariable Id="WixUILicenseRtf"
                  Value="License.rtf" />
     <WixVariable Id="WixUIBannerBmp"
@@ -377,10 +375,8 @@
     </Condition>
 
 
-    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT"
-              Value="Launch" />
-    <Property Id="WixShellExecTarget"
-              Value="[#ApplicationFile]" />
+    <Property Id="ALLUSERS"
+              Value="{}" />
 
     <Property Id="WixAppFolder"
               Value="WixPerMachineFolder" />
@@ -388,10 +384,8 @@
     <Property Id="ApplicationFolderName"
               Value="SizeOnDisk" />
 
-    <CustomAction Id="LaunchApplication"
-                  BinaryKey="WixCA"
-                  DllEntry="WixShellExec"
-                  Impersonate="yes" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT"
+              Value="Launch" />
 
     <UI>
       <UIRef Id="WixUI_Advanced" />
@@ -399,6 +393,7 @@
                Control="Next"
                Event="DoAction"
                Value="FindRelatedProducts">1</Publish>
+
       <Publish Dialog="InstallScopeDlg"
                Control="Next"
                Property="MSIINSTALLPERUSER"
@@ -413,16 +408,18 @@
                Control="Next"
                Event="DoAction"
                Value="WixSetDefaultPerMachineFolder"
-               Order="3">WixAppFolder = "WixPerMachineFolder"    </Publish>
+               Order="3">WixAppFolder = "WixPerMachineFolder"</Publish>
       <Publish Dialog="InstallScopeDlg"
                Control="Next"
                Event="DoAction"
                Value="WixSetDefaultPerUserFolder"
                Order="3">WixAppFolder = "WixPerUserFolder"</Publish>
+
       <Publish Dialog="ExitDialog"
                Control="Finish"
                Event="DoAction"
                Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+
     </UI>
 
     <CustomAction
@@ -436,6 +433,21 @@
       Property="ARPINSTALLLOCATION"
       Value="[APPLICATIONFOLDER]"/>
 
+
+
+    <!--Property Id="WixShellExecTarget"
+              Value="[#ApplicationFile]" />
+
+    <CustomAction Id="LaunchApplication"
+                  BinaryKey="WixCA"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes" /-->
+
+    <CustomAction Id="LaunchApplication"
+                  FileKey="ApplicationFile"
+                  ExeCommand="/X"
+                  Impersonate="yes"
+                  Return="asyncNoWait" />
 
     <InstallUISequence>
       <Custom Action="OverwriteWixSetDefaultPerMachineFolder"

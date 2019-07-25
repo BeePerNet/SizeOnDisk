@@ -20,7 +20,8 @@ call ..\..\CreateEmbedLangTransform.cmd sv-SE 1053
 REM not at this time, but good sample with ja.wxl       call ..\..\CreateEmbedLangTransform.cmd ja-JP 1041
 
 echo *** Merge ***
-REM cscript ..\..\WiLangId.vbs FinalMasterInstaller\SizeOnDiskSetup.msi Package 1036,1031,1034,1040,1046,1049,1053
+cscript ..\..\WiLangId.vbs FinalMasterInstaller\SizeOnDiskSetup.msi Product 1036,1031,1034,1040,1046,1049,1053
+cscript ..\..\WiLangId.vbs FinalMasterInstaller\SizeOnDiskSetup.msi Package 1036,1031,1034,1040,1046,1049,1053
 
 echo *** Installer languages verification ***
 cscript ..\..\wisubstg.vbs FinalMasterInstaller\SizeOnDiskSetup.msi
