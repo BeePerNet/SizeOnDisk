@@ -167,8 +167,8 @@
                           VerticalAlignment="Stretch" />
             <ListView Grid.Column="2"
                           SelectionMode="Extended"
-                ItemsSource="{Binding Path=SelectedTreeItem.Childs}"
-                    BorderThickness="1"
+                     ItemsSource="{Binding Path=SelectedTreeItem.Childs}"
+                     BorderThickness="1"
                     SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ContextMenu="{StaticResource VMContextMenu}"
@@ -184,7 +184,7 @@
                 </ListView.Resources>
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel />
+                        <cmd:VirtualizingWrapPanel />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListBox.ItemTemplate>
@@ -208,15 +208,15 @@
                     VirtualizingStackPanel.VirtualizationMode="Standard"
                     cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                     BorderThickness="1"
-                ItemsSource="{Binding SelectedTreeItem.Childs}"
+                    ItemsSource="{Binding SelectedTreeItem.Childs}"
                     SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
-                      AutoGenerateColumns="False"
-                      HeadersVisibility="Column"
-                      ContextMenu="{StaticResource VMContextMenu}"
-                      HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                      VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                      ClipboardCopyMode="IncludeHeader"
-                Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                    AutoGenerateColumns="False"
+                    HeadersVisibility="Column"
+                    ContextMenu="{StaticResource VMContextMenu}"
+                    HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                    VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                    ClipboardCopyMode="IncludeHeader"
+                    Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
                 <DataGrid.Resources>
                     <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
                         <Setter Property="TextAlignment" Value="Right" />

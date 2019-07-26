@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -257,6 +258,7 @@ namespace SizeOnDisk.ViewModel
 
         public void FillChildList(bool refreshOnNew = false)
         {
+            Monitor.Enter(_myCollectionLock);
             try
             {
                 List<VMFile> tmpChilds = this.Childs.ToList();
@@ -302,6 +304,7 @@ namespace SizeOnDisk.ViewModel
             {
                 this.IsProtected = true;
             }
+            Monitor.Exit(_myCollectionLock);
         }
 
         internal override void Refresh(LittleFileInfo fileInfo)
