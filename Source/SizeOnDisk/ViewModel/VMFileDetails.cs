@@ -51,15 +51,26 @@ namespace SizeOnDisk.ViewModel
         //Seems to have problems with VOB
         public BitmapSource Thumbnail { get; private set; } = null;
 
+        private bool disposed = false;
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // dispose managed resources
-                if (this.task != null)
-                    this.task.Dispose();
-            }
             // free native resources
+            if (disposed)
+                return;
+
+            try
+            {
+                if (disposing)
+                {
+                    if (this.task != null)
+                        this.task.Dispose();
+                }
+            }
+            finally
+            {
+                disposed = true;
+            }
+
         }
 
         public void Dispose()

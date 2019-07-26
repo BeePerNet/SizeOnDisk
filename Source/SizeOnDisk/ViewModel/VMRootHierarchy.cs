@@ -110,7 +110,6 @@ namespace SizeOnDisk.ViewModel
                 this.SelectedTreeItem = null;
                 this.SelectedListItem = null;
             }
-            folder.Dispose();
         }
 
         public void StopAsync()
