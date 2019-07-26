@@ -201,7 +201,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     _Timer.Stop();
                 }
-            });
+            }, true);
         }
 
         private void TimerTick(object sender, EventArgs e)
