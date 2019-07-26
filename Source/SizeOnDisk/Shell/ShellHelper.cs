@@ -35,7 +35,7 @@ namespace SizeOnDisk.Shell
         public static void Activate(string appId, string arguments)
         {
             SafeNativeMethods.ApplicationActivationManager appActiveManager = new SafeNativeMethods.ApplicationActivationManager();//Class not registered
-            appActiveManager.ActivateApplication(appId, arguments, SafeNativeMethods.ActivateOptions.None, out uint pid);
+            appActiveManager.ActivateApplication(appId, arguments, SafeNativeMethods.ActivateOptions.None, out _);
         }
 
         public static void Activate(string appId, string file, string verb)
@@ -46,7 +46,7 @@ namespace SizeOnDisk.Shell
             {
                 if (SafeNativeMethods.SHCreateShellItemArrayFromShellItem(pShellItem, typeof(SafeNativeMethods.IShellItemArray).GUID, out SafeNativeMethods.IShellItemArray pShellItemArray) == (int)SafeNativeMethods.HResult.Ok)
                 {
-                    appActiveManager.ActivateForFile(appId, pShellItemArray, verb, out uint pid);
+                    appActiveManager.ActivateForFile(appId, pShellItemArray, verb, out _);
                 }
             }
         }
@@ -513,8 +513,8 @@ namespace SizeOnDisk.Shell
             };
             info.cbSize = Marshal.SizeOf(info);
             if (!flags.HasValue)
-                flags = !string.IsNullOrWhiteSpace(verb) && (verb != "find") ? ShellExecuteFlags.SEE_MASK_INVOKEIDLIST : ShellExecuteFlags.SEE_MASK_DEFAULT;
-            flags = flags | ShellExecuteFlags.SEE_MASK_FLAG_NO_UI | ShellExecuteFlags.SEE_MASK_UNICODE;
+                flags = !string.IsNullOrWhiteSpace(verb) && (verb != "find") ? ShellExecuteFlags.INVOKEIDLIST : ShellExecuteFlags.DEFAULT;
+            flags = flags | ShellExecuteFlags.NOUI | ShellExecuteFlags.UNICODE;
             info.fMask = (uint)flags;
             SafeNativeMethods.ShellExecuteEx(ref info);
             if (info.hInstApp.ToInt64() <= 32)
@@ -592,7 +592,6 @@ namespace SizeOnDisk.Shell
         /// <summary>
         /// Run process in elevated privilege
         /// </summary>
-        [SuppressMessage("Microsoft.Design", "CA1031")]
         //[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Execution)]
         public static void Restart(bool runAsAdministrator)
         {
@@ -673,29 +672,30 @@ namespace SizeOnDisk.Shell
             Max
         }
 
+        [SuppressMessage("Usage", "CA2217:Do not mark enums with FlagsAttribute")]
         [Flags]
         public enum ShellExecuteFlags : uint
         {
-            SEE_MASK_DEFAULT = 0x00000000,
-            SEE_MASK_CLASSNAME = 0x00000001,
-            SEE_MASK_CLASSKEY = 0x00000003,
-            SEE_MASK_IDLIST = 0x00000004,
-            SEE_MASK_INVOKEIDLIST = 0x0000000c,   // Note SEE_MASK_INVOKEIDLIST(0xC) implies SEE_MASK_IDLIST(0x04)
-            SEE_MASK_HOTKEY = 0x00000020,
-            SEE_MASK_NOCLOSEPROCESS = 0x00000040,
-            SEE_MASK_CONNECTNETDRV = 0x00000080,
-            SEE_MASK_NOASYNC = 0x00000100,
-            SEE_MASK_FLAG_DDEWAIT = SEE_MASK_NOASYNC,
-            SEE_MASK_DOENVSUBST = 0x00000200,
-            SEE_MASK_FLAG_NO_UI = 0x00000400,
-            SEE_MASK_UNICODE = 0x00004000,
-            SEE_MASK_NO_CONSOLE = 0x00008000,
-            SEE_MASK_ASYNCOK = 0x00100000,
-            SEE_MASK_HMONITOR = 0x00200000,
-            SEE_MASK_NOZONECHECKS = 0x00800000,
-            SEE_MASK_NOQUERYCLASSSTORE = 0x01000000,
-            SEE_MASK_WAITFORINPUTIDLE = 0x02000000,
-            SEE_MASK_FLAG_LOG_USAGE = 0x04000000,
+            DEFAULT = 0x00000000,
+            CLASSNAME = 0x00000001,
+            CLASSKEY = 0x00000003,
+            IDLIST = 0x00000004,
+            INVOKEIDLIST = 0x0000000c,   // Note SEE_MASK_INVOKEIDLIST(0xC) implies SEE_MASK_IDLIST(0x04)
+            HOTKEY = 0x00000020,
+            NOCLOSEPROCESS = 0x00000040,
+            CONNECTNETDRV = 0x00000080,
+            NOASYNC = 0x00000100,
+            DDEWAIT = NOASYNC,
+            DOENVSUBST = 0x00000200,
+            NOUI = 0x00000400,
+            UNICODE = 0x00004000,
+            NOCONSOLE = 0x00008000,
+            ASYNCOK = 0x00100000,
+            HMONITOR = 0x00200000,
+            NOZONECHECKS = 0x00800000,
+            NOQUERYCLASSSTORE = 0x01000000,
+            WAITFORINPUTIDLE = 0x02000000,
+            LOGUSAGE = 0x04000000,
         }
 
 

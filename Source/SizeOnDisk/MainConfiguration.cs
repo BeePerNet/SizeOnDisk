@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.ViewModel;
 using System;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows;
 using System.Xml;
@@ -22,6 +23,7 @@ namespace SizeOnDisk
         private static MainConfiguration internalInstance;
         private static readonly object _lock = new object();
 
+        [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code")]
         public static MainConfiguration Instance
         {
             get

@@ -19,14 +19,27 @@ namespace SizeOnDisk.ViewModel
     [DebuggerDisplay("{GetType().Name}: {Name}")]
     public class VMFile : CommandViewModel, IDisposable
     {
+        private const string MessageIsNotVMFile = "OriginalSource is not VMFile";
+
+
+
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx OpenCommand = new RoutedCommandEx("open", "loc:PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx EditCommand = new RoutedCommandEx("edit", "loc:Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "loc:EditKey"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx OpenAsCommand = new RoutedCommandEx("openas", "loc:OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "loc:OpenAsKey"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx PrintCommand = new RoutedCommandEx("print", "loc:PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx ExploreCommand = new RoutedCommandEx("select", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Explore.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx FindCommand = new RoutedCommandEx("find", "loc:PresentationCore:ExceptionStringTable:FindText", "pack://application:,,,/SizeOnDisk;component/Icons/SearchFolderHS.png", typeof(VMFile), new KeyGesture(Key.F, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:FindKeyDisplayString"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx DeleteCommand = new RoutedCommandEx("delete", "loc:PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx PermanentDeleteCommand = new RoutedCommandEx("permanentdelete", "loc:PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "loc:PermanentDeleteKey"));
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx PropertiesCommand = new RoutedCommandEx("properties", "loc:PresentationCore:ExceptionStringTable:PropertiesText", "pack://application:,,,/SizeOnDisk;component/Icons/Properties.png", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
 
 
@@ -65,10 +78,13 @@ namespace SizeOnDisk.ViewModel
         }
 
         [DesignOnly(true)]
-        internal VMFile(VMFolder parent, string name, string path, bool dummy) : this(parent, name, path)
+        internal VMFile(VMFolder parent, string name, string path, int? fileSize) : this(parent, name, path)
         {
-            DiskSize = 4096;
-            FileSize = 12;
+            if (fileSize.HasValue)
+            {
+                FileSize = fileSize;
+                DiskSize = Convert.ToInt64(Math.Floor((double)(fileSize / 4096)) * 4096);
+            }
         }
 
 
@@ -251,13 +267,14 @@ namespace SizeOnDisk.ViewModel
         #region Commands
 
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
         private static void CallDeleteCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
-                throw new ArgumentNullException("e", "OriginalSource is not VMFile");
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
 
             if (file.IsSelected)
             {
@@ -275,13 +292,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
         private static void CallPermanentDeleteCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
-                throw new ArgumentNullException("e", "OriginalSource is not VMFile");
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
 
             if (file.IsSelected)
             {
@@ -353,16 +371,17 @@ namespace SizeOnDisk.ViewModel
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
         private static void CallShellCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
-                throw new ArgumentNullException("e", "OriginalSource is not VMFile");
+                throw new ArgumentOutOfRangeException(nameof(e), MessageIsNotVMFile);
 
             if (!(e.Command is RoutedCommand command))
-                throw new ArgumentNullException("e", "Command is not RoutedCommand");
+                throw new ArgumentOutOfRangeException(nameof(e), "Command is not RoutedCommand");
 
             if ((e.Command as IMenuCommand)?.Tag != null)
             {
@@ -466,8 +485,10 @@ namespace SizeOnDisk.ViewModel
                         if (string.IsNullOrEmpty(display))
                             display = item.Id;
 
-                        DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand);
-                        command.Tag = item.Name;
+                        DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
+                        {
+                            Tag = item.Name
+                        };
 
                         if (item.Icon != null)
                         {
@@ -536,15 +557,26 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        private bool disposed = false;
+
+
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposed)
+                return;
+
+            try
             {
-                // dispose managed resources
-                if (Details != null)
-                    this.Details.Dispose();
+                if (disposing)
+                {
+                    if (Details != null)
+                        this.Details.Dispose();
+                }
             }
-            // free native resources
+            finally
+            {
+                disposed = true;
+            }
         }
 
         public void Dispose()

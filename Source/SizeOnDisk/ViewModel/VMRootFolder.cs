@@ -11,7 +11,7 @@ using System.Windows.Threading;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMRootFolder : VMFolder, IDisposable
+    public class VMRootFolder : VMFolder
     {
         #region fields
 
@@ -72,7 +72,7 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name, path, IOHelper.GetClusterSize(path), dispatcher)
         {
             HardDrivePath = System.IO.Path.GetPathRoot(path);
-            _isTreeSelected = true;
+            SetIsTreeSelectedWithoutFillList();
         }
 
         #endregion creator
@@ -171,7 +171,6 @@ namespace SizeOnDisk.ViewModel
             Task.Run(() => ExecuteTask(action, parallelOptions), parallelOptions.CancellationToken);
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031")]
         public void RefreshAsync()
         {
             this.Stop()?.Wait();
@@ -287,20 +286,17 @@ namespace SizeOnDisk.ViewModel
 
         private bool disposed = false;
 
-        ~VMRootFolder()
-        {
-            Dispose(false);
-        }
 
-        protected override void Dispose(bool disposeManagedResources)
+        [SuppressMessage("Microsoft.Usage", "CA2215:Les méthodes Dispose doivent appeler la méthode Dispose de la classe de base")]
+        protected override void Dispose(bool disposing)
         {
-            // process only if mananged and unmanaged resources have
-            // not been disposed of.
-            if (!this.disposed)
+            if (disposed)
+                return;
+
+            try
             {
-                if (disposeManagedResources)
+                if (disposing)
                 {
-                    // dispose managed resources
                     this.Stop();
 
                     if (_CancellationTokenSource != null)
@@ -309,10 +305,12 @@ namespace SizeOnDisk.ViewModel
                         _CancellationTokenSource = null;
                     }
                 }
-
-                // dispose unmanaged resources
+            }
+            finally
+            {
                 disposed = true;
             }
+            base.Dispose(disposing);
         }
 
         #endregion IDisposable

@@ -85,11 +85,14 @@ namespace SizeOnDisk.ViewModel
         protected VMFolder(VMFolder parent, string name, string path, uint clusterSize, Dispatcher dispatcher)
             : base(parent, name, path)
         {
-            dispatcher.BeginInvoke(new Action(() =>
+            if (dispatcher != null)
             {
-                BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
-                BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
-            }), DispatcherPriority.Send);
+                dispatcher.BeginInvoke(new Action(() =>
+                {
+                    BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
+                    BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
+                }), DispatcherPriority.Send);
+            }
 
             this.clusterSize = clusterSize;
             _Dispatcher = dispatcher;
@@ -98,7 +101,7 @@ namespace SizeOnDisk.ViewModel
 
         [DesignOnly(true)]
         internal VMFolder(VMFolder parent, string name, string path)
-            : base(parent, name, path, true)
+            : base(parent, name, path, null)
         {
             RefreshCount();
         }
@@ -179,7 +182,12 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        protected bool _isTreeSelected;
+        private bool _isTreeSelected = false;
+
+        protected internal void SetIsTreeSelectedWithoutFillList()
+        {
+            _isTreeSelected = true;
+        }
 
         public bool IsTreeSelected
         {
@@ -326,7 +334,6 @@ namespace SizeOnDisk.ViewModel
             this.Attributes = fileInfo.Attributes;
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031")]
         public virtual void Refresh(ParallelOptions parallelOptions)
         {
             if (Dispatcher == null || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))

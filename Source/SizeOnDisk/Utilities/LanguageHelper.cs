@@ -40,9 +40,7 @@ namespace SizeOnDisk.Utilities
 
         public static void ChangeLanguage(CultureInfo cultureInfo)
         {
-            if (cultureInfo == null)
-                throw new ArgumentNullException("cultureInfo", "cultureInfo is null");
-            LocalizeDictionary.Instance.Culture = cultureInfo;
+            LocalizeDictionary.Instance.Culture = cultureInfo ?? throw new ArgumentNullException(nameof(cultureInfo));
             foreach (Window window in Application.Current.Windows)
             {
                 window.Language = XmlLanguage.GetLanguage(cultureInfo.IetfLanguageTag);
