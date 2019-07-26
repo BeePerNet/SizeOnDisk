@@ -770,11 +770,11 @@ namespace SizeOnDisk.Shell
 
             public enum SIATTRIBFLAGS
             {
-                SIATTRIBFLAGS_AND = 0x1,
-                SIATTRIBFLAGS_OR = 0x2,
-                SIATTRIBFLAGS_APPCOMPAT = 0x3,
-                SIATTRIBFLAGS_MASK = 0x3,
-                SIATTRIBFLAGS_ALLITEMS = 0x4000
+                AND = 0x1,
+                OR = 0x2,
+                APPCOMPAT = 0x3,
+                MASK = 0x3,
+                ALLITEMS = 0x4000
             }
 
             [ComImport()]
@@ -1194,16 +1194,16 @@ namespace SizeOnDisk.Shell
 
             internal enum SIGDN : uint
             {
-                SIGDN_NORMALDISPLAY = 0x00000000,
-                SIGDN_PARENTRELATIVEPARSING = 0x80018001,
-                SIGDN_DESKTOPABSOLUTEPARSING = 0x80028000,
-                SIGDN_PARENTRELATIVEEDITING = 0x80031001,
-                SIGDN_DESKTOPABSOLUTEEDITING = 0x8004c000,
-                SIGDN_FILESYSPATH = 0x80058000,
-                SIGDN_URL = 0x80068000,
-                SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
-                SIGDN_PARENTRELATIVE = 0x80080001,
-                SIGDN_PARENTRELATIVEFORUI = 0x80094001
+                NORMALDISPLAY = 0x00000000,
+                PARENTRELATIVEPARSING = 0x80018001,
+                DESKTOPABSOLUTEPARSING = 0x80028000,
+                PARENTRELATIVEEDITING = 0x80031001,
+                DESKTOPABSOLUTEEDITING = 0x8004c000,
+                FILESYSPATH = 0x80058000,
+                URL = 0x80068000,
+                PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
+                PARENTRELATIVE = 0x80080001,
+                PARENTRELATIVEFORUI = 0x80094001
             }
 
             internal enum HResult

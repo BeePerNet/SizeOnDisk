@@ -60,7 +60,7 @@ namespace SizeOnDisk.Shell
             {
                 if (frm.GetResult(out ShellHelper.SafeNativeMethods.IShellItem shellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                 {
-                    if (shellItem.GetDisplayName(ShellHelper.SafeNativeMethods.SIGDN.SIGDN_FILESYSPATH, out IntPtr pszString) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
+                    if (shellItem.GetDisplayName(ShellHelper.SafeNativeMethods.SIGDN.FILESYSPATH, out IntPtr pszString) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
                     {
                         if (pszString != IntPtr.Zero)
                         {

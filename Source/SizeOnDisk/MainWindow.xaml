@@ -167,7 +167,6 @@
                           VerticalAlignment="Stretch" />
             <ListView Grid.Column="2"
                           SelectionMode="Extended"
-                          cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                 ItemsSource="{Binding Path=SelectedTreeItem.Childs}"
                     BorderThickness="1"
                     SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
