@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -256,56 +257,68 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+
+        int runningCount = 0;
+        bool running = false;
+
         public void FillChildList(bool refreshOnNew = false)
         {
+            runningCount++;
             lock (_myCollectionLock)
             {
-                try
+                if (!running)
                 {
-                    List<VMFile> tmpChilds = this.Childs.ToList();
-                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
-                    VMFile found = null;
-                    foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
+                    running = true;
+                    try
                     {
-                        found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);
-                        if (found == null)
+                        List<VMFile> tmpChilds = this.Childs.ToList();
+                        IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
+                        VMFile found = null;
+                        foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
                         {
-                            if (fileInfo.IsFolder)
+                            found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);
+                            if (found == null)
                             {
-                                found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize, this.Dispatcher);
-                                this.Folders.Add(found as VMFolder);
-                                if (refreshOnNew)
-                                    (found as VMFolder).Refresh(new ParallelOptions());
+                                if (fileInfo.IsFolder)
+                                {
+                                    found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize, this.Dispatcher);
+                                    this.Folders.Add(found as VMFolder);
+                                    if (refreshOnNew)
+                                        (found as VMFolder).Refresh(new ParallelOptions());
+                                }
+                                else
+                                    found = new VMFile(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName));
+                                this.Childs.Add(found);
+                                if (refreshOnNew && this.Parent.IsTreeSelected)
+                                    this.RefreshOnView();
                             }
                             else
-                                found = new VMFile(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName));
-                            this.Childs.Add(found);
-                            if (refreshOnNew && this.Parent.IsTreeSelected)
-                                this.RefreshOnView();
+                            {
+                                tmpChilds.Remove(found);
+                            }
+                            found.Refresh(fileInfo);
                         }
-                        else
+                        foreach (VMFile file in tmpChilds)
                         {
-                            tmpChilds.Remove(found);
+                            if (!file.IsFile)
+                                this.Folders.Remove(file as VMFolder);
+                            this.Childs.Remove(file);
+                            file.Dispose();
                         }
-                        found.Refresh(fileInfo);
                     }
-                    foreach (VMFile file in tmpChilds)
+                    catch (DirectoryNotFoundException)
                     {
-                        if (!file.IsFile)
-                            this.Folders.Remove(file as VMFolder);
-                        this.Childs.Remove(file);
-                        file.Dispose();
-                    }
-                }
-                catch (DirectoryNotFoundException)
-                {
 
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    this.IsProtected = true;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        this.IsProtected = true;
+                    }
                 }
             }
+            runningCount--;
+            if (runningCount == 0)
+                running = false;
         }
 
         internal override void Refresh(LittleFileInfo fileInfo)
