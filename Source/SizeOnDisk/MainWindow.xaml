@@ -172,7 +172,6 @@
                     SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ContextMenu="{StaticResource VMContextMenu}"
-                      Grid.IsSharedSizeScope="True"
                       Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
                 <ListView.Resources>
                     <Style TargetType="ListViewItem">
@@ -184,21 +183,21 @@
                 </ListView.Resources>
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <cmd:VirtualizingWrapPanel />
+                        <cmd:VirtualizingWrapPanel ItemHeight="150" ItemWidth="110" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="104" MaxHeight="160">
+                        <Grid Height="150" HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
-                                <RowDefinition SharedSizeGroup="Icons" MinHeight="96" />
-                                <RowDefinition SharedSizeGroup="Names" />
+                                <RowDefinition Height="97" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Canvas Width="96" Height="96" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
+                            <Canvas VerticalAlignment="Top" Width="96" Height="96" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}" HorizontalAlignment="Center">
                                 <Image Panel.ZIndex="42" Canvas.Left="0" Canvas.Bottom="0" Source="Icons/Shortcut-big.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
                                 <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" Width="{Binding Details.Thumbnail.PixelWidth}" Height="{Binding Details.Thumbnail.PixelHeight}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Canvas>
-                            <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="50" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
+                            <TextBlock Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
