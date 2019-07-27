@@ -40,7 +40,7 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        public Dictionary<string, string> Languages
+        public static Dictionary<string, string> Languages
         {
             get
             {

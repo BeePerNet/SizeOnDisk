@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
@@ -11,11 +12,14 @@ namespace SizeOnDisk.Utilities
     /// <summary>
     /// Provide the UAC and run as administrator functions
     /// </summary>
+    [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<En attente>")]
     public static class UserAccessControlHelper
     {
-        private static uint STANDARD_RIGHTS_READ = 0x00020000;
-        private static uint TOKEN_QUERY = 0x0008;
-        private static uint TOKEN_READ = (STANDARD_RIGHTS_READ | TOKEN_QUERY);
+        private const string UnableToGetElevationMessage = "Unable to determine the current elevation.";
+        private const string CouldNotGetTokenMessage = "Could not get process token.";
+        private const uint STANDARD_RIGHTS_READ = 0x00020000;
+        private const uint TOKEN_QUERY = 0x0008;
+        private const uint TOKEN_READ = (STANDARD_RIGHTS_READ | TOKEN_QUERY);
 
         internal static class NativeMethods
         {
@@ -97,19 +101,17 @@ namespace SizeOnDisk.Utilities
         {
             if (SupportUserAccessControl)
             {
-                IntPtr tokenHandle;
-                if (!NativeMethods.OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_READ, out tokenHandle))
+                if (!NativeMethods.OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_READ, out IntPtr tokenHandle))
                 {
-                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not get process token.");
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), CouldNotGetTokenMessage);
                 }
 
                 NativeMethods.TOKEN_ELEVATION_TYPE elevationResult = NativeMethods.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
 
                 int elevationResultSize = Marshal.SizeOf((int)elevationResult);
-                uint returnedSize = 0;
                 IntPtr elevationTypePtr = Marshal.AllocHGlobal(elevationResultSize);
 
-                bool success = NativeMethods.GetTokenInformation(tokenHandle, NativeMethods.TOKEN_INFORMATION_CLASS.TokenElevationType, elevationTypePtr, (uint)elevationResultSize, out returnedSize);
+                bool success = NativeMethods.GetTokenInformation(tokenHandle, NativeMethods.TOKEN_INFORMATION_CLASS.TokenElevationType, elevationTypePtr, (uint)elevationResultSize, out uint _);
                 if (success)
                 {
                     elevationResult = (NativeMethods.TOKEN_ELEVATION_TYPE)Marshal.ReadInt32(elevationTypePtr);
@@ -118,7 +120,7 @@ namespace SizeOnDisk.Utilities
                 }
                 else
                 {
-                    throw new InvalidOperationException("Unable to determine the current elevation.");
+                    throw new InvalidOperationException(UnableToGetElevationMessage);
                 }
             }
             else

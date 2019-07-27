@@ -4,6 +4,8 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -55,12 +57,12 @@ namespace SizeOnDisk.ViewModel
 
         private readonly DispatcherTimer _Timer;
 
-        public VMRootHierarchy() : base(null, null, null, 0, Dispatcher.CurrentDispatcher)
+        public VMRootHierarchy() : base(null, null, null, 0)
         {
             this.IsExpanded = true;
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                VMRootFolder newFolder = new VMRootFolder(this, "Root Folder", "\\\\Root Folder");
+                VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
                 this.Folders.Add(newFolder);
                 newFolder.IsExpanded = true;
                 newFolder.IsTreeSelected = true;
@@ -83,7 +85,7 @@ namespace SizeOnDisk.ViewModel
 
         public void AddRootFolder(string path)
         {
-            VMRootFolder newFolder = new VMRootFolder(this, path, path, this.Dispatcher);
+            VMRootFolder newFolder = new VMRootFolder(this, path, path);
             //No need on root: this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
 
@@ -99,17 +101,36 @@ namespace SizeOnDisk.ViewModel
             newFolder.RefreshAsync();
         }
 
+        protected override Task ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = true)
+        {
+            new Thread(() =>
+            {
+                ExecuteTask(action, null);
+            })
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.Highest
+            }.Start();
+            return null;
+        }
+
+
         public void RemoveRootFolder(VMRootFolder folder)
         {
             if (folder == null)
                 throw new ArgumentNullException(nameof(folder));
-            this.SelectedRootFolder = null;
-            this.Folders.Remove(folder);
-            if (this.Folders.Count == 0)
+            ExecuteTaskAsync((po) =>
             {
-                this.SelectedTreeItem = null;
-                this.SelectedListItem = null;
-            }
+                folder.Stop();//?.Wait();
+                if (SelectedRootFolder == folder)
+                    this.SelectedRootFolder = null;
+                this.Folders.Remove(folder);
+                if (this.Folders.Count == 0)
+                {
+                    this.SelectedTreeItem = null;
+                    this.SelectedListItem = null;
+                }
+            });
         }
 
         public void StopAsync()
@@ -133,7 +154,7 @@ namespace SizeOnDisk.ViewModel
         internal void RefreshIsRunning()
         {
             this.OnPropertyChanged(nameof(IsRunning));
-            Dispatcher.BeginInvoke(new Action(() =>
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 CommandManager.InvalidateRequerySuggested();
             }));
@@ -187,7 +208,6 @@ namespace SizeOnDisk.ViewModel
 
         private void CallCloseCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            CallStopCommand(sender, e);
             this.RemoveRootFolder(this.SelectedRootFolder);
         }
 

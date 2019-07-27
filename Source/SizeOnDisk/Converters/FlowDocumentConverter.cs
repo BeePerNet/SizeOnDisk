@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -6,10 +7,12 @@ using System.Windows.Markup;
 
 namespace SizeOnDisk.Converters
 {
+    [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<En attente>")]
     public class FlowDocumentConverter : IValueConverter
     {
         private const string FlowDocumentMessage = "TargetType must be of type FlowDocument";
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "<En attente>")]
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)

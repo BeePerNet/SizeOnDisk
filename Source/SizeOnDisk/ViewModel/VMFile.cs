@@ -17,7 +17,7 @@ using WPFLocalizeExtension.Extensions;
 namespace SizeOnDisk.ViewModel
 {
     [DebuggerDisplay("{GetType().Name}: {Name}")]
-    public class VMFile : CommandViewModel, IDisposable
+    public class VMFile : CommandViewModel
     {
         private const string MessageIsNotVMFile = "OriginalSource is not VMFile";
 
@@ -45,6 +45,8 @@ namespace SizeOnDisk.ViewModel
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
+            if (bindingCollection == null)
+                return;
             bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
@@ -123,6 +125,8 @@ namespace SizeOnDisk.ViewModel
 
         protected static void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions = null)
         {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
             try
             {
                 action(parallelOptions);
@@ -136,9 +140,9 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        protected virtual void ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
+        protected virtual Task ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
         {
-            Parent.ExecuteTaskAsync(action, highpriority);
+            return Parent?.ExecuteTaskAsync(action, highpriority);
         }
 
         public void Rename(string newName)
@@ -245,6 +249,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        [SuppressMessage("Design","CA2213")]
         VMFileDetails _Details;
         public VMFileDetails Details
         {
@@ -557,32 +562,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        private bool disposed = false;
 
-
-        protected virtual void Dispose(bool disposing)
+        protected override void InternalDispose(bool disposing)
         {
-            if (disposed)
-                return;
+            if (disposing && this.Details != null)
+                this.Details.Dispose();
 
-            try
-            {
-                if (disposing)
-                {
-                    if (Details != null)
-                        this.Details.Dispose();
-                }
-            }
-            finally
-            {
-                disposed = true;
-            }
+            base.InternalDispose(disposing);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
     }
 }

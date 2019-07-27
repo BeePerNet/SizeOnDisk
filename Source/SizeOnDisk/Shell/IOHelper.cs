@@ -413,12 +413,12 @@ namespace SizeOnDisk.Shell
                 if (((num != 2) && (num != 3)) && (num != 0x15))
                 {
                     FillAttributeInfo(path, ref data, true);
-                    return;
+                    //return;
                 }
-                else if (num == 2)
-                    return;
-                else if (num != 0) //throw new Win32Exception(num);
-                    return;
+                //else if (num == 2)
+                //return;
+                //else if (num != 0) //throw new Win32Exception(num);
+                //return;
             }
         }
 

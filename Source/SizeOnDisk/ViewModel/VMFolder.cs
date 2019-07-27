@@ -4,11 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -18,7 +15,7 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMFolder : VMFile
     {
-        private readonly uint clusterSize;
+        private readonly int clusterSize = -1;
 
         public void PermanentDeleteAllSelectedFiles()
         {
@@ -71,31 +68,20 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        #region fields
-
-        private readonly Dispatcher _Dispatcher;
-        protected Dispatcher Dispatcher { get => _Dispatcher; }
-
-        #endregion fields
-
         #region constructor
 
         internal readonly object _myCollectionLock = new object();
 
-        protected VMFolder(VMFolder parent, string name, string path, uint clusterSize, Dispatcher dispatcher)
+        protected VMFolder(VMFolder parent, string name, string path, int clusterSize)
             : base(parent, name, path)
         {
-            if (dispatcher != null)
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                dispatcher.BeginInvoke(new Action(() =>
-                {
-                    BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
-                    BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
-                }), DispatcherPriority.Send);
-            }
+                BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
+                BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
+            }), DispatcherPriority.Send);
 
             this.clusterSize = clusterSize;
-            _Dispatcher = dispatcher;
             FileTotal = null;
         }
 
@@ -110,9 +96,9 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public ObservableCollection<VMFile> Childs { get; } = new ObservableCollection<VMFile>();
+        public ObservableCollection<VMFile> Childs { get; private set; } = new ObservableCollection<VMFile>();
 
-        public ObservableCollection<VMFolder> Folders { get; } = new ObservableCollection<VMFolder>();
+        public ObservableCollection<VMFolder> Folders { get; private set; } = new ObservableCollection<VMFolder>();
 
         public override bool IsFile
         {
@@ -204,13 +190,14 @@ namespace SizeOnDisk.ViewModel
                         this.SelectTreeItem(this);
                         this.SelectItem();
                     }
-                    if (value && this.Path != null && _Dispatcher != null)
+                    //clusterSize: Check if not in designer
+                    if (value && this.Path != null && this.clusterSize != -1)
                     {
                         ExecuteTaskAsync((parallelOptions) =>
                         {
                             this.FillChildList();
 
-                            Parallel.ForEach(this.Childs, parallelOptions, (T) => T.RefreshOnView());
+                            Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
                         }, true);
                     }
                 }
@@ -231,7 +218,7 @@ namespace SizeOnDisk.ViewModel
 
         private VMFile selectedItem;
         public VMFile SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
-        public uint ClusterSize { get => clusterSize; }
+        public int ClusterSize { get => clusterSize; }
 
         #endregion properties
 
@@ -265,7 +252,8 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        object _lock = new object();
+        private readonly object _lock = new object();
+
         public void FillChildList(bool refreshOnNew = false)
         {
             lock (_lock)
@@ -282,13 +270,17 @@ namespace SizeOnDisk.ViewModel
                         {
                             if (fileInfo.IsFolder)
                             {
-                                found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize, this.Dispatcher);
+                                found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize);
                                 this.Folders.Add(found as VMFolder);
                                 if (refreshOnNew)
                                     (found as VMFolder).Refresh(new ParallelOptions());
                             }
                             else
+#pragma warning disable IDE0068 // Utilisez le modèle de suppression recommandé
+#pragma warning disable CA2000 // Dispose objects before losing scope
                                 found = new VMFile(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName));
+#pragma warning restore CA2000 // Dispose objects before losing scope
+#pragma warning restore IDE0068 // Utilisez le modèle de suppression recommandé
                             this.Childs.Add(found);
                             if (refreshOnNew && this.Parent.IsTreeSelected)
                                 this.RefreshOnView();
@@ -304,7 +296,6 @@ namespace SizeOnDisk.ViewModel
                         if (!file.IsFile)
                             this.Folders.Remove(file as VMFolder);
                         this.Childs.Remove(file);
-                        file.Dispose();
                     }
                 }
                 catch (DirectoryNotFoundException)
@@ -325,7 +316,7 @@ namespace SizeOnDisk.ViewModel
 
         public virtual void Refresh(ParallelOptions parallelOptions)
         {
-            if (Dispatcher == null || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
+            if (this.clusterSize == -1 || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
                 return;
             try
             {
@@ -334,10 +325,10 @@ namespace SizeOnDisk.ViewModel
                 {
                     ExecuteTaskAsync((po) =>
                     {
-                        Parallel.ForEach(this.Childs, parallelOptions, (T) => T.RefreshOnView());
+                        Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
                     }, true);
                 }
-                Parallel.ForEach(this.Folders, parallelOptions, (T) => T.Refresh(parallelOptions));
+                Parallel.ForEach(this.Folders.ToList(), parallelOptions, (T) => T.Refresh(parallelOptions));
             }
             catch (OperationCanceledException)
             {
@@ -373,7 +364,18 @@ namespace SizeOnDisk.ViewModel
         //}
 
         #endregion functions
+        protected override void InternalDispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.Childs != null)
+                    this.Childs = null;
+                if (this.Folders != null)
+                    this.Folders = null;
+            }
 
+            base.InternalDispose(disposing);
+        }
 
 
     }

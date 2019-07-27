@@ -1,14 +1,49 @@
 ﻿using SizeOnDisk.Shell;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand.Observables;
+using WPFByYourCommand.Threading;
 
 namespace SizeOnDisk.ViewModel
 {
     public class VMFileDetails : ObservableObject, IDisposable
     {
         private readonly VMFile _vmFile;
+        private static BitmapImage defaultFileBigIcon;
+
+        private static BitmapImage GetDefaultFileBigIcon()
+        {
+            if (defaultFileBigIcon == null)
+            {
+                BitmapImage bmi = new BitmapImage();
+                bmi.BeginInit();
+                bmi.UriSource = new Uri("pack://application:,,,/SizeOnDisk;component/Icons/NotFoundIconBig.png");
+                bmi.EndInit();
+
+                bmi.Freeze();
+                defaultFileBigIcon = bmi;
+            }
+            return defaultFileBigIcon;
+        }
+
+        private static BitmapImage defaultFileIcon;
+
+        private static BitmapImage GetDefaultFileIcon()
+        {
+            if (defaultFileIcon == null)
+            {
+                BitmapImage bmi = new BitmapImage();
+                bmi.BeginInit();
+                bmi.UriSource = new Uri("pack://application:,,,/SizeOnDisk;component/Icons/NotFoundIcon.png");
+                bmi.EndInit();
+
+                bmi.Freeze();
+                defaultFileIcon = bmi;
+            }
+            return defaultFileIcon;
+        }
 
         public VMFileDetails(VMFile vmFile)
         {
@@ -16,6 +51,7 @@ namespace SizeOnDisk.ViewModel
         }
 
         Task task;
+        CancellationTokenSource cancellationTokenSource;
 
         public LittleFileInfo Load()
         {
@@ -30,15 +66,23 @@ namespace SizeOnDisk.ViewModel
             this.LastWriteTime = fileInfo.LastWriteTime;
 
             this.Icon = ShellHelper.GetIcon(_vmFile.Path, 16);
+            if (this.Icon == null)
+                this.Icon = GetDefaultFileIcon();
+
             this.Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
-
-            task = new Task(() =>
+            if (this.Thumbnail == null)
+                this.Thumbnail = GetDefaultFileBigIcon();
+            else
             {
-                Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
-                this.OnPropertyChanged(nameof(Thumbnail));
-            });
-            task.Start();
-
+                cancellationTokenSource = new CancellationTokenSource();
+                task = Task.Run(() =>
+                {
+                    cancellationTokenSource.CancelAfter(10000);
+                    Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+                    this.OnPropertyChanged(nameof(Thumbnail));
+                    task = null;
+                }, cancellationTokenSource.Token);//.CancelAfter(10000);
+            }
             return fileInfo;
         }
 
@@ -51,26 +95,28 @@ namespace SizeOnDisk.ViewModel
         //Seems to have problems with VOB
         public BitmapSource Thumbnail { get; private set; } = null;
 
-        private bool disposed = false;
+
+
+
+        bool _disposed = false;
         protected virtual void Dispose(bool disposing)
         {
-            // free native resources
-            if (disposed)
+            if (_disposed)
                 return;
 
-            try
+            if (disposing)
             {
-                if (disposing)
+                if (cancellationTokenSource != null && cancellationTokenSource.Token.CanBeCanceled)
                 {
-                    if (this.task != null)
-                        this.task.Dispose();
+                    cancellationTokenSource.Cancel(true);
+                    cancellationTokenSource.Dispose();
                 }
+                // dispose managed resources
+                if (this.task != null)
+                    this.task.Dispose();
             }
-            finally
-            {
-                disposed = true;
-            }
-
+            // free native resources
+            _disposed = true;
         }
 
         public void Dispose()

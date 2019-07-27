@@ -80,9 +80,10 @@ namespace SizeOnDisk.Shell
             return false;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "<En attente>")]
         private bool ShowLegacyDialog(IWin32Window owner)
         {
-            using (var frm = new OpenFileDialog())
+            using (OpenFileDialog frm = new OpenFileDialog())
             {
                 frm.CheckFileExists = false;
                 frm.CheckPathExists = true;

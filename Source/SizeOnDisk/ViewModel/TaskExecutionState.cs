@@ -8,6 +8,7 @@ namespace SizeOnDisk.ViewModel
         Canceling = 2,
         Canceled = 3,
         Finished = 4,
-        Designing = 42
+        Designing = 42,
+        Unknown = 31416
     }
 }

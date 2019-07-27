@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.Shell;
 using System;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -9,6 +10,7 @@ namespace SizeOnDisk.Properties
 {
     internal sealed partial class Settings
     {
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<En attente>")]
         public static void CheckUpgrade()
         {
             Assembly a = Assembly.GetExecutingAssembly();

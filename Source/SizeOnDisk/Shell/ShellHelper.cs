@@ -407,7 +407,7 @@ namespace SizeOnDisk.Shell
 
             if (soft.Verbs.Count <= 0)
                 return null;
-            
+
             if (soft.Icon == null)
             {
                 appid = soft.Verbs.FirstOrDefault(T => T.Command.ToUpperInvariant().Contains(".EXE"))?.Command;
@@ -498,6 +498,7 @@ namespace SizeOnDisk.Shell
 
         #region public functions
 
+        [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "<En attente>")]
         public static void ShellExecute(string fileName, string parameters = null, string verb = null, bool normal = false, ShellExecuteFlags? flags = null)
         {
 
@@ -505,12 +506,12 @@ namespace SizeOnDisk.Shell
 
             SafeNativeMethods.SHELLEXECUTEINFO info = new SafeNativeMethods.SHELLEXECUTEINFO
             {
-                hwnd = window,
                 lpVerb = verb,
                 lpFile = fileName,
                 lpParameters = parameters,
                 nShow = (int)(normal ? SafeNativeMethods.ShowCommands.SW_NORMAL : SafeNativeMethods.ShowCommands.SW_SHOW)
             };
+            info.hwnd = window;
             info.cbSize = Marshal.SizeOf(info);
             if (!flags.HasValue)
                 flags = !string.IsNullOrWhiteSpace(verb) && (verb != "find") ? ShellExecuteFlags.INVOKEIDLIST : ShellExecuteFlags.DEFAULT;
@@ -524,7 +525,7 @@ namespace SizeOnDisk.Shell
             }
         }
 
-
+        [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "<En attente>")]
         public static string FileExtentionInfo(AssocStr assocStr, string doctype)
         {
             IntPtr pcchOut = IntPtr.Zero;
@@ -540,43 +541,48 @@ namespace SizeOnDisk.Shell
         {
             string parameters = string.Empty;
             int pos = 1;
-            if (cmd.StartsWith("\"", StringComparison.Ordinal) && cmd.Count(T => T == '\"') > 1)
+            if (!string.IsNullOrEmpty(cmd))
             {
-                while (pos < cmd.Length)
+                if (cmd.StartsWith("\"", StringComparison.Ordinal) && cmd.Count(T => T == '\"') > 1)
                 {
-                    pos = cmd.IndexOf('\"', pos);
-                    if (pos < 0 || pos >= cmd.Length)
-                        pos = cmd.Length;
-                    else if (cmd[pos + 1] != '\"')
+                    while (pos < cmd.Length)
                     {
-                        parameters = cmd.Substring(pos + 1);
-                        cmd = cmd.Substring(1, pos - 1);
-                        pos = cmd.Length;
+                        pos = cmd.IndexOf('\"', pos);
+                        if (pos < 0 || pos >= cmd.Length)
+                            pos = cmd.Length;
+                        else if (cmd[pos + 1] != '\"')
+                        {
+                            parameters = cmd.Substring(pos + 1);
+                            cmd = cmd.Substring(1, pos - 1);
+                            pos = cmd.Length;
+                        }
+                    }
+                }
+                else
+                {
+                    pos = cmd.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase);
+                    if (pos < 0)
+                        pos = cmd.IndexOf(".cmd ", StringComparison.OrdinalIgnoreCase);
+                    if (pos < 0)
+                        pos = cmd.IndexOf(".bat ", StringComparison.OrdinalIgnoreCase);
+                    if (pos > 0 && pos < cmd.Length)
+                    {
+                        parameters = cmd.Substring(pos + 5);
+                        cmd = cmd.Substring(0, pos + 4);
+                    }
+                    else
+                    {
+                        pos = cmd.IndexOf(' ');
+                        if (pos > 0 && pos < cmd.Length)
+                        {
+                            parameters = cmd.Substring(pos + 1);
+                            cmd = cmd.Substring(0, pos);
+                        }
                     }
                 }
             }
             else
-            {
-                pos = cmd.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase);
-                if (pos < 0)
-                    pos = cmd.IndexOf(".cmd ", StringComparison.OrdinalIgnoreCase);
-                if (pos < 0)
-                    pos = cmd.IndexOf(".bat ", StringComparison.OrdinalIgnoreCase);
-                if (pos > 0 && pos < cmd.Length)
-                {
-                    parameters = cmd.Substring(pos + 5);
-                    cmd = cmd.Substring(0, pos + 4);
-                }
-                else
-                {
-                    pos = cmd.IndexOf(' ');
-                    if (pos > 0 && pos < cmd.Length)
-                    {
-                        parameters = cmd.Substring(pos + 1);
-                        cmd = cmd.Substring(0, pos);
-                    }
-                }
-            }
+                cmd = string.Empty;
             return new Tuple<string, string>(cmd.Trim(), parameters.Trim());
         }
 
@@ -673,8 +679,9 @@ namespace SizeOnDisk.Shell
         }
 
         [SuppressMessage("Usage", "CA2217:Do not mark enums with FlagsAttribute")]
+        [SuppressMessage("Design", "CA1008:Enums should have zero value")]
         [Flags]
-        public enum ShellExecuteFlags : uint
+        public enum ShellExecuteFlags : int
         {
             DEFAULT = 0x00000000,
             CLASSNAME = 0x00000001,
@@ -948,7 +955,7 @@ namespace SizeOnDisk.Shell
             [DllImport("user32.dll", EntryPoint = "DestroyIcon",
                 SetLastError = true, ExactSpelling = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            private static extern bool DestroyIcon(IntPtr hIcon);
+            internal static extern bool DestroyIcon(IntPtr hIcon);
 
             [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
             static extern uint ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -11,6 +12,7 @@ namespace SizeOnDisk
     /// <summary>
     /// Interaction logic for AboutBox.xaml
     /// </summary>
+    [SuppressMessage("Design","CA1501")]
     public partial class AboutBox : Window
     {
         /// <summary>
@@ -36,7 +38,7 @@ namespace SizeOnDisk
         /// </summary>
         /// <param name="sender">Object the sent the event.</param>
         /// <param name="e">Navigation events arguments.</param>
-        private void _Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             if (e.Uri != null && string.IsNullOrEmpty(e.Uri.OriginalString) == false)
             {
@@ -91,19 +93,17 @@ namespace SizeOnDisk
         {
             get
             {
-                string result = string.Empty;
                 // first, try to get the version string from the assembly.
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 if (version != null)
                 {
-                    result = version.ToString();
+                    return version.ToString();
                 }
                 else
                 {
                     // if that fails, try to get the version from a resource in the Application.
-                    result = GetLogicalResourceString(xPathVersion);
+                    return GetLogicalResourceString(xPathVersion);
                 }
-                return result;
             }
         }
 
@@ -147,10 +147,12 @@ namespace SizeOnDisk
             get { return GetLogicalResourceString(xPathLink); }
         }
 
+#pragma warning disable CA1056 // Uri properties should not be strings
         /// <summary>
         /// Gets the link uri that is the navigation target of the link.
         /// </summary>
         public string LinkUri
+#pragma warning restore CA1056 // Uri properties should not be strings
         {
             get { return GetLogicalResourceString(xPathLinkUri); }
         }
@@ -198,9 +200,7 @@ namespace SizeOnDisk
             {
                 if (xmlDoc == null)
                 {
-                    // if we haven't already found the resource XmlDocument, then try to find it.
-                    XmlDataProvider provider = this.TryFindResource("aboutProvider") as XmlDataProvider;
-                    if (provider != null)
+                    if (this.TryFindResource("aboutProvider") is XmlDataProvider provider)
                     {
                         // save away the XmlDocument, so we don't have to get it multiple times.
                         xmlDoc = provider.Document;

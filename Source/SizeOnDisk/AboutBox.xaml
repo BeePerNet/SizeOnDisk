@@ -129,7 +129,7 @@
                 <Label Style="{StaticResource LinkLabelStyle}">
                     <Hyperlink NavigateUri="{Binding Mode=OneTime, Path=LinkUri}"
                                Style="{StaticResource LinkLabelStyle}"
-                               Hyperlink.RequestNavigate="_Hyperlink_RequestNavigate">
+                               Hyperlink.RequestNavigate="Hyperlink_RequestNavigate">
                         <TextBlock Text="{Binding Mode=OneTime, Path=LinkText}" />
                     </Hyperlink>
                 </Label>

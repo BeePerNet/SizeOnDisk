@@ -2,6 +2,7 @@
 using SizeOnDisk.Utilities;
 using SizeOnDisk.ViewModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace SizeOnDisk
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [SuppressMessage("Design", "CA1501")]
     public partial class MainWindow
     {
         public MainWindow()

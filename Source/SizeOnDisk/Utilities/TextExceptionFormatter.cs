@@ -19,12 +19,14 @@ namespace SizeOnDisk.Utilities
         private int innerDepth;
         private readonly Exception exception;
         private NameValueCollection additionalInfo;
-        private StringBuilder stringBuilder = new StringBuilder(1024);
+        private readonly StringBuilder stringBuilder = new StringBuilder(1024);
         private static readonly ArrayList IgnoredProperties = new ArrayList(new string[] { "Source", "Message", "HelpLink", "InnerException", "StackTrace" });
 
 
         public static Exception GetInnerException(Exception ex)
         {
+            if (ex == null)
+                return null;
             while (ex.InnerException != null)
                 ex = ex.InnerException;
             return ex;
@@ -34,11 +36,7 @@ namespace SizeOnDisk.Utilities
         // Methods
         public TextExceptionFormatter(Exception exception)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException("exception");
-            }
-            this.exception = exception;
+            this.exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
 
         public string Format()
@@ -88,7 +86,7 @@ namespace SizeOnDisk.Utilities
         {
             if (exceptionToFormat == null)
             {
-                throw new ArgumentNullException("exceptionToFormat");
+                throw new ArgumentNullException(nameof(exceptionToFormat));
             }
             this.WriteExceptionType(exceptionToFormat.GetType());
             this.WriteMessage(exceptionToFormat.Message);
@@ -132,7 +130,7 @@ namespace SizeOnDisk.Utilities
             object propertyAccessFailed;
             if (exceptionToFormat == null)
             {
-                throw new ArgumentNullException("exceptionToFormat");
+                throw new ArgumentNullException(nameof(exceptionToFormat));
             }
             Type type = exceptionToFormat.GetType();
             PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -245,13 +243,15 @@ namespace SizeOnDisk.Utilities
             {
                 if (this.additionalInfo == null)
                 {
-                    this.additionalInfo = new NameValueCollection();
-                    this.additionalInfo.Add("MachineName", GetMachineName());
-                    this.additionalInfo.Add("TimeStamp", DateTime.UtcNow.ToString(CultureInfo.CurrentCulture));
-                    this.additionalInfo.Add("FullName", Assembly.GetExecutingAssembly().FullName);
-                    this.additionalInfo.Add("AppDomainName", AppDomain.CurrentDomain.FriendlyName);
-                    this.additionalInfo.Add("ThreadIdentity", Thread.CurrentPrincipal.Identity.Name);
-                    this.additionalInfo.Add("WindowsIdentity", GetWindowsIdentity());
+                    this.additionalInfo = new NameValueCollection
+                    {
+                        { "MachineName", GetMachineName() },
+                        { "TimeStamp", DateTime.UtcNow.ToString(CultureInfo.CurrentCulture) },
+                        { "FullName", Assembly.GetExecutingAssembly().FullName },
+                        { "AppDomainName", AppDomain.CurrentDomain.FriendlyName },
+                        { "ThreadIdentity", Thread.CurrentPrincipal.Identity.Name },
+                        { "WindowsIdentity", GetWindowsIdentity() }
+                    };
                 }
                 return this.additionalInfo;
             }

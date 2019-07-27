@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using SizeOnDisk.Shell;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -11,6 +12,7 @@ namespace SizeOnDisk.ViewModel
         private static IEnumerable<ShellCommandSoftware> list = null;
         private static readonly object _lock = new object();
 
+        [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "<En attente>")]
         public static IEnumerable<ShellCommandSoftware> Editors
         {
             get

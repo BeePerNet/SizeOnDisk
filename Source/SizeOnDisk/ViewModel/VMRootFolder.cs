@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace SizeOnDisk.ViewModel
@@ -51,8 +52,8 @@ namespace SizeOnDisk.ViewModel
         #region creator
 
         [DesignOnly(true)]
-        internal VMRootFolder(VMRootHierarchy parent, string name, string path)
-            : base(parent, name, path)
+        internal VMRootFolder(VMRootHierarchy parent, string name)
+            : base(parent, name, name)
         {
             VMFolder newFolder = new VMFolder(this, "Folder1", "\\\\Root Folder\\Folder1");
             this.Childs.Add(newFolder);
@@ -68,8 +69,8 @@ namespace SizeOnDisk.ViewModel
             this._ExecutionState = TaskExecutionState.Designing;
         }
 
-        internal VMRootFolder(VMRootHierarchy parent, string name, string path, Dispatcher dispatcher)
-            : base(parent, name, path, IOHelper.GetClusterSize(path), dispatcher)
+        internal VMRootFolder(VMRootHierarchy parent, string name, string path)
+            : base(parent, name, path, (int)IOHelper.GetClusterSize(path))
         {
             HardDrivePath = System.IO.Path.GetPathRoot(path);
             SetIsTreeSelectedWithoutFillList();
@@ -111,7 +112,10 @@ namespace SizeOnDisk.ViewModel
             {
                 _Runwatch.Stop();
                 this.OnPropertyChanged(nameof(RunTime));
-                this.ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
+                if (parallelOptions != null && parallelOptions.CancellationToken != null)
+                    this.ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
+                else
+                    this.ExecutionState = TaskExecutionState.Unknown;
             }
         }
 
@@ -121,28 +125,27 @@ namespace SizeOnDisk.ViewModel
 
         private DispatcherTimer _Timer;
         private ParallelOptions _ParallelOptions;
+        [SuppressMessage("Design", "CA2213")]
         private CancellationTokenSource _CancellationTokenSource;
         private readonly object _lock = new object();
 
         private ParallelOptions GetParallelOptions()
         {
-            if (_CancellationTokenSource != null)
-            {
-                if (!_CancellationTokenSource.Token.CanBeCanceled)
-                {
-                    _ParallelOptions = null;
-                }
-            }
+            if (_CancellationTokenSource != null && _CancellationTokenSource.Token != null && !_CancellationTokenSource.Token.CanBeCanceled)
+                _ParallelOptions = null;
+
             if (_ParallelOptions == null)
             {
                 lock (_lock)
                 {
                     if (_ParallelOptions == null)
                     {
-                        ParallelOptions parallelOptions = new ParallelOptions();
+                        if (_CancellationTokenSource != null)
+                            _CancellationTokenSource.Dispose();
+
+                        _ParallelOptions = new ParallelOptions();
                         _CancellationTokenSource = new CancellationTokenSource();
-                        parallelOptions.CancellationToken = _CancellationTokenSource.Token;
-                        _ParallelOptions = parallelOptions;
+                        _ParallelOptions.CancellationToken = _CancellationTokenSource.Token;
                     }
                 }
             }
@@ -163,12 +166,18 @@ namespace SizeOnDisk.ViewModel
             }.Start();
         }
 
-        protected override void ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
+        protected override Task ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
         {
             if (highpriority)
+            {
                 RootExecuteTaskAsyncHighPriority(action);
-            ParallelOptions parallelOptions = GetParallelOptions();
-            Task.Run(() => ExecuteTask(action, parallelOptions), parallelOptions.CancellationToken);
+                return null;
+            }
+            else
+            {
+                ParallelOptions parallelOptions = GetParallelOptions();
+                return Task.Run(() => ExecuteTask(action, parallelOptions), parallelOptions.CancellationToken);
+            }
         }
 
         public void RefreshAsync()
@@ -178,7 +187,7 @@ namespace SizeOnDisk.ViewModel
             this.ExecutionState = TaskExecutionState.Running;
             if (_Timer == null)
             {
-                _Timer = new DispatcherTimer(DispatcherPriority.DataBind, Dispatcher)
+                _Timer = new DispatcherTimer(DispatcherPriority.DataBind, Application.Current.Dispatcher)
                 {
                     Interval = new TimeSpan(0, 0, 1)
                 };
@@ -229,31 +238,22 @@ namespace SizeOnDisk.ViewModel
                     lock (_lock)
                     {
                         cts = _CancellationTokenSource;
-                        if (!_ParallelOptions.CancellationToken.CanBeCanceled)
-                            cts = null;
+                        if (cts.Token.CanBeCanceled)
+                            cts.Cancel(true);
                         _CancellationTokenSource = null;
                         _ParallelOptions = null;
                     }
-                    if (cts != null)
+                    return ExecuteTaskAsync((po) =>
                     {
-                        cts.Cancel(true);
-                        Task task = Task.Run(() =>
+                        try
                         {
-                            try
-                            {
-                                cts.Token.WaitHandle.WaitOne();
-                            }
-                            catch (Exception ex)
-                            {
-                                ExceptionBox.ShowException(ex);
-                            }
-                            finally
-                            {
-                                this.ExecutionState = TaskExecutionState.Canceled;
-                            }
-                        });
-                        return task;
-                    }
+                            cts.Token.WaitHandle.WaitOne();
+                        }
+                        finally
+                        {
+                            this.ExecutionState = TaskExecutionState.Canceled;
+                        }
+                    });
                 }
             }
             catch (Exception ex)
@@ -282,37 +282,16 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Task
 
-        #region IDisposable
 
-        private bool disposed = false;
-
-
-        [SuppressMessage("Microsoft.Usage", "CA2215:Les méthodes Dispose doivent appeler la méthode Dispose de la classe de base")]
-        protected override void Dispose(bool disposing)
+        protected override void InternalDispose(bool disposing)
         {
-            if (disposed)
-                return;
+            if (disposing && this._CancellationTokenSource != null)
+                this._CancellationTokenSource.Dispose();
 
-            try
-            {
-                if (disposing)
-                {
-                    this.Stop();
-
-                    if (_CancellationTokenSource != null)
-                    {
-                        _CancellationTokenSource.Dispose();
-                        _CancellationTokenSource = null;
-                    }
-                }
-            }
-            finally
-            {
-                disposed = true;
-            }
-            base.Dispose(disposing);
+            base.InternalDispose(disposing);
         }
 
-        #endregion IDisposable
+
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows;
 
@@ -8,6 +8,7 @@ namespace SizeOnDisk.Utilities
     /// <summary>
     /// Interaction logic for ExceptionBox.xaml
     /// </summary>
+    [SuppressMessage("Design", "CA1501")]
     public partial class ExceptionBox : Window
     {
         private class Context
@@ -23,6 +24,7 @@ namespace SizeOnDisk.Utilities
             this.DataContext = new Context() { Textblock = textblock, Textbox = textbox };
         }
 
+        [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<En attente>")]
         public static void ShowException(Exception ex)
         {
             ExceptionBox.ShowException(TextExceptionFormatter.GetInnerException(ex).Message, new TextExceptionFormatter(ex).Format());
