@@ -69,10 +69,13 @@ namespace SizeOnDisk.ViewModel
             if (this.Icon == null)
                 this.Icon = GetDefaultFileIcon();
 
-            this.Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
-            if (this.Thumbnail == null)
-                this.Thumbnail = GetDefaultFileBigIcon();
-            else
+            if (Thumbnail == null)
+            {
+                this.Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+                if (this.Thumbnail == null)
+                    this.Thumbnail = GetDefaultFileBigIcon();
+            }
+            if (this.Thumbnail != GetDefaultFileBigIcon())
             {
                 cancellationTokenSource = new CancellationTokenSource();
                 task = Task.Run(() =>
