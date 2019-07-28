@@ -1,5 +1,5 @@
-
 if not exist FinalMasterInstaller md FinalMasterInstaller
+del /q FinalMasterInstaller\*.msi
 copy en-US\SizeOnDiskSetup.msi FinalMasterInstaller\SizeOnDiskSetup.msi
 
 echo %CD%
