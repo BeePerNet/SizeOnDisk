@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand.Observables;
-using WPFByYourCommand.Threading;
 
 namespace SizeOnDisk.ViewModel
 {

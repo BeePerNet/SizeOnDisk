@@ -182,7 +182,7 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshAsync()
         {
-            this.Stop()?.Wait();
+            //this.Stop()?.Wait();
 
             this.ExecutionState = TaskExecutionState.Running;
             if (_Timer == null)
