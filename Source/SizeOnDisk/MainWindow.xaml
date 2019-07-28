@@ -191,16 +191,17 @@
                                     <RowDefinition Height="96" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <Canvas Width="96" Height="96" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                    <Image Panel.ZIndex="42" Canvas.Left="0" Canvas.Bottom="0" Source="Icons/Shortcut-big.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
-                                        <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" />
-                                </Canvas>
-                                <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="WordEllipsis" />
+                                <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
+                                    <Image Panel.ZIndex="42" Width="19" Height="19" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-big.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
+                                <cmd:AutoDisablingImage Width="{Binding Details.Thumbnail.Width}" Height="{Binding Details.Thumbnail.Height}" Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Grid>
+                                <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
                             </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListView>
             <DataGrid 
+                Background="Transparent"
                     Grid.Column="2"
                     VirtualizingStackPanel.VirtualizationMode="Standard"
                     cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
@@ -229,10 +230,10 @@
                     <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Canvas Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                    <Image Panel.ZIndex="42" Canvas.Left="0" Canvas.Bottom="0" Source="Icons/Shortcut-small.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
-                                    <cmd:AutoDisablingImage Source="{Binding Details.Icon}"  />
-                                </Canvas>
+                                <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
+                                    <Image Width="7" Height="7" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-small.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
+                                    <cmd:AutoDisablingImage Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                </Grid>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

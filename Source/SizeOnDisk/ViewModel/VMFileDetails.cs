@@ -79,7 +79,7 @@ namespace SizeOnDisk.ViewModel
                 cancellationTokenSource = new CancellationTokenSource();
                 task = Task.Run(() =>
                 {
-                    cancellationTokenSource.CancelAfter(10000);
+                    cancellationTokenSource.CancelAfter(20000);
                     Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
                     this.OnPropertyChanged(nameof(Thumbnail));
                     task = null;
@@ -109,13 +109,14 @@ namespace SizeOnDisk.ViewModel
             if (disposing)
             {
                 if (cancellationTokenSource != null && cancellationTokenSource.Token.CanBeCanceled)
-                {
                     cancellationTokenSource.Cancel(true);
-                    cancellationTokenSource.Dispose();
-                }
+
                 // dispose managed resources
                 if (this.task != null)
                     this.task.Dispose();
+
+                if (cancellationTokenSource != null)
+                    cancellationTokenSource.Dispose();
             }
             // free native resources
             _disposed = true;

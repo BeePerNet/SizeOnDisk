@@ -182,8 +182,6 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshAsync()
         {
-            //this.Stop()?.Wait();
-
             this.ExecutionState = TaskExecutionState.Running;
             if (_Timer == null)
             {
@@ -226,7 +224,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public Task Stop()
+        public void Stop()
         {
             try
             {
@@ -243,7 +241,7 @@ namespace SizeOnDisk.ViewModel
                         _CancellationTokenSource = null;
                         _ParallelOptions = null;
                     }
-                    return ExecuteTaskAsync((po) =>
+                    ExecuteTaskAsync((po) =>
                     {
                         try
                         {
@@ -260,7 +258,6 @@ namespace SizeOnDisk.ViewModel
             {
                 ExceptionBox.ShowException(ex);
             }
-            return null;
         }
 
         public TaskExecutionState ExecutionState
