@@ -325,12 +325,14 @@ namespace SizeOnDisk.Shell
                 {
                     if (handle.IsInvalid)
                     {
-                        //throw new Win32Exception();
                         int error = Marshal.GetLastWin32Error();
-                        if (error == 5)
-                            throw new UnauthorizedAccessException("Accès refusé: " + folderPath, new Win32Exception(error));
+
+                        if (error == 3)
+                            throw new DirectoryNotFoundException($"Path not found: {folderPath}", new Win32Exception(error));
+                        else if (error == 5) // 3 = ERROR_PATH_NOT_FOUND, 5 = ERROR_ACCESS_DENIED
+                            throw new UnauthorizedAccessException($"Access denied: {folderPath}", new Win32Exception(error));
                         else
-                            throw new Win32Exception(error);
+                            throw new Win32Exception(error, $"Error {error} on path {folderPath}");
                     }
                     else
                     {
