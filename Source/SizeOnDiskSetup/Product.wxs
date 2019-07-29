@@ -147,7 +147,7 @@
                  Guid="*">
         <Shortcut Id="ApplicationFileMenuShortcut"
                   Name="SizeOnDisk"
-                  Description="Programs Menu Shortcut to SizeOnDisk"
+                  Description="SizeOnDisk"
                   Target="[#ApplicationFile]"
                   IconIndex="0" />
         <RemoveFile Id="ApplicationFileMenuShortcut"
@@ -166,7 +166,7 @@
                  Guid="*">
         <Shortcut Id="ApplicationFileDesktopShortcut"
                   Name="SizeOnDisk"
-                  Description="Desktop Shortcut to SizeOnDisk"
+                  Description="SizeOnDisk"
                   Target="[#ApplicationFile]"
                   IconIndex="0" />
         <RemoveFile Id="ApplicationFileDesktopShortcut"
