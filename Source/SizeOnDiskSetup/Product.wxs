@@ -544,7 +544,7 @@
                   BinaryKey="WixCA"
                   DllEntry="WixShellExec"
                   Execute="immediate"
-                  Impersonate="yes" />
+                  Impersonate="no" />
 
     <!--CustomAction Id="LaunchApplication"
                   FileKey="ApplicationFile"
