@@ -16,13 +16,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <SuppressIces />
+    <SuppressIces>ICE57;ICE69;ICE03</SuppressIces>
     <DefineConstants>Debug;</DefineConstants>
     <VerboseOutput>True</VerboseOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <SuppressIces>ICE57;ICE69;ICE03</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
@@ -86,9 +87,10 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>call $(ProjectDir)mergeall</PostBuildEvent>
+    <PreBuildEvent />
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>call $(ProjectDir)createzips</PreBuildEvent>
+    <PostBuildEvent>call $(ProjectDir)mergeall
+call $(ProjectDir)createzips</PostBuildEvent>
   </PropertyGroup>
 </Project>
