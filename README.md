@@ -12,7 +12,7 @@ Le but principal du logiciel est de passer tous les fichiers du disque dur le pl
 ![SizeOnDisk](https://user-images.githubusercontent.com/46988275/62136808-dfca2300-b2b2-11e9-86c5-97184015fc0c.png)
 
 Last known as: [SizeOnDisk on CodePlex](https://archive.codeplex.com/?p=sizeondisk)  
-Anciennement: [SizeOnDisk sur CodePlex](https://archive.codeplex.com/?p=sizeondisk)
+Anciennement: [SizeOnDisk sur CodePlex](https://archive.codeplex.com/?p=sizeondisk)  
 [Évaluation de Softonic](https://sizeondisk.fr.softonic.com/?ex=BB-865.0#tab-review)
 
 
