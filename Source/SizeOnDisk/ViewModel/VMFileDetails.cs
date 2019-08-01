@@ -89,28 +89,31 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
-                if (this._Thumbnail == null)
-                    this._Thumbnail = GetDefaultFileBigIcon();
-                else
+                if (_Thumbnail == null)
                 {
-                    if (thread == null)
+                    this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+                    if (this._Thumbnail == null)
+                        this._Thumbnail = GetDefaultFileBigIcon();
+                    else
                     {
-                        thread = new Thread(() =>
+                        if (thread == null)
                         {
-                            try
+                            thread = new Thread(() =>
                             {
-                                _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
-                                OnPropertyChanged(nameof(Thumbnail));
-                            }
-                            catch (Exception ex)
-                            {
+                                try
+                                {
+                                    _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+                                    OnPropertyChanged(nameof(Thumbnail));
+                                }
+                                catch (Exception ex)
+                                {
 
-                            }
-                            thread = null;
-                        });
-                        thread.IsBackground = true;
-                        thread.Start();
+                                }
+                                thread = null;
+                            });
+                            thread.IsBackground = true;
+                            thread.Start();
+                        }
                     }
                 }
 
