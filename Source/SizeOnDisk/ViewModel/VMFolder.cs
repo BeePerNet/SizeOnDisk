@@ -2,16 +2,11 @@
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Threading;
-using WPFByYourCommand.Commands;
+using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -72,17 +67,9 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        private readonly object _myCollectionLock = new object();
-
         protected VMFolder(VMFolder parent, string name, string path, int clusterSize)
             : base(parent, name, path)
         {
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
-                BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
-                BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
-            }), DispatcherPriority.Send);
-
             this.clusterSize = clusterSize;
             FileTotal = null;
         }
@@ -98,9 +85,9 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public ObservableCollection<VMFile> Childs { get; private set; } = new ObservableCollection<VMFile>();
+        public DispatchObservableCollection<VMFile> Childs { get; private set; } = new DispatchObservableCollection<VMFile>();
 
-        public ObservableCollection<VMFolder> Folders { get; private set; } = new ObservableCollection<VMFolder>();
+        public DispatchObservableCollection<VMFolder> Folders { get; private set; } = new DispatchObservableCollection<VMFolder>();
 
         public override bool IsFile
         {
@@ -262,8 +249,8 @@ namespace SizeOnDisk.ViewModel
             {
                 try
                 {
-                    List<VMFile> tmpChilds = this.Childs.ToList();
                     IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
+                    List<VMFile> tmpChilds = this.Childs.ToList();
                     VMFile found = null;
                     foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
                     {

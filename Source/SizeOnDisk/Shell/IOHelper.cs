@@ -350,7 +350,7 @@ namespace SizeOnDisk.Shell
             }
             finally
             {
-                num2 = SafeNativeMethods.SetErrorMode(num2);
+                _ = SafeNativeMethods.SetErrorMode(num2);
             }
         }
 
