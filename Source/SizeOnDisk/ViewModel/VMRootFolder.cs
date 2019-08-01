@@ -126,7 +126,7 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name, path, (int)IOHelper.GetClusterSize(path))
         {
             HardDrivePath = System.IO.Path.GetPathRoot(path);
-            this._isTreeSelected = true;
+            this.SetInternalIsTreeSelected();
         }
 
         #endregion creator

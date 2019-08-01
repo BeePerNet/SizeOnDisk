@@ -170,7 +170,12 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        protected bool _isTreeSelected = false;
+        private bool _isTreeSelected = false;
+
+        protected void SetInternalIsTreeSelected()
+        {
+            _isTreeSelected = true;
+        }
 
         public bool IsTreeSelected
         {

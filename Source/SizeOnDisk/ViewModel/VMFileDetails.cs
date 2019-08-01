@@ -48,8 +48,6 @@ namespace SizeOnDisk.ViewModel
             _vmFile = vmFile;
         }
 
-        Thread thread;
-
         public LittleFileInfo Load()
         {
             if (_vmFile.IsFile)
@@ -83,6 +81,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        Thread thread;
         //Seems to have problems with VOB
         BitmapSource _Thumbnail = null;
         public BitmapSource Thumbnail
@@ -105,7 +104,7 @@ namespace SizeOnDisk.ViewModel
                                     _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
                                     OnPropertyChanged(nameof(Thumbnail));
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
 
                                 }
