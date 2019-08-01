@@ -26,6 +26,9 @@ namespace SizeOnDisk
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+
+            //System.Windows.Media.Imaging.BitmapSource Thumbnail = ShellHelper.GetIcon(@"P:\Sébastien\Mes images\BSG-75.jpg", 96, true);
+
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.Language))
             {
                 LanguageHelper.ChangeLanguage(new CultureInfo(Properties.Settings.Default.Language));
@@ -102,14 +105,6 @@ namespace SizeOnDisk
                 }
             }
 
-        }
-
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            if (_RootHierarchy != null)
-            {
-                _RootHierarchy.StopAsync();
-            }
         }
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)

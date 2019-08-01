@@ -1,13 +1,12 @@
 ﻿using SizeOnDisk.Shell;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMFileDetails : ObservableObject, IDisposable
+    public class VMFileDetails : ObservableObject
     {
         private readonly VMFile _vmFile;
         private static BitmapImage defaultFileBigIcon;
@@ -49,8 +48,7 @@ namespace SizeOnDisk.ViewModel
             _vmFile = vmFile;
         }
 
-        Task task;
-        CancellationTokenSource cancellationTokenSource;
+        Thread thread;
 
         public LittleFileInfo Load()
         {
@@ -64,27 +62,9 @@ namespace SizeOnDisk.ViewModel
             this.LastAccessTime = fileInfo.LastAccessTime;
             this.LastWriteTime = fileInfo.LastWriteTime;
 
-            this.Icon = ShellHelper.GetIcon(_vmFile.Path, 16);
-            if (this.Icon == null)
-                this.Icon = GetDefaultFileIcon();
+            this._Thumbnail = null;
+            this.OnPropertyChanged(nameof(Thumbnail));
 
-            if (Thumbnail == null)
-            {
-                this.Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
-                if (this.Thumbnail == null)
-                    this.Thumbnail = GetDefaultFileBigIcon();
-            }
-            if (this.Thumbnail != GetDefaultFileBigIcon())
-            {
-                cancellationTokenSource = new CancellationTokenSource();
-                task = Task.Run(() =>
-                {
-                    cancellationTokenSource.CancelAfter(20000);
-                    Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
-                    this.OnPropertyChanged(nameof(Thumbnail));
-                    task = null;
-                }, cancellationTokenSource.Token);//.CancelAfter(10000);
-            }
             return fileInfo;
         }
 
@@ -92,40 +72,50 @@ namespace SizeOnDisk.ViewModel
         public DateTime CreationTime { get; private set; }
         public DateTime LastAccessTime { get; private set; }
         public DateTime LastWriteTime { get; private set; }
-        public BitmapSource Icon { get; private set; } = null;
-
-        //Seems to have problems with VOB
-        public BitmapSource Thumbnail { get; private set; } = null;
-
-
-
-
-        bool _disposed = false;
-        protected virtual void Dispose(bool disposing)
+        public BitmapSource Icon
         {
-            if (_disposed)
-                return;
-
-            if (disposing)
+            get
             {
-                if (cancellationTokenSource != null && cancellationTokenSource.Token.CanBeCanceled)
-                    cancellationTokenSource.Cancel(true);
-
-                // dispose managed resources
-                if (this.task != null)
-                    this.task.Dispose();
-
-                if (cancellationTokenSource != null)
-                    cancellationTokenSource.Dispose();
+                BitmapSource icon = ShellHelper.GetIcon(_vmFile.Path, 16);
+                if (icon == null)
+                    icon = GetDefaultFileIcon();
+                return icon;
             }
-            // free native resources
-            _disposed = true;
         }
 
-        public void Dispose()
+        //Seems to have problems with VOB
+        BitmapSource _Thumbnail = null;
+        public BitmapSource Thumbnail
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            get
+            {
+                this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+                if (this._Thumbnail == null)
+                    this._Thumbnail = GetDefaultFileBigIcon();
+                else
+                {
+                    if (thread == null)
+                    {
+                        thread = new Thread(() =>
+                        {
+                            try
+                            {
+                                _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+                                OnPropertyChanged(nameof(Thumbnail));
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                            thread = null;
+                        });
+                        thread.IsBackground = true;
+                        thread.Start();
+                    }
+                }
+
+                return _Thumbnail;
+            }
         }
 
     }

@@ -123,13 +123,13 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        protected static void ExecuteTask(Action<ParallelOptions> action, ParallelOptions parallelOptions = null)
+        protected static void ExecuteTask(Action action)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
             try
             {
-                action(parallelOptions);
+                action();
             }
             catch (OperationCanceledException)
             {
@@ -140,16 +140,16 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        protected virtual Task ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
+        public virtual Task ExecuteTaskAsync(Action action, bool highpriority = false)
         {
-            return Parent?.ExecuteTaskAsync(action, highpriority);
+            return Parent.ExecuteTaskAsync(action, highpriority);
         }
 
         public void Rename(string newName)
         {
             if (this.Name != newName)
             {
-                ExecuteTask((parallelOptions) =>
+                ExecuteTaskAsync(() =>
                 {
                     string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Path), newName);
                     if (this.IsFile)
@@ -249,7 +249,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        [SuppressMessage("Design","CA2213")]
+        [SuppressMessage("Design", "CA2213")]
         VMFileDetails _Details;
         public VMFileDetails Details
         {
@@ -257,13 +257,17 @@ namespace SizeOnDisk.ViewModel
             {
                 return _Details;
             }
+            private set
+            {
+                SetProperty(ref _Details, value);
+            }
         }
 
         public void RefreshOnView()
         {
-            _Details = new VMFileDetails(this);
-            LittleFileInfo fileInfo = _Details.Load();
-            OnPropertyChanged(nameof(Details));
+            if (Details == null)
+                Details = new VMFileDetails(this);
+            LittleFileInfo fileInfo = Details.Load();
             this.Refresh(fileInfo);
         }
 
@@ -287,7 +291,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                ExecuteTask((parallelOptions) =>
+                file.ExecuteTaskAsync(() =>
                 {
                     if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
                     {
@@ -312,7 +316,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                ExecuteTask((parallelOptions) =>
+                ExecuteTask(() =>
                 {
                     if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
                     {
@@ -478,7 +482,7 @@ namespace SizeOnDisk.ViewModel
                     VMFile.PrintCommand,
                     SeparatorDummyCommand.Instance
                 };
-                ExecuteTask((parallelOptions) =>
+                ExecuteTask(() =>
                 {
                     bool added = false;
                     foreach (ShellCommandSoftware item in DefaultEditors.Editors)
@@ -560,15 +564,6 @@ namespace SizeOnDisk.ViewModel
                 });
                 return commands;
             }
-        }
-
-
-        protected override void InternalDispose(bool disposing)
-        {
-            if (disposing && this.Details != null)
-                this.Details.Dispose();
-
-            base.InternalDispose(disposing);
         }
 
     }

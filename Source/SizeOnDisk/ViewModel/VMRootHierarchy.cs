@@ -4,10 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
@@ -64,14 +61,12 @@ namespace SizeOnDisk.ViewModel
             {
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
                 this.Folders.Add(newFolder);
+
                 newFolder.IsExpanded = true;
                 newFolder.IsTreeSelected = true;
-                newFolder.Childs.Last().IsSelected = true;
             }
             else
             {
-                BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
-                BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
                 _Timer = new DispatcherTimer(DispatcherPriority.DataBind)
                 {
                     Interval = new TimeSpan(0, 0, 1)
@@ -86,51 +81,27 @@ namespace SizeOnDisk.ViewModel
         public void AddRootFolder(string path)
         {
             VMRootFolder newFolder = new VMRootFolder(this, path, path);
-            //No need on root: this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
+
+            newFolder.RefreshAsync();
+
+            newFolder.IsExpanded = true;
 
             this.SelectedRootFolder = newFolder;
             this.SelectedTreeItem = newFolder;
             this.SelectedListItem = newFolder;
-            newFolder.IsExpanded = true;
-            newFolder.IsTreeSelected = true;
-
-            BindingOperations.EnableCollectionSynchronization(newFolder.Childs, newFolder._myCollectionLock);
-            BindingOperations.EnableCollectionSynchronization(newFolder.Folders, newFolder._myCollectionLock);
-
-            newFolder.RefreshAsync();
         }
-
-        protected override Task ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = true)
-        {
-            new Thread(() =>
-            {
-                ExecuteTask(action, null);
-            })
-            {
-                IsBackground = true,
-                Priority = ThreadPriority.Highest
-            }.Start();
-            return null;
-        }
-
 
         public void RemoveRootFolder(VMRootFolder folder)
         {
-            if (folder == null)
-                throw new ArgumentNullException(nameof(folder));
-            ExecuteTaskAsync((po) =>
+            if (SelectedRootFolder == folder)
+                this.SelectedRootFolder = null;
+            this.Folders.Remove(folder);
+            if (this.Folders.Count == 0)
             {
-                folder.Stop();//?.Wait();
-                if (SelectedRootFolder == folder)
-                    this.SelectedRootFolder = null;
-                this.Folders.Remove(folder);
-                if (this.Folders.Count == 0)
-                {
-                    this.SelectedTreeItem = null;
-                    this.SelectedListItem = null;
-                }
-            });
+                this.SelectedTreeItem = null;
+                this.SelectedListItem = null;
+            }
         }
 
         public void StopAsync()
@@ -163,24 +134,14 @@ namespace SizeOnDisk.ViewModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx OpenFolderCommand = new RoutedCommandEx("openfolder", "loc:ChooseFolder", "pack://application:,,,/SizeOnDisk;component/Icons/openfolderHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Insert, ModifierKeys.None, "loc:Insert"));
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly RoutedCommandEx RefreshCommand = new RoutedCommandEx("refresh", "loc:PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootHierarchy), new KeyGesture(Key.F5, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:RefreshKeyDisplayString"));
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly RoutedCommandEx StopCommand = new RoutedCommandEx("stop", "loc:PresentationCore:ExceptionStringTable:StopText", "pack://application:,,,/SizeOnDisk;component/Icons/StopHS.png", typeof(VMRootHierarchy), new KeyGesture(Key.Escape, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:StopKeyDisplayString"));
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly RoutedCommandEx CloseCommand = new RoutedCommandEx("close", "loc:PresentationCore:ExceptionStringTable:CloseText", "pack://application:,,,/SizeOnDisk;component/Icons/Close.png", typeof(VMRootHierarchy));
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly RoutedUICommand RefreshAllCommand = new RoutedUICommand("Refresh all", "RefreshAll", typeof(VMFile));
+        public static readonly RoutedUICommand RefreshAllCommand = new RoutedUICommand("Refresh all", "RefreshAll", typeof(VMRootHierarchy));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
             if (bindingCollection == null)
                 throw new ArgumentNullException(nameof(bindingCollection));
-            base.AddCommandModels(bindingCollection);
             bindingCollection.Add(new CommandBinding(OpenFolderCommand, CallOpenCommand));
-            bindingCollection.Add(new CommandBinding(RefreshCommand, CallRefreshCommand, CanCallRefreshCommand));
-            bindingCollection.Add(new CommandBinding(RefreshAllCommand, CallRefreshCommand, CanCallCommand));
-            bindingCollection.Add(new CommandBinding(StopCommand, CallStopCommand, CanCallStopCommand));
-            bindingCollection.Add(new CommandBinding(CloseCommand, CallCloseCommand, CanCallCommand));
+            bindingCollection.Add(new CommandBinding(RefreshAllCommand, CallRefreshCommand, CanCallRefreshCommand));
         }
 
         private void CallOpenCommand(object sender, ExecutedRoutedEventArgs e)
@@ -194,52 +155,24 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.Handled = true;
-            e.CanExecute = this.SelectedRootFolder != null && this.SelectedRootFolder.ExecutionState == TaskExecutionState.Running;
-        }
-
-        private void CallStopCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-            this.SelectedRootFolder.Stop();
-        }
-
-        private void CallCloseCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            this.RemoveRootFolder(this.SelectedRootFolder);
-        }
 
         private void CanCallRefreshCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = this.SelectedRootFolder != null && this.SelectedRootFolder.ExecutionState != TaskExecutionState.Running;
+            e.CanExecute = this.Folders.Count > 0;
         }
 
         private void CallRefreshCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            if (e.Command == RefreshAllCommand)
-            {
-                foreach (VMRootFolder folder in this.Childs)
-                    folder.RefreshAsync();
-            }
-            else
-            {
-                this.SelectedRootFolder.RefreshAsync();
-            }
-        }
-
-        private void CanCallCommand(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.Handled = true;
-            e.CanExecute = this.SelectedRootFolder != null;
+            foreach (VMRootFolder folder in this.Folders)
+                folder.RefreshAsync();
         }
 
         #endregion Commands
 
         private VMViewMode viewMode = VMViewMode.Details;
         public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
+
     }
 }

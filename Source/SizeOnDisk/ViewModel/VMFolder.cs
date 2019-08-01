@@ -9,7 +9,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Threading;
+using WPFByYourCommand.Commands;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -19,7 +21,7 @@ namespace SizeOnDisk.ViewModel
 
         public void PermanentDeleteAllSelectedFiles()
         {
-            ExecuteTask((parallelOptions) =>
+            ExecuteTask(() =>
             {
                 VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
@@ -44,7 +46,7 @@ namespace SizeOnDisk.ViewModel
 
         public void DeleteAllSelectedFiles()
         {
-            ExecuteTask((parallelOptions) =>
+            ExecuteTask(() =>
             {
                 VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
@@ -70,12 +72,12 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        internal readonly object _myCollectionLock = new object();
+        private readonly object _myCollectionLock = new object();
 
         protected VMFolder(VMFolder parent, string name, string path, int clusterSize)
             : base(parent, name, path)
         {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 BindingOperations.EnableCollectionSynchronization(this.Childs, _myCollectionLock);
                 BindingOperations.EnableCollectionSynchronization(this.Folders, _myCollectionLock);
@@ -168,12 +170,7 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        private bool _isTreeSelected = false;
-
-        protected internal void SetIsTreeSelectedWithoutFillList()
-        {
-            _isTreeSelected = true;
-        }
+        protected bool _isTreeSelected = false;
 
         public bool IsTreeSelected
         {
@@ -193,11 +190,11 @@ namespace SizeOnDisk.ViewModel
                     //clusterSize: Check if not in designer
                     if (value && this.Path != null && this.clusterSize != -1)
                     {
-                        ExecuteTaskAsync((parallelOptions) =>
+                        ExecuteTaskAsync(() =>
                         {
                             this.FillChildList();
 
-                            Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
+                            Parallel.ForEach(this.Childs.ToList(), (T) => T.RefreshOnView());
                         }, true);
                     }
                 }
@@ -206,7 +203,7 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshAfterCommand()
         {
-            ExecuteTaskAsync((parallelOptions) =>
+            ExecuteTaskAsync(() =>
             {
                 FillChildList(true);
                 RefreshCount();
@@ -323,7 +320,7 @@ namespace SizeOnDisk.ViewModel
                 this.FillChildList();
                 if (this.IsTreeSelected)
                 {
-                    ExecuteTaskAsync((po) =>
+                    ExecuteTaskAsync(() =>
                     {
                         Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
                     }, true);
@@ -364,19 +361,6 @@ namespace SizeOnDisk.ViewModel
         //}
 
         #endregion functions
-        protected override void InternalDispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this.Childs != null)
-                    this.Childs = null;
-                if (this.Folders != null)
-                    this.Folders = null;
-            }
-
-            base.InternalDispose(disposing);
-        }
-
 
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using Microsoft.Win32.SafeHandles;
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Concurrent;
@@ -8,14 +7,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
@@ -77,7 +74,7 @@ namespace SizeOnDisk.Shell
             // Create a native shellitem from our path
             Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
             int retCode = SafeNativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem nativeShellItem);
-            if (retCode < 0)
+            if (retCode != 0)
                 //return new BitmapImage(new Uri("pack://application:,,,/SizeOnDisk;component/Icons/File.png"));
                 return null;
             //throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
@@ -98,32 +95,37 @@ namespace SizeOnDisk.Shell
             IntPtr hBitmap = IntPtr.Zero;
             try
             {
-                retCode = ((SafeNativeMethods.IShellItemImageFactory)nativeShellItem).GetImage(nativeSIZE, options, out hBitmap);
-                if (retCode < 0)
+                SafeNativeMethods.IShellItemImageFactory imageFactory = nativeShellItem as SafeNativeMethods.IShellItemImageFactory;
+                if (imageFactory == null)
                     return null;
+
+                try
+                {
+                    retCode = imageFactory.GetImage(nativeSIZE, options, out hBitmap);
+                    if (retCode != 0)
+                        return null;
+
+                    // return a System.Media.Imaging.BitmapSource
+                    // Use interop to create a BitmapSource from hBitmap.
+                    BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
+                        hBitmap,
+                        IntPtr.Zero,
+                        System.Windows.Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+
+                    returnValue.Freeze();
+
+                    return returnValue;
+                }
+                finally
+                {
+                    // delete HBitmap to avoid memory leaks
+                    SafeNativeMethods.DeleteObject(hBitmap);
+                }
             }
             finally
             {
                 Marshal.ReleaseComObject(nativeShellItem);
-            }
-            try
-            {
-                // return a System.Media.Imaging.BitmapSource
-                // Use interop to create a BitmapSource from hBitmap.
-                BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
-                    hBitmap,
-                    IntPtr.Zero,
-                    System.Windows.Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-
-                returnValue.Freeze();
-
-                return returnValue;
-            }
-            finally
-            {
-                // delete HBitmap to avoid memory leaks
-                SafeNativeMethods.DeleteObject(hBitmap);
             }
         }
 

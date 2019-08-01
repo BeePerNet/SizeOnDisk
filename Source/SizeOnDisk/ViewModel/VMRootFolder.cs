@@ -8,12 +8,65 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
+using WPFByYourCommand.Commands;
 
 namespace SizeOnDisk.ViewModel
 {
     public class VMRootFolder : VMFolder
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly RoutedCommandEx RefreshCommand = new RoutedCommandEx("refresh", "loc:PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootFolder), new KeyGesture(Key.F5, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:RefreshKeyDisplayString"));
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly RoutedCommandEx StopCommand = new RoutedCommandEx("stop", "loc:PresentationCore:ExceptionStringTable:StopText", "pack://application:,,,/SizeOnDisk;component/Icons/StopHS.png", typeof(VMRootFolder), new KeyGesture(Key.Escape, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:StopKeyDisplayString"));
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly RoutedCommandEx CloseCommand = new RoutedCommandEx("close", "loc:PresentationCore:ExceptionStringTable:CloseText", "pack://application:,,,/SizeOnDisk;component/Icons/Close.png", typeof(VMRootFolder));
+
+        public override void AddCommandModels(CommandBindingCollection bindingCollection)
+        {
+            if (bindingCollection == null)
+                throw new ArgumentNullException(nameof(bindingCollection));
+            base.AddCommandModels(bindingCollection);
+            bindingCollection.Add(new CommandBinding(RefreshCommand, CallRefreshCommand, CanCallRefreshCommand));
+            bindingCollection.Add(new CommandBinding(StopCommand, CallStopCommand, CanCallStopCommand));
+            bindingCollection.Add(new CommandBinding(CloseCommand, CallCloseCommand));
+        }
+
+        private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = this.ExecutionState == TaskExecutionState.Running;
+        }
+
+        private void CallStopCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            this.Stop();
+        }
+
+        private void CallCloseCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecuteTaskAsync(() =>
+            {
+                this.Stop()?.WaitOne();
+                (this.Parent as VMRootHierarchy).RemoveRootFolder(this);
+            }, true);
+        }
+
+
+        private void CanCallRefreshCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = this.ExecutionState != TaskExecutionState.Running;
+        }
+
+        private void CallRefreshCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            this.RefreshAsync();
+        }
+
         #region fields
 
         private readonly Stopwatch _Runwatch = new Stopwatch();
@@ -73,7 +126,7 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name, path, (int)IOHelper.GetClusterSize(path))
         {
             HardDrivePath = System.IO.Path.GetPathRoot(path);
-            SetIsTreeSelectedWithoutFillList();
+            this._isTreeSelected = true;
         }
 
         #endregion creator
@@ -153,12 +206,12 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        private void RootExecuteTaskAsyncHighPriority(Action<ParallelOptions> action)
+        private void RootExecuteTaskAsyncHighPriority(Action action)
         {
             ParallelOptions parallelOptions = GetParallelOptions();
             new Thread(() =>
             {
-                ExecuteTask(action, parallelOptions);
+                ExecuteTask(action);
             })
             {
                 IsBackground = true,
@@ -166,7 +219,7 @@ namespace SizeOnDisk.ViewModel
             }.Start();
         }
 
-        protected override Task ExecuteTaskAsync(Action<ParallelOptions> action, bool highpriority = false)
+        public override Task ExecuteTaskAsync(Action action, bool highpriority = false)
         {
             if (highpriority)
             {
@@ -176,7 +229,7 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 ParallelOptions parallelOptions = GetParallelOptions();
-                return Task.Run(() => ExecuteTask(action, parallelOptions), parallelOptions.CancellationToken);
+                return Task.Run(() => ExecuteTask(action), parallelOptions.CancellationToken);
             }
         }
 
@@ -192,12 +245,12 @@ namespace SizeOnDisk.ViewModel
                 _Timer.Tick += new EventHandler(TimerTick);
             }
 
-            ExecuteTaskAsync((parallelOptions) =>
+            ExecuteTaskAsync(() =>
             {
                 try
                 {
                     _Timer.Start();
-                    this.Refresh(parallelOptions);
+                    this.Refresh(this.GetParallelOptions());
                     this.ExecutionState = TaskExecutionState.Finished;
                 }
                 catch (Exception ex)
@@ -208,7 +261,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     _Timer.Stop();
                 }
-            }, true);
+            });
         }
 
         private void TimerTick(object sender, EventArgs e)
@@ -224,7 +277,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public void Stop()
+        public WaitHandle Stop()
         {
             try
             {
@@ -241,7 +294,7 @@ namespace SizeOnDisk.ViewModel
                         _CancellationTokenSource = null;
                         _ParallelOptions = null;
                     }
-                    ExecuteTaskAsync((po) =>
+                    ExecuteTaskAsync(() =>
                     {
                         try
                         {
@@ -251,13 +304,15 @@ namespace SizeOnDisk.ViewModel
                         {
                             this.ExecutionState = TaskExecutionState.Canceled;
                         }
-                    });
+                    }, true);
+                    return cts.Token.WaitHandle;
                 }
             }
             catch (Exception ex)
             {
                 ExceptionBox.ShowException(ex);
             }
+            return null;
         }
 
         public TaskExecutionState ExecutionState
@@ -278,16 +333,6 @@ namespace SizeOnDisk.ViewModel
         }
 
         #endregion Task
-
-
-        protected override void InternalDispose(bool disposing)
-        {
-            if (disposing && this._CancellationTokenSource != null)
-                this._CancellationTokenSource.Dispose();
-
-            base.InternalDispose(disposing);
-        }
-
 
 
     }

@@ -18,7 +18,6 @@
         Width="1050"
         Title="{Binding Path=SelectedTreeItem.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
-        Closing="Window_Closing"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
         Loaded="Window_Loaded">
     <Window.DataContext>
@@ -58,7 +57,8 @@
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
                      ItemsSource="{Binding FileCommands}" />
     </Window.Resources>
-    <Grid>
+    <Grid
+        cmd:CommandBehavior.Context="{Binding SelectedRootFolder}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -68,9 +68,9 @@
         <ToolBarTray>
             <ToolBar>
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Margin="2" />
-                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.RefreshCommand}" Margin="2" />
-                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.StopCommand}" Margin="2" />
-                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.CloseCommand}" Margin="2" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.RefreshCommand}" Margin="2" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.StopCommand}" Margin="2" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.CloseCommand}" Margin="2" />
                 <Separator />
                 <ToggleButton ToolTip="Details view"
                               Margin="2"
