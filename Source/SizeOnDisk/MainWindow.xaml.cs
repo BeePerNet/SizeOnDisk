@@ -1,7 +1,6 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using SizeOnDisk.ViewModel;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;

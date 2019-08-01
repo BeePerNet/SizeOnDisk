@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Configuration;
 using System.Xml.Serialization;
 
 namespace SizeOnDisk.ViewModel
 {
     [Serializable]
-    public class DefaultEditorItem// : ConfigurationElement
+    public class DefaultEditorItem
     {
         [XmlAttribute("display")]
         public string Display { get; set; }

@@ -12,7 +12,7 @@ namespace SizeOnDisk
     /// <summary>
     /// Interaction logic for AboutBox.xaml
     /// </summary>
-    [SuppressMessage("Design","CA1501")]
+    [SuppressMessage("Design", "CA1501")]
     public partial class AboutBox : Window
     {
         /// <summary>
