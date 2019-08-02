@@ -215,8 +215,8 @@
         <TabControl ItemsSource="{Binding Folders}" SelectedItem="{Binding SelectedRootFolder}" Margin="1">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Name="Textbox" Panel.ZIndex="42" Text="{Binding Name}" ToolTip="{Binding Path}" MinWidth="60" TextAlignment="Center" />
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="-6,0">
+                        <TextBlock Name="Textbox" Margin="3,1" Panel.ZIndex="42" Text="{Binding Name}" ToolTip="{Binding Path}" MinWidth="60" TextAlignment="Center" />
                         <ProgressBar Background="Transparent" IsIndeterminate="{Binding ExecutionState, Converter={StaticResource IsRunningConverter}}" BorderThickness="0" />
                     </Grid>
                 </DataTemplate>
