@@ -36,7 +36,8 @@ namespace SizeOnDisk.ViewModel
                                     bool found = false;
                                     ShellCommandSoftware command = new ShellCommandSoftware
                                     {
-                                        Id = item.Display
+                                        Id = item.Display,
+                                        ForFolder = item.ForFolder
                                     };
                                     switch (item.Definition)
                                     {

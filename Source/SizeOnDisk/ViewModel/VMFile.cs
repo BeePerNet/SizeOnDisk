@@ -470,28 +470,31 @@ namespace SizeOnDisk.ViewModel
                     bool added = false;
                     foreach (ShellCommandSoftware item in DefaultEditors.Editors)
                     {
-                        added = true;
-                        string display = item.Id;
-                        if (display.StartsWith("loc:", StringComparison.OrdinalIgnoreCase))
-                            display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
-                        if (string.IsNullOrEmpty(display))
-                            display = item.Id;
-
-                        DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
+                        if (item.ForFolder || this.IsFile)
                         {
-                            Tag = item.Name
-                        };
+                            added = true;
+                            string display = item.Id;
+                            if (display.StartsWith("loc:", StringComparison.OrdinalIgnoreCase))
+                                display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
+                            if (string.IsNullOrEmpty(display))
+                                display = item.Id;
 
-                        if (item.Icon != null)
-                        {
-                            command.Icon = new Image
+                            DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
                             {
-                                Source = item.Icon,
-                                Width = 16,
-                                Height = 16
+                                Tag = item.Name
                             };
+
+                            if (item.Icon != null)
+                            {
+                                command.Icon = new Image
+                                {
+                                    Source = item.Icon,
+                                    Width = 16,
+                                    Height = 16
+                                };
+                            }
+                            commands.Add(command);
                         }
-                        commands.Add(command);
                     }
                     if (added)
                         commands.Add(SeparatorDummyCommand.Instance);

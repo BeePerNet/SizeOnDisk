@@ -17,5 +17,8 @@ namespace SizeOnDisk.ViewModel
 
         [XmlAttribute("parameter2")]
         public string Parameter2 { get; set; }
+
+        [XmlAttribute("ForFolder")]
+        public bool ForFolder { get; set; }
     }
 }

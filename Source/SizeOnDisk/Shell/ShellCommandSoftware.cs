@@ -10,5 +10,7 @@ namespace SizeOnDisk.Shell
         public BitmapSource Icon { get; set; }
         public ShellCommandVerb Default { get; set; }
         public IList<ShellCommandVerb> Verbs { get; } = new List<ShellCommandVerb>();
+
+        public bool ForFolder { get; set; } = true;
     }
 }
