@@ -1,8 +1,6 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -13,11 +11,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
-using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMRootFolder : VMFolder
+    public class VMRootFolder : VMFolder, IDisposable
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx RefreshCommand = new RoutedCommandEx("refresh", "loc:PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootFolder), new KeyGesture(Key.F5, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:RefreshKeyDisplayString"));
@@ -313,6 +310,31 @@ namespace SizeOnDisk.ViewModel
         }
 
         #endregion Task
+
+
+
+
+        bool _disposed = false;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                this.Stop();
+                if (_CancellationTokenSource != null)
+                    _CancellationTokenSource.Dispose();
+            }
+            // free native resources
+            _disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
 
     }

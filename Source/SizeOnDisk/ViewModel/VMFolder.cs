@@ -2,13 +2,11 @@
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
@@ -87,10 +85,6 @@ namespace SizeOnDisk.ViewModel
         #endregion constructor
 
         #region properties
-
-        public IList<VMFile> Childs { get; } = new ObservableImmutableCollection<VMFile>();
-
-        public IList<VMFolder> Folders { get; } = new ObservableImmutableCollection<VMFolder>();
 
         public override bool IsFile
         {
@@ -247,7 +241,11 @@ namespace SizeOnDisk.ViewModel
         }
 
         private readonly object _lock = new object();
-        protected object _listlock = null;
+
+        public ObservableImmutableCollection<VMFile> Childs { get; } = new ObservableImmutableCollection<VMFile>();
+
+        public ObservableImmutableCollection<VMFolder> Folders { get; } = new ObservableImmutableCollection<VMFolder>();
+
 
         public void FillChildList(bool refreshOnNew = false)
         {
@@ -256,6 +254,7 @@ namespace SizeOnDisk.ViewModel
                 try
                 {
                     List<VMFile> tmpChilds = Childs.ToList();
+                    List<VMFile> addChilds = new List<VMFile>();
                     VMFile found = null;
                     IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
                     foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
@@ -266,17 +265,12 @@ namespace SizeOnDisk.ViewModel
                             if (fileInfo.IsFolder)
                             {
                                 found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize);
-                                Folders.Add(found as VMFolder);
                                 if (refreshOnNew)
                                     (found as VMFolder).Refresh(new ParallelOptions());
                             }
                             else
-#pragma warning disable IDE0068 // Utilisez le modèle de suppression recommandé
-#pragma warning disable CA2000 // Dispose objects before losing scope
                                 found = new VMFile(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName));
-#pragma warning restore CA2000 // Dispose objects before losing scope
-#pragma warning restore IDE0068 // Utilisez le modèle de suppression recommandé
-                            Childs.Add(found);
+                            addChilds.Add(found);
                             if (refreshOnNew && this.Parent.IsTreeSelected)
                                 this.RefreshOnView();
                         }
@@ -286,13 +280,12 @@ namespace SizeOnDisk.ViewModel
                         }
                         found.Refresh(fileInfo);
                     }
-                    foreach (VMFile file in tmpChilds)
-                    {
-                        if (!file.IsFile)
-                            Folders.Remove(file as VMFolder);
-                        Childs.Remove(file);
-                    }
-               }
+                    Folders.RemoveRange(tmpChilds.OfType<VMFolder>(), EqualityComparer<VMFolder>.Default);
+                    Childs.RemoveRange(tmpChilds, EqualityComparer<VMFile>.Default);
+
+                    Folders.AddRange(addChilds.OfType<VMFolder>());
+                    Childs.AddRange(addChilds);
+                }
                 catch (DirectoryNotFoundException)
                 {
 

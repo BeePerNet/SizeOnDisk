@@ -1,17 +1,14 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
-using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {

@@ -11,7 +11,7 @@ namespace WixTools
         {
             try
             {
-                string WinInstalledLanguages = string.Join(",", WinApiTools.GetInstalledInputLanguages().Select(T => T.TwoLetterISOLanguageName).Distinct().ToArray());
+                string WinInstalledLanguages = string.Join(",", WinApiTools.GetCultures(WinApiTools.LocaleType.LocaleAll).Select(T => T.TwoLetterISOLanguageName).Distinct().ToArray());
 
                 session.Log("WinInstalledLanguages {0}", WinInstalledLanguages);
                 session["WinInstalledLanguages"] = WinInstalledLanguages;

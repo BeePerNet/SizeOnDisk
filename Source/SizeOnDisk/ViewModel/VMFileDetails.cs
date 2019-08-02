@@ -1,7 +1,6 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand.Observables;
@@ -52,11 +51,6 @@ namespace SizeOnDisk.ViewModel
 
         public LittleFileInfo Load()
         {
-            if (_vmFile.IsFile)
-                FileType = ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
-            else
-                FileType = string.Empty;
-
             LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
             this.CreationTime = fileInfo.CreationTime;
             this.LastAccessTime = fileInfo.LastAccessTime;
@@ -68,7 +62,17 @@ namespace SizeOnDisk.ViewModel
             return fileInfo;
         }
 
-        public string FileType { get; private set; }
+        public string FileType
+        {
+            get
+            {
+                if (_vmFile.IsFile)
+                    return ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
+                else
+                    return string.Empty;
+            }
+        }
+
         public DateTime CreationTime { get; private set; }
         public DateTime LastAccessTime { get; private set; }
         public DateTime LastWriteTime { get; private set; }
@@ -76,7 +80,7 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                
+
                 BitmapSource icon = ShellHelper.GetIcon(_vmFile.Path, 16);
                 if (icon == null)
                     icon = GetDefaultFileIcon();
