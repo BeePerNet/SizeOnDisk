@@ -56,7 +56,7 @@ namespace SizeOnDisk.ViewModel
             this.LastAccessTime = fileInfo.LastAccessTime;
             this.LastWriteTime = fileInfo.LastWriteTime;
 
-            this._Thumbnail = null;
+            this.thumbnailInitialized = false;
             this.OnPropertyChanged(nameof(Thumbnail));
 
             return fileInfo;
@@ -88,39 +88,37 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        Task task;
+
+        private bool thumbnailInitialized = false;
         //Seems to have problems with VOB
         BitmapSource _Thumbnail = null;
         public BitmapSource Thumbnail
         {
             get
             {
-                if (_Thumbnail == null)
+                if (!thumbnailInitialized)
                 {
-                    this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+                    if (_Thumbnail == null)
+                        this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
                     if (this._Thumbnail == null)
                         this._Thumbnail = GetDefaultFileBigIcon();
                     else
                     {
-                        if (task == null)
+                        Task.Factory.StartNew(() =>
                         {
-                            task = Task.Factory.StartNew(() =>
+                            try
                             {
-                                try
-                                {
-                                    _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
-                                    OnPropertyChanged(nameof(Thumbnail));
-                                }
-                                catch (Exception ex)
-                                {
-                                    ExceptionBox.ShowException(ex);
-                                }
-                                task = null;
-                            }, TaskCreationOptions.LongRunning);
-                        }
+                                _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+                                OnPropertyChanged(nameof(Thumbnail));
+                            }
+                            catch (Exception ex)
+                            {
+                                ExceptionBox.ShowException(ex);
+                            }
+                        }, TaskCreationOptions.LongRunning);
                     }
+                    thumbnailInitialized = true;
                 }
-
                 return _Thumbnail;
             }
         }
