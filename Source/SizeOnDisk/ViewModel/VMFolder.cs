@@ -125,21 +125,21 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        private long? _FileTotal = 1;
-        private long? _FolderTotal = null;
+        private ulong? _FileTotal = 1;
+        private ulong? _FolderTotal = null;
 
-        public long? FileCount
+        public ulong? FileCount
         {
-            get { return this.Childs?.Count - this.Folders?.Count; }
+            get { return (ulong?)(this.Childs?.Count - this.Folders?.Count); }
         }
 
-        public override long? FileTotal
+        public override ulong? FileTotal
         {
             get { return _FileTotal; }
             protected set { SetProperty(ref _FileTotal, value); }
         }
 
-        public override long? FolderTotal
+        public override ulong? FolderTotal
         {
             get { return _FolderTotal; }
             protected set { SetProperty(ref _FolderTotal, value); }
@@ -170,11 +170,10 @@ namespace SizeOnDisk.ViewModel
                 {
                     _isTreeSelected = value;
                     this.OnPropertyChanged(nameof(IsTreeSelected));
-                    if (_isTreeSelected && this.Parent != null)
+                    if (_isTreeSelected)
                     {
-                        this.Parent.IsExpanded = true;
+                        this.IsExpanded = true;
                         this.SelectTreeItem(this);
-                        this.SelectItem();
                     }
                     //clusterSize: Check if not in designer
                     if (value && this.Path != null && this.clusterSize != -1 && Application.Current != null)
@@ -224,12 +223,24 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                this.FileTotal = this.Childs?.Sum(T => T.FileTotal);
-                this.FolderTotal = this.Folders == null ? null : this.Folders.Sum(T => T.FolderTotal) + this.Folders.Count;
-                this.DiskSize = this.Childs?.Sum(T => T.DiskSize);
-                this.FileSize = this.Childs?.Sum(T => T.FileSize);
+                this.FileTotal = Sum(this.Childs.Select(T => T.FileTotal));
+                this.FolderTotal = Sum(this.Folders.Select(T => T.FolderTotal)) + (ulong)this.Folders.Count;
+                this.DiskSize = Sum(this.Childs.Select(T => T.DiskSize));
+                this.FileSize = Sum(this.Childs.Select(T => T.FileSize));
             }
         }
+
+
+        public static ulong? Sum(IEnumerable<ulong?> source)
+        {
+            ulong? total = null;
+
+            foreach (var item in source.Where(T => T.HasValue))
+                total = (total ?? 0) + item;
+
+            return total;
+        }
+
 
         public void RefreshParents()
         {

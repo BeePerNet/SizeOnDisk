@@ -79,12 +79,12 @@ namespace SizeOnDisk.ViewModel
         }
 
         [DesignOnly(true)]
-        internal VMFile(VMFolder parent, string name, string path, int? fileSize) : this(parent, name, path)
+        internal VMFile(VMFolder parent, string name, string path, ulong? fileSize) : this(parent, name, path)
         {
             if (fileSize.HasValue)
             {
                 FileSize = fileSize;
-                DiskSize = Convert.ToInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
+                DiskSize = Convert.ToUInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
             }
         }
 
@@ -154,29 +154,29 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        private long? _FileSize = null;
-        private long? _DiskSize = null;
+        private ulong? _FileSize = null;
+        private ulong? _DiskSize = null;
 
-        public virtual long? FileTotal
+        public virtual ulong? FileTotal
         {
             get { return 1; }
             protected set { }
         }
 
-        public virtual long? FolderTotal
+        public virtual ulong? FolderTotal
         {
             get { return null; }
             protected set { }
         }
 
-        public long? DiskSize
+        public ulong? DiskSize
         {
             get { return _DiskSize; }
             protected set { SetProperty(ref _DiskSize, value); }
         }
 
 
-        public long? FileSize
+        public ulong? FileSize
         {
             get { return _FileSize; }
             protected set { SetProperty(ref _FileSize, value); }
@@ -205,10 +205,6 @@ namespace SizeOnDisk.ViewModel
 
         #region functions
 
-        protected virtual void SelectItem()
-        {
-            this.Parent.SelectItem();
-        }
 
         protected virtual void SelectListItem(VMFile selected)
         {
@@ -218,8 +214,8 @@ namespace SizeOnDisk.ViewModel
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
             this.Attributes = fileInfo.Attributes;
-            this.FileSize = fileInfo.Size;
-            this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + this.Parent.ClusterSize - 1) / this.Parent.ClusterSize) * this.Parent.ClusterSize;
+            this.FileSize = (ulong)fileInfo.Size;
+            this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + (ulong)this.Parent.ClusterSize - 1) / (ulong)this.Parent.ClusterSize) * (ulong)this.Parent.ClusterSize;
         }
 
         private FileAttributes _Attributes = FileAttributes.Normal;

@@ -85,6 +85,9 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        new public VMRootHierarchy Parent { get; }
+
+
         #region properties
 
         VMFolder _SelectedTreeItem;
@@ -131,25 +134,44 @@ namespace SizeOnDisk.ViewModel
 
         [DesignOnly(true)]
         internal VMRootFolder(VMRootHierarchy parent, string name)
-            : base(parent, name, name)
+            : base(null, name, name)
         {
+            this.Parent = parent;
+
             VMFolder newFolder = new VMFolder(this, "Folder1", "\\\\Root Folder\\Folder1");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
+            VMFile newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", 40 * 1024);
+            newFolder.Childs.Add(newFile);
+            newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", 2 * 1024);
+            newFolder.Childs.Add(newFile);
+            newFolder.RefreshCount();
+
             newFolder = new VMFolder(this, "Folder2", "\\\\Root Folder\\Folder2");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            VMFile newFile = new VMFile(this, "File1.txt", "\\\\Root Folder\\File1.txt", 128);
+            newFile = new VMFile(this, "Filezzz.txt", "\\\\Root Folder\\Folder 2\\Filezzz.txt", (uint)(1.44 * 1000 * 1024));
+            newFolder.Childs.Add(newFile);
+            newFolder.RefreshCount();
+
+            newFile = new VMFile(this, "Arecibo.txt", "\\\\Root Folder\\Arecibo.txt", 1679);
             this.Childs.Add(newFile);
-            newFile = new VMFile(this, "File2.42", "\\\\Root Folder\\File2.42", 4400);
+
+            newFile = new VMFile(this, "42.zip", "\\\\Root Folder\\42.zip", 4503599626321920);
             this.Childs.Add(newFile);
+
             this.RefreshCount();
             this._ExecutionState = TaskExecutionState.Designing;
+
+            this.SetInternalIsTreeSelected();
+            this.SelectedTreeItem = this;
+            this.SelectedListItem = this;
         }
 
         internal VMRootFolder(VMRootHierarchy parent, string name, string path)
-            : base(parent, name, path, (int)IOHelper.GetClusterSize(path))
+            : base(null, name, path, (int)IOHelper.GetClusterSize(path))
         {
+            this.Parent = parent;
             HardDrivePath = System.IO.Path.GetPathRoot(path);
             this.SetInternalIsTreeSelected();
 
@@ -161,10 +183,6 @@ namespace SizeOnDisk.ViewModel
 
         #region functions
 
-        protected override void SelectItem()
-        {
-            (this.Parent as VMRootHierarchy).SelectedRootFolder = this;
-        }
         protected override void SelectTreeItem(VMFolder folder)
         {
             this.SelectedTreeItem = folder;
@@ -330,7 +348,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     _ExecutionState = value;
                     this.OnPropertyChanged(nameof(ExecutionState));
-                    (this.Parent as VMRootHierarchy).RefreshIsRunning();
+                    this.Parent.RefreshIsRunning();
                 }
             }
         }

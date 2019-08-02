@@ -9,11 +9,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
+using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
-    public class VMRootHierarchy : VMFolder
+    public class VMRootHierarchy : CommandViewModel
     {
+        public ObservableImmutableCollection<VMRootFolder> Folders { get; } = new ObservableImmutableCollection<VMRootFolder>();
+
 
         void TimerTick(object sender, EventArgs e)
         {
@@ -39,13 +42,13 @@ namespace SizeOnDisk.ViewModel
 
         private readonly DispatcherTimer _Timer;
 
-        public VMRootHierarchy() : base(null, null, null, 0)
+        public VMRootHierarchy()
         {
-            this.IsExpanded = true;
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
                 VMRootFolder newFolder = new VMRootFolder(this, "Root Folder");
                 this.Folders.Add(newFolder);
+                _SelectedRootFolder = newFolder;
 
                 newFolder.IsExpanded = true;
                 newFolder.IsTreeSelected = true;
@@ -84,7 +87,7 @@ namespace SizeOnDisk.ViewModel
 
         public void StopAllAsync()
         {
-            Task[] tasks = this.Folders.Select(T => (T as VMRootFolder).Stop()).ToArray();
+            Task[] tasks = this.Folders.Select(T => (T as VMRootFolder).Stop()).Where(T => T != null).ToArray();
             if (tasks.Length > 0)
                 Task.WaitAll(tasks);
         }
@@ -146,6 +149,10 @@ namespace SizeOnDisk.ViewModel
             e.Handled = true;
             foreach (VMRootFolder folder in this.Folders)
                 folder.RefreshAsync();
+        }
+
+        public override void AddInputModels(InputBindingCollection bindingCollection)
+        {
         }
 
         #endregion Commands
