@@ -230,7 +230,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TreeView BorderThickness="1"
-                              ItemsSource="{Binding Folders}"
+                              ItemsSource="{Binding DummyMe}"
                               ContextMenu="{StaticResource VMContextMenu}"
                               DisplayMemberPath="Name"
                               SelectedValuePath="Path"
@@ -273,8 +273,8 @@
                             <ListView.Resources>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="IsSelected" 
-                                 Value="{Binding IsSelected, Mode=TwoWay, 
-                                 UpdateSourceTrigger=PropertyChanged}"/>
+                                             Value="{Binding IsSelected, Mode=TwoWay, 
+                                             UpdateSourceTrigger=PropertyChanged}"/>
                                     <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                 </Style>
                             </ListView.Resources>

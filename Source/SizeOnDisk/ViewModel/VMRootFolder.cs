@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -76,6 +77,14 @@ namespace SizeOnDisk.ViewModel
 
         #endregion fields
 
+        public IEnumerable<VMRootFolder> DummyMe
+        {
+            get
+            {
+                return new VMRootFolder[] { this };
+            }
+        }
+
         #region properties
 
         VMFolder _SelectedTreeItem;
@@ -143,6 +152,9 @@ namespace SizeOnDisk.ViewModel
         {
             HardDrivePath = System.IO.Path.GetPathRoot(path);
             this.SetInternalIsTreeSelected();
+
+            this.SelectedTreeItem = this;
+            this.SelectedListItem = this;
         }
 
         #endregion creator
