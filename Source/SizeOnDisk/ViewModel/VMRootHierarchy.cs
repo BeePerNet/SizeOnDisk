@@ -37,22 +37,6 @@ namespace SizeOnDisk.ViewModel
             set { SetProperty(ref _SelectedRootFolder, value); }
         }
 
-        VMFolder _SelectedTreeItem;
-
-        public VMFolder SelectedTreeItem
-        {
-            get { return _SelectedTreeItem; }
-            set { SetProperty(ref _SelectedTreeItem, value); }
-        }
-
-        VMFile _SelectedListItem;
-
-        public VMFile SelectedListItem
-        {
-            get { return _SelectedListItem; }
-            set { SetProperty(ref _SelectedListItem, value); }
-        }
-
         private readonly DispatcherTimer _Timer;
 
         public VMRootHierarchy() : base(null, null, null, 0)
@@ -85,13 +69,10 @@ namespace SizeOnDisk.ViewModel
             VMRootFolder newFolder = new VMRootFolder(this, path, path);
             this.Folders.Add(newFolder);
 
-            newFolder.RefreshAsync();
-
             newFolder.IsExpanded = true;
-
             this.SelectedRootFolder = newFolder;
-            this.SelectedTreeItem = newFolder;
-            this.SelectedListItem = newFolder;
+
+            newFolder.RefreshAsync();
         }
 
         public void RemoveRootFolder(VMRootFolder folder)
@@ -99,11 +80,6 @@ namespace SizeOnDisk.ViewModel
             if (SelectedRootFolder == folder)
                 this.SelectedRootFolder = null;
             this.Folders.Remove(folder);
-            if (this.Folders.Count == 0)
-            {
-                this.SelectedTreeItem = null;
-                this.SelectedListItem = null;
-            }
         }
 
         public void StopAllAsync()
@@ -173,9 +149,6 @@ namespace SizeOnDisk.ViewModel
         }
 
         #endregion Commands
-
-        private VMViewMode viewMode = VMViewMode.Details;
-        public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
 
     }
 }

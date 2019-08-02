@@ -78,6 +78,22 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
+        VMFolder _SelectedTreeItem;
+
+        public VMFolder SelectedTreeItem
+        {
+            get { return _SelectedTreeItem; }
+            set { SetProperty(ref _SelectedTreeItem, value); }
+        }
+
+        VMFile _SelectedListItem;
+
+        public VMFile SelectedListItem
+        {
+            get { return _SelectedListItem; }
+            set { SetProperty(ref _SelectedListItem, value); }
+        }
+
         public string HardDrivePath { get; }
 
         public TimeSpan RunTime
@@ -139,15 +155,13 @@ namespace SizeOnDisk.ViewModel
         }
         protected override void SelectTreeItem(VMFolder folder)
         {
-            (this.Parent as VMRootHierarchy).SelectedTreeItem = folder;
-            (this.Parent as VMRootHierarchy).SelectedListItem = folder;
+            this.SelectedTreeItem = folder;
+            this.SelectedListItem = folder;
         }
         protected override void SelectListItem(VMFile selected)
         {
-            (this.Parent as VMRootHierarchy).SelectedListItem = selected;
+            this.SelectedListItem = selected;
         }
-
-
 
         public override void Refresh(ParallelOptions parallelOptions)
         {
@@ -308,6 +322,10 @@ namespace SizeOnDisk.ViewModel
                 }
             }
         }
+
+        private VMViewMode viewMode = VMViewMode.Details;
+        public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
+
 
         #endregion Task
 
