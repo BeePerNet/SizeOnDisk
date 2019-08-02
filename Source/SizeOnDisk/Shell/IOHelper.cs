@@ -316,7 +316,7 @@ namespace SizeOnDisk.Shell
         {
             IOHelper.WIN32_FIND_DATA win_find_data = new IOHelper.WIN32_FIND_DATA();
             string prefixedfolderPath = folderPath.TrimEnd(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
-            prefixedfolderPath = string.Concat("\\\\?\\", folderPath);
+            prefixedfolderPath = string.Concat("\\\\?\\", prefixedfolderPath);
             int num2 = SafeNativeMethods.SetErrorMode(1);
             try
             {
@@ -387,21 +387,20 @@ namespace SizeOnDisk.Shell
                 }
                 finally
                 {
-                    num2 = SafeNativeMethods.SetErrorMode(num2);
+                    _ = SafeNativeMethods.SetErrorMode(num2);
                 }
                 data.PopulateFrom(win_find_data);
                 return;
             }
             bool flag2 = false;
-            int newMode = 0;
-            newMode = SafeNativeMethods.SetErrorMode(1);
+            int newMode = SafeNativeMethods.SetErrorMode(1);
             try
             {
                 flag2 = SafeNativeMethods.GetFileAttributesEx(path, 0, ref data);
             }
             finally
             {
-                newMode = SafeNativeMethods.SetErrorMode(newMode);
+                _ = SafeNativeMethods.SetErrorMode(newMode);
             }
             if (!flag2)
             {
@@ -436,7 +435,7 @@ namespace SizeOnDisk.Shell
         public static uint GetClusterSize(string path)
         {
             string drive = System.IO.Path.GetPathRoot(path);
-            bool result = SafeNativeMethods.GetDiskFreeSpace(drive, out uint sectorsPerCluster, out uint bytesPerSector, out uint dummy, out dummy);
+            bool result = SafeNativeMethods.GetDiskFreeSpace(drive, out uint sectorsPerCluster, out uint bytesPerSector, out uint _, out _);
             if (!result)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             return sectorsPerCluster * bytesPerSector;

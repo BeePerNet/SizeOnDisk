@@ -38,11 +38,9 @@ namespace SizeOnDisk
             }
             this.RunAsAdmin.Visibility = (UserAccessControlHelper.SupportUserAccessControl ? Visibility.Visible : Visibility.Collapsed);
             this.RunAsAdmin.IsEnabled = !UserAccessControlHelper.IsProcessElevated;
-            _RootHierarchy = this.DataContext as VMRootHierarchy;
         }
 
 
-        private VMRootHierarchy _RootHierarchy;
         private Legend _Legend;
 
         private void Selector_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -112,6 +110,9 @@ namespace SizeOnDisk
             aboutBox.ShowDialog();
         }
 
-
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            (this.DataContext as VMRootHierarchy).StopAllAsync();
+        }
     }
 }

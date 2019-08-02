@@ -1,6 +1,8 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -11,6 +13,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
+using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -49,7 +52,7 @@ namespace SizeOnDisk.ViewModel
         {
             ExecuteTaskAsync(() =>
             {
-                this.Stop()?.WaitOne();
+                this.Stop()?.Wait();
                 (this.Parent as VMRootHierarchy).RemoveRootFolder(this);
             }, true);
         }
@@ -206,31 +209,13 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        private void RootExecuteTaskAsyncHighPriority(Action action)
-        {
-            ParallelOptions parallelOptions = GetParallelOptions();
-            new Thread(() =>
-            {
-                ExecuteTask(action);
-            })
-            {
-                IsBackground = true,
-                Priority = ThreadPriority.Highest
-            }.Start();
-        }
-
         public override Task ExecuteTaskAsync(Action action, bool highpriority = false)
         {
-            if (highpriority)
-            {
-                RootExecuteTaskAsyncHighPriority(action);
-                return null;
-            }
-            else
-            {
-                ParallelOptions parallelOptions = GetParallelOptions();
-                return Task.Run(() => ExecuteTask(action), parallelOptions.CancellationToken);
-            }
+            ParallelOptions parallelOptions = GetParallelOptions();
+            return Task.Factory.StartNew(new Action(() => TaskHelper.SafeExecute(action)),
+                parallelOptions.CancellationToken,
+                (highpriority ? TaskCreationOptions.LongRunning : TaskCreationOptions.None) | TaskCreationOptions.DenyChildAttach,
+                TaskScheduler.Default);
         }
 
         public void RefreshAsync()
@@ -253,10 +238,6 @@ namespace SizeOnDisk.ViewModel
                     this.Refresh(this.GetParallelOptions());
                     this.ExecutionState = TaskExecutionState.Finished;
                 }
-                catch (Exception ex)
-                {
-                    ExceptionBox.ShowException(ex);
-                }
                 finally
                 {
                     _Timer.Stop();
@@ -277,7 +258,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public WaitHandle Stop()
+        public Task Stop()
         {
             try
             {
@@ -294,7 +275,7 @@ namespace SizeOnDisk.ViewModel
                         _CancellationTokenSource = null;
                         _ParallelOptions = null;
                     }
-                    ExecuteTaskAsync(() =>
+                    return ExecuteTaskAsync(() =>
                     {
                         try
                         {
@@ -305,7 +286,6 @@ namespace SizeOnDisk.ViewModel
                             this.ExecutionState = TaskExecutionState.Canceled;
                         }
                     }, true);
-                    return cts.Token.WaitHandle;
                 }
             }
             catch (Exception ex)

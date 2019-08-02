@@ -1,6 +1,8 @@
 ﻿using SizeOnDisk.Shell;
+using SizeOnDisk.Utilities;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand.Observables;
 
@@ -74,6 +76,7 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
+                
                 BitmapSource icon = ShellHelper.GetIcon(_vmFile.Path, 16);
                 if (icon == null)
                     icon = GetDefaultFileIcon();
@@ -81,7 +84,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        Thread thread;
+        Task task;
         //Seems to have problems with VOB
         BitmapSource _Thumbnail = null;
         public BitmapSource Thumbnail
@@ -95,23 +98,21 @@ namespace SizeOnDisk.ViewModel
                         this._Thumbnail = GetDefaultFileBigIcon();
                     else
                     {
-                        if (thread == null)
+                        if (task == null)
                         {
-                            thread = new Thread(() =>
+                            task = Task.Factory.StartNew(() =>
                             {
                                 try
                                 {
                                     _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
                                     OnPropertyChanged(nameof(Thumbnail));
                                 }
-                                catch (Exception)
+                                catch (Exception ex)
                                 {
-
+                                    ExceptionBox.ShowException(ex);
                                 }
-                                thread = null;
-                            });
-                            thread.IsBackground = true;
-                            thread.Start();
+                                task = null;
+                            }, TaskCreationOptions.LongRunning);
                         }
                     }
                 }

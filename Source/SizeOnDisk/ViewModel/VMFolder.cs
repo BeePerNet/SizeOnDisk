@@ -2,10 +2,13 @@
 using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
 using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
@@ -16,7 +19,7 @@ namespace SizeOnDisk.ViewModel
 
         public void PermanentDeleteAllSelectedFiles()
         {
-            ExecuteTask(() =>
+            ExecuteTaskAsync(() =>
             {
                 VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
@@ -36,12 +39,12 @@ namespace SizeOnDisk.ViewModel
                     }
                     this.RefreshAfterCommand();
                 }
-            });
+            }, true);
         }
 
         public void DeleteAllSelectedFiles()
         {
-            ExecuteTask(() =>
+            ExecuteTaskAsync(() =>
             {
                 VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
@@ -61,7 +64,7 @@ namespace SizeOnDisk.ViewModel
                     }
                     this.RefreshAfterCommand();
                 }
-            });
+            }, true);
         }
 
 
@@ -85,9 +88,9 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public DispatchObservableCollection<VMFile> Childs { get; private set; } = new DispatchObservableCollection<VMFile>();
+        public IList<VMFile> Childs { get; } = new ObservableImmutableCollection<VMFile>();
 
-        public DispatchObservableCollection<VMFolder> Folders { get; private set; } = new DispatchObservableCollection<VMFolder>();
+        public IList<VMFolder> Folders { get; } = new ObservableImmutableCollection<VMFolder>();
 
         public override bool IsFile
         {
@@ -180,13 +183,15 @@ namespace SizeOnDisk.ViewModel
                         this.SelectItem();
                     }
                     //clusterSize: Check if not in designer
-                    if (value && this.Path != null && this.clusterSize != -1)
+                    if (value && this.Path != null && this.clusterSize != -1 && Application.Current != null)
                     {
                         ExecuteTaskAsync(() =>
                         {
                             this.FillChildList();
 
                             Parallel.ForEach(this.Childs.ToList(), (T) => T.RefreshOnView());
+
+                            RefreshAfterCommand();
                         }, true);
                     }
                 }
@@ -225,10 +230,10 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                this.FileTotal = this.Childs.Sum(T => T.FileTotal);
-                this.FolderTotal = this.Folders.Sum(T => T.FolderTotal) + this.Folders.Count;
-                this.DiskSize = this.Childs.Sum(T => T.DiskSize);
-                this.FileSize = this.Childs.Sum(T => T.FileSize);
+                this.FileTotal = this.Childs?.Sum(T => T.FileTotal);
+                this.FolderTotal = this.Folders == null ? null : this.Folders.Sum(T => T.FolderTotal) + this.Folders.Count;
+                this.DiskSize = this.Childs?.Sum(T => T.DiskSize);
+                this.FileSize = this.Childs?.Sum(T => T.FileSize);
             }
         }
 
@@ -242,6 +247,7 @@ namespace SizeOnDisk.ViewModel
         }
 
         private readonly object _lock = new object();
+        protected object _listlock = null;
 
         public void FillChildList(bool refreshOnNew = false)
         {
@@ -249,9 +255,9 @@ namespace SizeOnDisk.ViewModel
             {
                 try
                 {
-                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
-                    List<VMFile> tmpChilds = this.Childs.ToList();
+                    List<VMFile> tmpChilds = Childs.ToList();
                     VMFile found = null;
+                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
                     foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
                     {
                         found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);
@@ -260,7 +266,7 @@ namespace SizeOnDisk.ViewModel
                             if (fileInfo.IsFolder)
                             {
                                 found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize);
-                                this.Folders.Add(found as VMFolder);
+                                Folders.Add(found as VMFolder);
                                 if (refreshOnNew)
                                     (found as VMFolder).Refresh(new ParallelOptions());
                             }
@@ -270,7 +276,7 @@ namespace SizeOnDisk.ViewModel
                                 found = new VMFile(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName));
 #pragma warning restore CA2000 // Dispose objects before losing scope
 #pragma warning restore IDE0068 // Utilisez le modèle de suppression recommandé
-                            this.Childs.Add(found);
+                            Childs.Add(found);
                             if (refreshOnNew && this.Parent.IsTreeSelected)
                                 this.RefreshOnView();
                         }
@@ -283,10 +289,10 @@ namespace SizeOnDisk.ViewModel
                     foreach (VMFile file in tmpChilds)
                     {
                         if (!file.IsFile)
-                            this.Folders.Remove(file as VMFolder);
-                        this.Childs.Remove(file);
+                            Folders.Remove(file as VMFolder);
+                        Childs.Remove(file);
                     }
-                }
+               }
                 catch (DirectoryNotFoundException)
                 {
 
@@ -310,14 +316,17 @@ namespace SizeOnDisk.ViewModel
             try
             {
                 this.FillChildList();
-                if (this.IsTreeSelected)
+                if (this.Childs != null && this.Childs.Count > 0)
                 {
-                    ExecuteTaskAsync(() =>
+                    if (this.IsTreeSelected)
                     {
-                        Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
-                    }, true);
+                        ExecuteTaskAsync(() =>
+                        {
+                            Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
+                        }, true);
+                    }
+                    Parallel.ForEach(this.Folders.ToList(), parallelOptions, (T) => T.Refresh(parallelOptions));
                 }
-                Parallel.ForEach(this.Folders.ToList(), parallelOptions, (T) => T.Refresh(parallelOptions));
             }
             catch (OperationCanceledException)
             {

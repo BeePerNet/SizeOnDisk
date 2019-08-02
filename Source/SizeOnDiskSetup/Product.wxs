@@ -96,6 +96,16 @@
               Checksum="yes"
               KeyPath="yes" />
       </Component>
+      <Component Id="SystemCollectionsImmutableComponent"
+                 Guid="*">
+        <File Name="System.Collections.Immutable.dll"
+              Id="SystemCollectionsImmutableFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)/System.Collections.Immutable.dll"
+              Vital="yes"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
       <Component Id="ConfigurationFileComponent"
                  Guid="*">
         <File Id="ConfigurationFile"
@@ -331,6 +341,7 @@
         <ComponentRef Id="XAMLMarkupExtensionsComponent" />
         <ComponentRef Id="WPFLocalizeExtensionComponent" />
         <ComponentRef Id="WPFByYourCommandComponent" />
+        <ComponentRef Id="SystemCollectionsImmutableComponent" />
       </Feature>
       <Feature Id="MenuShortcutFeature"
                Title="Programs menu shortcut"

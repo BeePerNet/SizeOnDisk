@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows;
@@ -35,17 +36,33 @@ namespace SizeOnDisk.Utilities
             ExceptionBox.ShowException(startText, new TextExceptionFormatter(ex).Format());
         }
 
+        private static void InternalShowException(Window owner, string textblock, string textbox)
+        {
+            try
+            {
+                ExceptionBox window = new ExceptionBox(textblock, textbox)
+                {
+                    Owner = owner
+                };
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Trace.Write(new TextExceptionFormatter(ex).Format());
+            }
+        }
+
         public static void ShowException(string textblock, string textbox)
         {
-            Application.Current.Dispatcher.BeginInvoke((ThreadStart)delegate
-            {
-                ExceptionBox window = new ExceptionBox(textblock, textbox);
-                if (Application.Current.MainWindow.IsLoaded)
+            if (Application.Current == null)
+                InternalShowException(null, textblock, textbox);
+            else if (Application.Current.Dispatcher.Thread == Thread.CurrentThread)
+                InternalShowException(Application.Current.MainWindow, textblock, textbox);
+            else
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    window.Owner = Application.Current.MainWindow;
-                }
-                window.ShowDialog();
-            });
+                    InternalShowException(Application.Current.MainWindow, textblock, textbox);
+                }));
         }
 
     }

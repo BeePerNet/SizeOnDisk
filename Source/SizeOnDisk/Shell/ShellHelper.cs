@@ -38,8 +38,8 @@ namespace SizeOnDisk.Shell
         public static void Activate(string appId, string file, string verb)
         {
             SafeNativeMethods.ApplicationActivationManager appActiveManager = new SafeNativeMethods.ApplicationActivationManager();//Class not registered
-            Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
-            if (SafeNativeMethods.SHCreateItemFromParsingName(file, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem pShellItem) == (int)SafeNativeMethods.HResult.Ok)
+            SafeNativeMethods.IShellItem pShellItem = SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(file, IntPtr.Zero, typeof(SafeNativeMethods.IShellItem).GUID);
+            if (pShellItem != null)
             {
                 if (SafeNativeMethods.SHCreateShellItemArrayFromShellItem(pShellItem, typeof(SafeNativeMethods.IShellItemArray).GUID, out SafeNativeMethods.IShellItemArray pShellItemArray) == (int)SafeNativeMethods.HResult.Ok)
                 {
@@ -72,19 +72,17 @@ namespace SizeOnDisk.Shell
         public static BitmapSource GetIcon(string path, int size = 16, bool thumbnail = false, bool cache = false)
         {
             // Create a native shellitem from our path
-            Guid guid = new Guid(SafeNativeMethods.IShellItemGuid);
-            int retCode = SafeNativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out SafeNativeMethods.IShellItem nativeShellItem);
-            if (retCode != 0)
+            int retCode = SafeNativeMethods.SHCreateItemFromParsingNameIShellItemImageFactory(path, IntPtr.Zero, typeof(SafeNativeMethods.IShellItemImageFactory).GUID, out SafeNativeMethods.IShellItemImageFactory imageFactory);
+            if (retCode != 0 || imageFactory == null)
                 //return new BitmapImage(new Uri("pack://application:,,,/SizeOnDisk;component/Icons/File.png"));
                 return null;
             //throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
 
 
-            SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size
-            {
-                Width = Convert.ToInt32(size),
-                Height = Convert.ToInt32(size)
-            };
+            SafeNativeMethods.Size nativeSIZE = new SafeNativeMethods.Size(
+                Convert.ToInt32(size),
+                Convert.ToInt32(size)
+            );
 
             SafeNativeMethods.SIIGBF options = SafeNativeMethods.SIIGBF.ResizeToFit;
             if (!thumbnail)
@@ -95,37 +93,32 @@ namespace SizeOnDisk.Shell
             IntPtr hBitmap = IntPtr.Zero;
             try
             {
-                SafeNativeMethods.IShellItemImageFactory imageFactory = nativeShellItem as SafeNativeMethods.IShellItemImageFactory;
-                if (imageFactory == null)
-                    return null;
-
-                try
-                {
-                    retCode = imageFactory.GetImage(nativeSIZE, options, out hBitmap);
-                    if (retCode != 0)
-                        return null;
-
-                    // return a System.Media.Imaging.BitmapSource
-                    // Use interop to create a BitmapSource from hBitmap.
-                    BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
-                        hBitmap,
-                        IntPtr.Zero,
-                        System.Windows.Int32Rect.Empty,
-                        BitmapSizeOptions.FromEmptyOptions());
-
-                    returnValue.Freeze();
-
-                    return returnValue;
-                }
-                finally
-                {
-                    // delete HBitmap to avoid memory leaks
-                    SafeNativeMethods.DeleteObject(hBitmap);
-                }
+                imageFactory.GetImage(nativeSIZE, options, out hBitmap);
             }
             finally
             {
-                Marshal.ReleaseComObject(nativeShellItem);
+                Marshal.FinalReleaseComObject(imageFactory);
+            }
+            if (hBitmap == IntPtr.Zero)
+                return null;
+            try
+            {
+                // return a System.Media.Imaging.BitmapSource
+                // Use interop to create a BitmapSource from hBitmap.
+                BitmapSource returnValue = Imaging.CreateBitmapSourceFromHBitmap(
+                    hBitmap,
+                    IntPtr.Zero,
+                    System.Windows.Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
+
+                returnValue.Freeze();
+
+                return returnValue;
+            }
+            finally
+            {
+                // delete HBitmap to avoid memory leaks
+                SafeNativeMethods.DeleteObject(hBitmap);
             }
         }
 
@@ -817,33 +810,43 @@ namespace SizeOnDisk.Shell
 
             [DllImport("gdi32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool DeleteObject(IntPtr hObject);
+            internal static extern bool DeleteObject([In]IntPtr hObject);
 
-            [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            internal static extern int SHCreateItemFromParsingName(
-            [MarshalAs(UnmanagedType.LPWStr)] string path,
-            // The following parameter is not used - binding context.
-            IntPtr pbc,
-            ref Guid riid,
-            [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
+
+
+
+
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, EntryPoint = "SHCreateItemFromParsingName", PreserveSig = false)]
+            [return: MarshalAs(UnmanagedType.Interface, IidParameterIndex = 2)]
+            public static extern IShellItem SHCreateItemFromParsingNameIShellItem(
+                [In][MarshalAs(UnmanagedType.LPWStr)] string pszPath,
+                [In]IntPtr pbc,
+                [In][MarshalAs(UnmanagedType.LPStruct)] Guid riid);
+
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, EntryPoint = "SHCreateItemFromParsingName")]
+            public static extern int SHCreateItemFromParsingNameIShellItemImageFactory(
+                [In][MarshalAs(UnmanagedType.LPWStr)] string pszPath,
+                [In]IntPtr pbc,
+                [In][MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+                [Out][MarshalAs(UnmanagedType.Interface, IidParameterIndex = 2)] out IShellItemImageFactory ppv);
+
+
+
 
             /// <summary>
             /// A Wrapper for a SIZE struct
             /// </summary>
             [StructLayout(LayoutKind.Sequential)]
-            internal struct Size
+            public struct Size
             {
-
-                /// <summary>
-                /// Width
-                /// </summary>
-                public int Width { get; set; }
-
-                /// <summary>
-                /// Height
-                /// </summary>
-                public int Height { get; set; }
-            };
+                public int cx;
+                public int cy;
+                public Size(int x, int y)
+                {
+                    cx = x;
+                    cy = y;
+                }
+            }
 
 
             #region COM
@@ -931,9 +934,7 @@ namespace SizeOnDisk.Shell
             }
 
 
-            internal const string IShellItemGuid = "43826D1E-E718-42EE-BC55-A1E261C37BFE";
-
-            [ComImport, Guid(IShellItemGuid), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            [ComImport, Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
             internal interface IShellItem
             {
                 [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -1038,11 +1039,10 @@ namespace SizeOnDisk.Shell
             [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
             internal interface IShellItemImageFactory
             {
-                [PreserveSig]
-                int GetImage(
-                [In, MarshalAs(UnmanagedType.Struct)] Size size,
-                [In] SIIGBF flags,
-                [Out] out IntPtr phbm);
+                void GetImage(
+                    [In] [MarshalAs(UnmanagedType.Struct)] Size size,
+                    [In] SIIGBF flags,
+                    [Out] out IntPtr phbm);
             }
 
 

@@ -19,7 +19,7 @@
         Title="{Binding Path=SelectedTreeItem.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.DataContext>
         <vm:VMRootHierarchy />
     </Window.DataContext>
@@ -181,7 +181,8 @@
                 </ListView.Resources>
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <cmd:VirtualizingWrapPanel ItemHeight="152" ItemWidth="120" />
+                        <!--cmd:VirtualizingWrapPanel ItemHeight="152" ItemWidth="120" /-->
+                        <WrapPanel/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListBox.ItemTemplate>

@@ -35,24 +35,25 @@ namespace SizeOnDisk.Shell
 
         private bool ShowVistaDialog(IWin32Window owner)
         {
+            Guid riid = typeof(ShellHelper.SafeNativeMethods.IShellItem).GUID;
             var frm = (ShellHelper.SafeNativeMethods.IFileDialog)(new ShellHelper.SafeNativeMethods.FileOpenDialogRCW());
             frm.GetOptions(out ShellHelper.SafeNativeMethods.FileOpenOptions options);
             options |= ShellHelper.SafeNativeMethods.FileOpenOptions.PickFolders | ShellHelper.SafeNativeMethods.FileOpenOptions.ForceFilesystem | ShellHelper.SafeNativeMethods.FileOpenOptions.NoValidate | ShellHelper.SafeNativeMethods.FileOpenOptions.NoTestFileCreate | ShellHelper.SafeNativeMethods.FileOpenOptions.DontAddToRecent;
             frm.SetOptions(options);
             if (this.InitialFolder != null)
             {
-                Guid riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
-                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.InitialFolder, IntPtr.Zero, ref riid, out ShellHelper.SafeNativeMethods.IShellItem directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
+                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(this.InitialFolder, IntPtr.Zero, riid);
+                if (shellItem != null)
                 {
-                    frm.SetFolder(directoryShellItem);
+                    frm.SetFolder(shellItem);
                 }
             }
             if (this.DefaultFolder != null)
             {
-                Guid riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
-                if (ShellHelper.SafeNativeMethods.SHCreateItemFromParsingName(this.DefaultFolder, IntPtr.Zero, ref riid, out ShellHelper.SafeNativeMethods.IShellItem directoryShellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
+                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(this.DefaultFolder, IntPtr.Zero, riid);
+                if (shellItem != null)
                 {
-                    frm.SetDefaultFolder(directoryShellItem);
+                    frm.SetDefaultFolder(shellItem);
                 }
             }
 
@@ -75,6 +76,7 @@ namespace SizeOnDisk.Shell
                             }
                         }
                     }
+
                 }
             }
             return false;

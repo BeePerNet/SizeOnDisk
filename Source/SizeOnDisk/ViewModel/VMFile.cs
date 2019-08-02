@@ -123,22 +123,6 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        protected static void ExecuteTask(Action action)
-        {
-            if (action == null)
-                throw new ArgumentNullException(nameof(action));
-            try
-            {
-                action();
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            catch (Exception ex)
-            {
-                ExceptionBox.ShowException(ex);
-            }
-        }
 
         public virtual Task ExecuteTaskAsync(Action action, bool highpriority = false)
         {
@@ -166,8 +150,8 @@ namespace SizeOnDisk.ViewModel
                     this.OnPropertyChanged(nameof(Path));
                     this.OnPropertyChanged(nameof(Extension));
                     this.RefreshOnView();
+                    this.Parent.RefreshAfterCommand();
                 });
-                this.Parent.RefreshAfterCommand();
             }
         }
 
@@ -316,7 +300,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                ExecuteTask(() =>
+                TaskHelper.SafeExecute(() =>
                 {
                     if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
                     {
@@ -482,7 +466,7 @@ namespace SizeOnDisk.ViewModel
                     VMFile.PrintCommand,
                     SeparatorDummyCommand.Instance
                 };
-                ExecuteTask(() =>
+                TaskHelper.SafeExecute(() =>
                 {
                     bool added = false;
                     foreach (ShellCommandSoftware item in DefaultEditors.Editors)

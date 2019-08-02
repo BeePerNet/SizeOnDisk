@@ -1,13 +1,17 @@
 ﻿using SizeOnDisk.Shell;
 using SizeOnDisk.Utilities;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
+using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -67,6 +71,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
+                //BindingOperations.EnableCollectionSynchronization(this.Folders, this._listlock = new object());
                 _Timer = new DispatcherTimer(DispatcherPriority.DataBind)
                 {
                     Interval = new TimeSpan(0, 0, 1)
@@ -104,10 +109,11 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        public void StopAsync()
+        public void StopAllAsync()
         {
-            foreach (VMRootFolder folder in this.Folders)
-                folder.Stop();
+            Task[] tasks = this.Folders.Select(T => (T as VMRootFolder).Stop()).ToArray();
+            if (tasks.Length > 0)
+                Task.WaitAll(tasks);
         }
 
         #endregion function
