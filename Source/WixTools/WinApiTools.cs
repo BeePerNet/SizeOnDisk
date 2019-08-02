@@ -8,8 +8,48 @@ using System.Runtime.InteropServices;
 
 namespace WixTools
 {
-    internal static class WinApiTools
+    public static class WinApiTools
     {
+        public static ICollection<CultureInfo> GetInstalledCultures()
+        {
+            List<CultureInfo> result = new List<CultureInfo>();
+            EnumUILanguagesProcDelegate enumCallback = (lpUILanguageString, lParam) =>
+            {
+                try
+                {
+                    result.Add(new CultureInfo(Convert.ToInt32(Marshal.PtrToStringAuto(lpUILanguageString), 16)));
+                }
+                catch (Exception)
+                {
+                    // This culture is not supported by .NET (not happened so far)
+                    // Must be ignored.
+                }
+                return true;
+            };
+
+            if (EnumUILanguages(enumCallback, 0, IntPtr.Zero) == false)
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+                throw new Win32Exception(errorCode);
+            }
+            return result;
+        }
+
+
+
+        [DllImport("Kernel32.dll", CharSet = CharSet.Auto)]
+        static extern System.Boolean EnumUILanguages(
+            EnumUILanguagesProcDelegate lpUILanguageEnumProc,
+            System.UInt32 dwFlags,
+            System.IntPtr lParam
+            );
+
+
+        delegate System.Boolean EnumUILanguagesProcDelegate(
+            System.IntPtr lpUILanguageString,
+            System.IntPtr lParam
+            );
+
 
 
         public static IEnumerable<CultureInfo> GetInstalledInputLanguages()
@@ -83,8 +123,7 @@ namespace WixTools
                 return true;
             };
 
-            if (EnumSystemLocalesEx(enumCallback, cultureTypes, 0,
-               (IntPtr)0) == false)
+            if (EnumSystemLocalesEx(enumCallback, cultureTypes, 0, IntPtr.Zero) == false)
             {
                 int errorCode = Marshal.GetLastWin32Error();
                 throw new Win32Exception(errorCode);

@@ -1,5 +1,7 @@
 using Microsoft.Deployment.WindowsInstaller;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace WixTools
@@ -11,9 +13,11 @@ namespace WixTools
         {
             try
             {
-                string WinInstalledLanguages = string.Join(",", WinApiTools.GetCultures(WinApiTools.LocaleType.LocaleAll).Select(T => T.TwoLetterISOLanguageName).Distinct().ToArray());
+                ICollection<CultureInfo> cultures = WinApiTools.GetInstalledCultures();
 
-                session.Log("WinInstalledLanguages {0}", WinInstalledLanguages);
+                string WinInstalledLanguages = string.Join(",", cultures.Select(T => T.TwoLetterISOLanguageName).Distinct().ToArray());
+
+                session.Log("WinInstalledLanguages {0}", string.Join(",", cultures.Select(T => T.Name).ToArray()));
                 session["WinInstalledLanguages"] = WinInstalledLanguages;
             }
             catch (Exception ex)
