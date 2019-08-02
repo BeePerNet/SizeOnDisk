@@ -51,21 +51,12 @@
                 <Setter Property="ToolTip" Value="{Binding Name}" />
             </Style.Setters>
         </Style>
-        <Style x:Key="{x:Type StatusBarItem}" TargetType="StatusBarItem">
-            <Setter Property="Margin" Value="3,0,3,1" />
-        </Style>
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
                      ItemsSource="{Binding FileCommands}" />
     </Window.Resources>
-    <Grid
+    <DockPanel 
         cmd:CommandBehavior.Context="{Binding SelectedRootFolder}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <ToolBarTray>
+        <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Margin="2" />
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.RefreshCommand}" Margin="2" />
@@ -123,8 +114,109 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <TextBox Grid.Row="1" Text="{Binding SelectedListItem.Path,Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
-        <Grid Grid.Row="2">
+        <TextBox DockPanel.Dock="Top" Text="{Binding SelectedListItem.Path,Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
+        <StatusBar Name="StatusBar" DockPanel.Dock="Bottom"
+                   Grid.Row="3">
+            <StatusBar.Resources>
+                <Style x:Key="{x:Type StatusBarItem}" TargetType="StatusBarItem">
+                    <Setter Property="Padding" Value="3,2" />
+                </Style>
+            </StatusBar.Resources>
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="12" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem>
+                <Grid>
+                    <TextBlock Padding="5,1,5,3" Panel.ZIndex="50" Text="{Binding SelectedRootFolder.ExecutionState, Converter={StaticResource IsRunningConverter}, FallbackValue=...}" />
+                    <ProgressBar Background="Transparent" IsIndeterminate="{Binding IsRunning, Converter={StaticResource IsRunningConverter}}" BorderThickness="0" UseLayoutRounding="False" />
+                </Grid>
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2"
+                           Content="{Binding SelectedRootFolder.RunTime}" />
+            <Separator Grid.Column="3" />
+            <StatusBarItem Grid.Column="4"
+                           Content="{Binding RunningThreads}" />
+
+
+
+
+            <StatusBarItem Grid.Column="6"
+                           Content="{Binding SelectedTreeItem.Folders.Count}"
+                           ContentStringFormat="N0"
+                           ToolTip="{lex:Loc TotalFolders}" />
+            <Separator Grid.Column="7" />
+            <StatusBarItem Grid.Column="8"
+                           Content="{Binding SelectedTreeItem.FileCount}"
+                           ContentStringFormat="N0"
+                           ToolTip="{lex:Loc TotalFiles}" />
+
+
+            <Separator Grid.Column="9" />
+            <StatusBarItem Grid.Column="10"
+                           Content="{Binding SelectedTreeItem.FolderTotal}"
+                           ContentStringFormat="N0"
+                           ToolTip="{lex:Loc TotalFolders}" />
+            <Separator Grid.Column="11" />
+            <StatusBarItem Grid.Column="12"
+                           Content="{Binding SelectedTreeItem.FileTotal}"
+                           ContentStringFormat="N0"
+                           ToolTip="{lex:Loc TotalFiles}" />
+            <Separator Grid.Column="13" />
+            <StatusBarItem Grid.Column="14"
+                           Content="{Binding SelectedTreeItem.FileSize, Converter={StaticResource SizeConverter}}"
+                           ToolTip="{lex:Loc TotalFileSize}" />
+            <Separator Grid.Column="15" />
+            <StatusBarItem Grid.Column="16"
+                           Content="{Binding SelectedTreeItem.DiskSize, Converter={StaticResource SizeConverter}}"
+                           ToolTip="{lex:Loc TotalDiskSize}" />
+            <Separator Grid.Column="17" />
+            <StatusBarItem Grid.Column="18"
+                           Content="{Binding SelectedRootFolder.HardDrivePath}"
+                           ToolTip="{lex:Loc HardDriveUsage}" />
+            <Separator Grid.Column="19" />
+            <StatusBarItem Grid.Column="20"
+                           Content="{Binding SelectedRootFolder.HardDriveUsage,Converter={StaticResource SizeConverter}}"
+                           ToolTip="{lex:Loc HardDriveUsage}" />
+            <Separator Grid.Column="21" />
+            <StatusBarItem Grid.Column="22"
+                           Content="{Binding SelectedRootFolder.HardDriveFree,Converter={StaticResource SizeConverter}}"
+                           ToolTip="{lex:Loc HardDriveFree}" />
+        </StatusBar>
+
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="275" />
                 <ColumnDefinition Width="Auto" />
@@ -226,6 +318,18 @@
                                  UpdateSourceTrigger=PropertyChanged}"/>
                         <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                     </Style>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="1,0" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                    <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
@@ -278,97 +382,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
-        <StatusBar Name="StatusBar"
-                   Grid.Row="3">
-            <StatusBar.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="12" />
-                        </Grid.ColumnDefinitions>
-                    </Grid>
-                </ItemsPanelTemplate>
-            </StatusBar.ItemsPanel>
-            <StatusBarItem Content="{Binding SelectedRootFolder.ExecutionState, Converter={StaticResource IsRunningConverter}, FallbackValue=...}" />
-            <Separator Grid.Column="1" />
-            <StatusBarItem Grid.Column="2"
-                           Content="{Binding SelectedRootFolder.RunTime}" />
-            <Separator Grid.Column="3" />
-            <StatusBarItem Grid.Column="4"
-                           Content="{Binding RunningThreads}" />
-
-
-
-
-            <StatusBarItem Grid.Column="6"
-                           Content="{Binding SelectedTreeItem.Folders.Count}"
-                           ContentStringFormat="N0"
-                           ToolTip="{lex:Loc TotalFolders}" />
-            <Separator Grid.Column="7" />
-            <StatusBarItem Grid.Column="8"
-                           Content="{Binding SelectedTreeItem.FileCount}"
-                           ContentStringFormat="N0"
-                           ToolTip="{lex:Loc TotalFiles}" />
-
-
-            <Separator Grid.Column="9" />
-            <StatusBarItem Grid.Column="10"
-                           Content="{Binding SelectedTreeItem.FolderTotal}"
-                           ContentStringFormat="N0"
-                           ToolTip="{lex:Loc TotalFolders}" />
-            <Separator Grid.Column="11" />
-            <StatusBarItem Grid.Column="12"
-                           Content="{Binding SelectedTreeItem.FileTotal}"
-                           ContentStringFormat="N0"
-                           ToolTip="{lex:Loc TotalFiles}" />
-            <Separator Grid.Column="13" />
-            <StatusBarItem Grid.Column="14"
-                           Content="{Binding SelectedTreeItem.FileSize, Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:Loc TotalFileSize}" />
-            <Separator Grid.Column="15" />
-            <StatusBarItem Grid.Column="16"
-                           Content="{Binding SelectedTreeItem.DiskSize, Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:Loc TotalDiskSize}" />
-            <Separator Grid.Column="17" />
-            <StatusBarItem Grid.Column="18"
-                           Content="{Binding SelectedRootFolder.HardDrivePath}"
-                           ToolTip="{lex:Loc HardDriveUsage}" />
-            <Separator Grid.Column="19" />
-            <StatusBarItem Grid.Column="20"
-                           Content="{Binding SelectedRootFolder.HardDriveUsage,Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:Loc HardDriveUsage}" />
-            <Separator Grid.Column="21" />
-            <StatusBarItem Grid.Column="22"
-                           Content="{Binding SelectedRootFolder.HardDriveFree,Converter={StaticResource SizeConverter}}"
-                           ToolTip="{lex:Loc HardDriveFree}" />
-        </StatusBar>
-    </Grid>
+    </DockPanel>
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo ProgressState="{Binding IsRunning, Converter={StaticResource IsRunningConverter}}" />
     </Window.TaskbarItemInfo>

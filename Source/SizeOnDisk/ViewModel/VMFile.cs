@@ -84,7 +84,7 @@ namespace SizeOnDisk.ViewModel
             if (fileSize.HasValue)
             {
                 FileSize = fileSize;
-                DiskSize = Convert.ToInt64(Math.Floor((double)(fileSize / 4096)) * 4096);
+                DiskSize = Convert.ToInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
             }
         }
 

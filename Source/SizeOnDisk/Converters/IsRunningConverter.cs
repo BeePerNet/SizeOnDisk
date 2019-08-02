@@ -18,6 +18,14 @@ namespace SizeOnDisk.Converters
                 }
                 return TaskbarItemProgressState.None;
             }
+            if (targetType == typeof(bool))
+            {
+                if (convertible != null && convertible.ToBoolean(culture))
+                {
+                    return true;
+                }
+                return false;
+            }
             if (value != null && value is TaskExecutionState)
             {
                 switch ((TaskExecutionState)value)

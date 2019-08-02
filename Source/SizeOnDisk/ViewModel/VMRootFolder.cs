@@ -114,9 +114,9 @@ namespace SizeOnDisk.ViewModel
             newFolder = new VMFolder(this, "Folder2", "\\\\Root Folder\\Folder2");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            VMFile newFile = new VMFile(this, "File1.txt", "\\\\Root Folder\\File1.txt");
+            VMFile newFile = new VMFile(this, "File1.txt", "\\\\Root Folder\\File1.txt", 128);
             this.Childs.Add(newFile);
-            newFile = new VMFile(this, "File2.42", "\\\\Root Folder\\File2.42");
+            newFile = new VMFile(this, "File2.42", "\\\\Root Folder\\File2.42", 4400);
             this.Childs.Add(newFile);
             this.RefreshCount();
             this._ExecutionState = TaskExecutionState.Designing;
