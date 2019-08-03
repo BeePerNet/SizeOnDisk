@@ -19,7 +19,7 @@
         Title="{Binding Path=SelectedRootFolder.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
-        Loaded="Window_Loaded" Closing="Window_Closing" UseLayoutRounding="True">
+        Loaded="Window_Loaded" Closing="Window_Closing" UseLayoutRounding="True" Icon="Icons/Hard_Drive.ico">
     <Window.DataContext>
         <vm:VMRootHierarchy />
     </Window.DataContext>

@@ -1,9 +1,9 @@
 ﻿using SizeOnDisk.Shell;
-using SizeOnDisk.Utilities;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand;
+using WPFByYourCommand.Exceptions;
 using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
@@ -16,7 +16,7 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFileBigIcon()
         {
             if (defaultFileBigIcon == null)
-                defaultFileBigIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileBig.png");
+                defaultFileBigIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileBig.png");
             return defaultFileBigIcon;
         }
 
@@ -24,7 +24,7 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFileIcon()
         {
             if (defaultFileIcon == null)
-                defaultFileIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
+                defaultFileIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
             return defaultFileIcon;
         }
 
@@ -32,7 +32,7 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFolderBigIcon()
         {
             if (defaultFolderBigIcon == null)
-                defaultFolderBigIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderBig.png");
+                defaultFolderBigIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderBig.png");
             return defaultFolderBigIcon;
         }
 
@@ -40,7 +40,7 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFolderIcon()
         {
             if (defaultFolderIcon == null)
-                defaultFolderIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderSmall.png");
+                defaultFolderIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderSmall.png");
             return defaultFolderIcon;
         }
 

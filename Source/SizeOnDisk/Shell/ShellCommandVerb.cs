@@ -1,4 +1,4 @@
-﻿namespace SizeOnDisk
+﻿namespace SizeOnDisk.Shell
 {
     public class ShellCommandVerb
     {

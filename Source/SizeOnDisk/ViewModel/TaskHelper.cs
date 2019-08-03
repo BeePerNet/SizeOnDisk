@@ -1,5 +1,5 @@
-﻿using SizeOnDisk.Utilities;
-using System;
+﻿using System;
+using WPFByYourCommand.Exceptions;
 
 namespace SizeOnDisk.ViewModel
 {

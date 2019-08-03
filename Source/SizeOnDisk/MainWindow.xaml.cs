@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using WPFByYourCommand;
 using WPFByYourCommand.Commands;
 
 namespace SizeOnDisk
@@ -30,11 +31,11 @@ namespace SizeOnDisk
 
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.Language))
             {
-                LanguageHelper.ChangeLanguage(new CultureInfo(Properties.Settings.Default.Language));
+                LanguagesHelper.ChangeLanguage(new CultureInfo(Properties.Settings.Default.Language));
             }
             else
             {
-                LanguageHelper.ChangeLanguage(CultureInfo.CurrentCulture);
+                LanguagesHelper.ChangeLanguage(CultureInfo.CurrentCulture);
             }
             this.RunAsAdmin.Visibility = (UserAccessControlHelper.SupportUserAccessControl ? Visibility.Visible : Visibility.Collapsed);
             this.RunAsAdmin.IsEnabled = !UserAccessControlHelper.IsProcessElevated;

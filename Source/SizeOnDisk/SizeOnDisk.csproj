@@ -182,19 +182,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="ShellCommandVerb.cs" />
+    <Compile Include="Shell\ShellCommandVerb.cs" />
     <Compile Include="Shell\OpenFolderDialog.cs" />
     <Compile Include="Shell\ShellCommandRoot.cs" />
     <Compile Include="Shell\ShellCommandSoftware.cs" />
-    <Compile Include="Utilities\ExceptionBox.xaml.cs">
-      <DependentUpon>ExceptionBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utilities\LanguageHelper.cs" />
     <Compile Include="Shell\LittleFileInfo.cs" />
     <Compile Include="Shell\ReparsePoint.cs" />
     <Compile Include="Utilities\Settings.cs" />
     <Compile Include="Shell\ShellHelper.cs" />
-    <Compile Include="Utilities\TextExceptionFormatter.cs" />
     <Compile Include="Utilities\UserAccessControlHelper.cs" />
     <Compile Include="Shell\IOHelper.cs" />
     <Compile Include="Utilities\WrapperIWin32Window.cs" />
@@ -238,10 +233,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
-    <Page Include="Utilities\ExceptionBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="WindowOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -278,9 +269,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Shield.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\eventlogError.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Hard_Drive.ico" />

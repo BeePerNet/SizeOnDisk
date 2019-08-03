@@ -3,6 +3,7 @@ using SizeOnDisk.Utilities;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
+using WPFByYourCommand;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -33,7 +34,7 @@ namespace SizeOnDisk.ViewModel
             set
             {
                 Properties.Settings.Default.Language = value;
-                LanguageHelper.ChangeLanguage(CultureInfo.GetCultureInfo(value));
+                LanguagesHelper.ChangeLanguage(CultureInfo.GetCultureInfo(value));
                 MainWindow window = (MainWindow)this.Owner;
                 window.UpdateUILanguage();
             }
@@ -44,7 +45,7 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return LanguageHelper.Cultures;
+                return LanguagesHelper.Cultures;
             }
         }
 

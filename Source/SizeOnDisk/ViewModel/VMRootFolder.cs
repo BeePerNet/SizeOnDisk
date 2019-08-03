@@ -1,5 +1,4 @@
 ﻿using SizeOnDisk.Shell;
-using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
+using WPFByYourCommand.Exceptions;
 using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel

@@ -1,5 +1,4 @@
 ﻿using SizeOnDisk.Shell;
-using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
+using WPFByYourCommand.Exceptions;
 using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.ViewModel

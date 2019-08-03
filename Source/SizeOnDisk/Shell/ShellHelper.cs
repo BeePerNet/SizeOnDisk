@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using WPFByYourCommand.Exceptions;
 using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.Shell
