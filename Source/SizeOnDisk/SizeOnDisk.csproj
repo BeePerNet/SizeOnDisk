@@ -204,6 +204,7 @@
     <Compile Include="ViewModel\TaskExecutionState.cs" />
     <Compile Include="ViewModel\TaskHelper.cs" />
     <Compile Include="ViewModel\VMFileDetails.cs" />
+    <Compile Include="ViewModel\VMLog.cs" />
     <Compile Include="ViewModel\VMOptions.cs" />
     <Compile Include="ViewModel\VMRootFolder.cs" />
     <Compile Include="ViewModel\VMRootHierarchy.cs" />
@@ -392,10 +393,10 @@
     <Resource Include="Icons\File_Big.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\NotFoundIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\NotFoundIconBig.png" />
+    <Resource Include="Icons\UnknownFileBig.png" />
+    <Resource Include="Icons\UnknownFileSmall.png" />
+    <Resource Include="Icons\UnknownFolderBig.png" />
+    <Resource Include="Icons\UnknownFolderSmall.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

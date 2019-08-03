@@ -32,6 +32,11 @@ namespace SizeOnDisk.Utilities
             return ex;
         }
 
+        public Exception GetInnerException()
+        {
+            return GetInnerException(this.exception);
+        }
+
 
         // Methods
         public TextExceptionFormatter(Exception exception)

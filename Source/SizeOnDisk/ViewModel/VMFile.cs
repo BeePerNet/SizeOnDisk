@@ -1,4 +1,5 @@
 ﻿using SizeOnDisk.Shell;
+using SizeOnDisk.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -548,5 +549,10 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        public void LogException(Exception ex)
+        {
+            TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
+            this.Parent.Log(new VMLog(this,formatter.GetInnerException().Message, formatter.Format()));
+        }
     }
 }

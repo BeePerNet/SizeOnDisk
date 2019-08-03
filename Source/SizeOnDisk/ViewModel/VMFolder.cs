@@ -291,18 +291,19 @@ namespace SizeOnDisk.ViewModel
                         }
                         found.Refresh(fileInfo);
                     }
-                    Folders.RemoveRange(tmpChilds.OfType<VMFolder>(), EqualityComparer<VMFolder>.Default);
-                    Childs.RemoveRange(tmpChilds, EqualityComparer<VMFile>.Default);
+                    Folders.DoOperation((l) => l.RemoveRange(tmpChilds.OfType<VMFolder>(), EqualityComparer<VMFolder>.Default));
+                    Childs.DoOperation((l) => l.RemoveRange(tmpChilds, EqualityComparer<VMFile>.Default));
 
-                    Folders.AddRange(addChilds.OfType<VMFolder>());
-                    Childs.AddRange(addChilds);
+                    Folders.DoAddRange((l) => addChilds.OfType<VMFolder>());
+                    Childs.DoAddRange((l) => addChilds);
                 }
-                catch (DirectoryNotFoundException)
+                catch (DirectoryNotFoundException ex)
                 {
-
+                    LogException(ex);
                 }
-                catch (UnauthorizedAccessException)
+                catch (UnauthorizedAccessException ex)
                 {
+                    LogException(ex);
                     this.IsProtected = true;
                 }
             }
@@ -338,6 +339,7 @@ namespace SizeOnDisk.ViewModel
             catch (Exception ex)
             {
                 ExceptionBox.ShowException(ex);
+                LogException(ex);
             }
             if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
                 return;
@@ -367,5 +369,10 @@ namespace SizeOnDisk.ViewModel
 
         #endregion functions
 
+
+        public virtual void Log(VMLog log)
+        {
+            this.Parent.Log(log);
+        }
     }
 }

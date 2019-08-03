@@ -3,6 +3,7 @@ using SizeOnDisk.Utilities;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using WPFByYourCommand;
 using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
@@ -10,38 +11,37 @@ namespace SizeOnDisk.ViewModel
     public class VMFileDetails : ObservableObject
     {
         private readonly VMFile _vmFile;
-        private static BitmapImage defaultFileBigIcon;
 
+        private static BitmapImage defaultFileBigIcon;
         private static BitmapImage GetDefaultFileBigIcon()
         {
             if (defaultFileBigIcon == null)
-            {
-                BitmapImage bmi = new BitmapImage();
-                bmi.BeginInit();
-                bmi.UriSource = new Uri("pack://application:,,,/SizeOnDisk;component/Icons/NotFoundIconBig.png");
-                bmi.EndInit();
-
-                bmi.Freeze();
-                defaultFileBigIcon = bmi;
-            }
+                defaultFileBigIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileBig.png");
             return defaultFileBigIcon;
         }
 
         private static BitmapImage defaultFileIcon;
-
         private static BitmapImage GetDefaultFileIcon()
         {
-            if (defaultFileIcon == null)
-            {
-                BitmapImage bmi = new BitmapImage();
-                bmi.BeginInit();
-                bmi.UriSource = new Uri("pack://application:,,,/SizeOnDisk;component/Icons/NotFoundIcon.png");
-                bmi.EndInit();
+            if (defaultFileBigIcon == null)
+                defaultFileBigIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
+            return defaultFileBigIcon;
+        }
 
-                bmi.Freeze();
-                defaultFileIcon = bmi;
-            }
-            return defaultFileIcon;
+        private static BitmapImage defaultFolderBigIcon;
+        private static BitmapImage GetDefaultFolderBigIcon()
+        {
+            if (defaultFolderBigIcon == null)
+                defaultFolderBigIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderBig.png");
+            return defaultFolderBigIcon;
+        }
+
+        private static BitmapImage defaultFolderIcon;
+        private static BitmapImage GetDefaultFolderIcon()
+        {
+            if (defaultFolderIcon == null)
+                defaultFolderIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderSmall.png");
+            return defaultFolderIcon;
         }
 
         public VMFileDetails(VMFile vmFile)
@@ -80,10 +80,23 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-
-                BitmapSource icon = ShellHelper.GetIcon(_vmFile.Path, 16);
-                if (icon == null)
-                    icon = GetDefaultFileIcon();
+                BitmapSource icon = null;
+                try
+                {
+                    icon = ShellHelper.GetIcon(_vmFile.Path, 16);
+                    if (icon == null)
+                    {
+                        if (_vmFile.IsFile)
+                            icon = GetDefaultFileIcon();
+                        else
+                            icon = GetDefaultFolderIcon();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ExceptionBox.ShowException(ex);
+                    this._vmFile.LogException(ex);
+                }
                 return icon;
             }
         }
@@ -101,7 +114,12 @@ namespace SizeOnDisk.ViewModel
                     if (_Thumbnail == null)
                         this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
                     if (this._Thumbnail == null)
-                        this._Thumbnail = GetDefaultFileBigIcon();
+                    {
+                        if (_vmFile.IsFile)
+                            this._Thumbnail = GetDefaultFileBigIcon();
+                        else
+                            this._Thumbnail = GetDefaultFolderBigIcon();
+                    }
                     else
                     {
                         Task.Factory.StartNew(() =>
@@ -114,6 +132,7 @@ namespace SizeOnDisk.ViewModel
                             catch (Exception ex)
                             {
                                 ExceptionBox.ShowException(ex);
+                                this._vmFile.LogException(ex);
                             }
                         }, TaskCreationOptions.LongRunning);
                     }

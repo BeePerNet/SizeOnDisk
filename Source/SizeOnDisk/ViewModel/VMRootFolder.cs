@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
+using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -253,7 +254,12 @@ namespace SizeOnDisk.ViewModel
         public override Task ExecuteTaskAsync(Action action, bool highpriority = false)
         {
             ParallelOptions parallelOptions = GetParallelOptions();
-            return Task.Factory.StartNew(new Action(() => TaskHelper.SafeExecute(action)),
+            return Task.Factory.StartNew(new Action(() =>
+                {
+                    Exception ex = TaskHelper.SafeExecute(action);
+                    if (ex != null)
+                        LogException(ex);
+                }),
                 parallelOptions.CancellationToken,
                 (highpriority ? TaskCreationOptions.LongRunning : TaskCreationOptions.None) | TaskCreationOptions.DenyChildAttach,
                 TaskScheduler.Default);
@@ -295,6 +301,7 @@ namespace SizeOnDisk.ViewModel
             }
             catch (Exception ex)
             {
+                LogException(ex);
                 ExceptionBox.ShowException(ex);
             }
         }
@@ -331,6 +338,7 @@ namespace SizeOnDisk.ViewModel
             }
             catch (Exception ex)
             {
+                LogException(ex);
                 ExceptionBox.ShowException(ex);
             }
             return null;
@@ -382,6 +390,13 @@ namespace SizeOnDisk.ViewModel
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public ObservableImmutableCollection<VMLog> Logs { get; } = new ObservableImmutableCollection<VMLog>();
+
+        public override void Log(VMLog log)
+        {
+            Logs.DoAdd((logs) => log);
         }
 
 
