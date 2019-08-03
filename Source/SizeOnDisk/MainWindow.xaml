@@ -346,7 +346,7 @@
                                             <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
                                                 <Image Width="7" Height="7" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-small.png" 
                                                        Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                                <cmd:AutoDisablingImage Width="16" Height="16" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="False"  />
+                                                <cmd:AutoDisablingImage Width="17" Height="17" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
