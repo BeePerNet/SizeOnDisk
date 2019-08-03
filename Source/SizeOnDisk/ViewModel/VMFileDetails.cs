@@ -23,9 +23,9 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage defaultFileIcon;
         private static BitmapImage GetDefaultFileIcon()
         {
-            if (defaultFileBigIcon == null)
-                defaultFileBigIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
-            return defaultFileBigIcon;
+            if (defaultFileIcon == null)
+                defaultFileIcon = Helper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
+            return defaultFileIcon;
         }
 
         private static BitmapImage defaultFolderBigIcon;

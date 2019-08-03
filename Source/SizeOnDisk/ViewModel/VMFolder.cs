@@ -309,11 +309,6 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        internal override void Refresh(LittleFileInfo fileInfo)
-        {
-            this.Attributes = fileInfo.Attributes;
-        }
-
         public virtual void Refresh(ParallelOptions parallelOptions)
         {
             if (this.clusterSize == -1 || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))

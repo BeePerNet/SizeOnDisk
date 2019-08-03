@@ -139,16 +139,16 @@ namespace SizeOnDisk.ViewModel
         {
             this.Parent = parent;
 
-            VMFolder newFolder = new VMFolder(this, "Folder1", "\\\\Root Folder\\Folder1");
+            VMFolder newFolder = new VMFolder(this, "Blackbriar", "\\\\Root Folder\\Folder1");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            VMFile newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", 40 * 1024);
+            VMFile newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", (ulong)1.44 * 1000 * 1024);
             newFolder.Childs.Add(newFile);
-            newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", 2 * 1024);
+            newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", (ulong)10 * 1024 * 1000 * 1000);
             newFolder.Childs.Add(newFile);
             newFolder.RefreshCount();
 
-            newFolder = new VMFolder(this, "Folder2", "\\\\Root Folder\\Folder2");
+            newFolder = new VMFolder(this, "Threadstone", "\\\\Root Folder\\Folder2");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
             newFile = new VMFile(this, "Filezzz.txt", "\\\\Root Folder\\Folder 2\\Filezzz.txt", (uint)(1.44 * 1000 * 1024));

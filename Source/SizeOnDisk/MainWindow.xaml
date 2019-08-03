@@ -19,7 +19,7 @@
         Title="{Binding Path=SelectedRootFolder.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
-        Loaded="Window_Loaded" Closing="Window_Closing">
+        Loaded="Window_Loaded" Closing="Window_Closing" UseLayoutRounding="True">
     <Window.DataContext>
         <vm:VMRootHierarchy />
     </Window.DataContext>
@@ -290,8 +290,10 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                            <Image Panel.ZIndex="42" Width="19" Height="19" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-big.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
-                                            <cmd:AutoDisablingImage Width="{Binding Details.Thumbnail.Width}" Height="{Binding Details.Thumbnail.Height}" Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <Image Panel.ZIndex="42" Width="19" Height="19" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-big.png" 
+                                                   Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
+                                            <cmd:AutoDisablingImage Width="{Binding Details.Thumbnail.Width}" Height="{Binding Details.Thumbnail.Height}" 
+                                                                    Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Grid>
                                         <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                     </Grid>
@@ -342,8 +344,9 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                                <Image Width="7" Height="7" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-small.png" Visibility="{Binding Extension, Converter={StaticResource IsEqualConverter}, ConverterParameter=lnk}" />
-                                                <cmd:AutoDisablingImage Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                                <Image Width="7" Height="7" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-small.png" 
+                                                       Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
+                                                <cmd:AutoDisablingImage Width="16" Height="16" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="False"  />
                                             </Grid>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>

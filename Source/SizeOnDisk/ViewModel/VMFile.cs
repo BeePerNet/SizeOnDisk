@@ -212,11 +212,25 @@ namespace SizeOnDisk.ViewModel
             this.Parent.SelectListItem(selected);
         }
 
+        public bool IsLink
+        {
+            get
+            {
+                return ((this.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
+                    || (this.IsFile && Extension.ToUpperInvariant() == "LNK");
+            }
+        }
+
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
             this.Attributes = fileInfo.Attributes;
-            this.FileSize = (ulong)fileInfo.Size;
-            this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + (ulong)this.Parent.ClusterSize - 1) / (ulong)this.Parent.ClusterSize) * (ulong)this.Parent.ClusterSize;
+            OnPropertyChanged(nameof(IsLink));
+            if (this.IsFile)
+            {
+                this.FileSize = (ulong)fileInfo.Size;
+                this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + (ulong)this.Parent.ClusterSize - 1) / (ulong)this.Parent.ClusterSize) * (ulong)this.Parent.ClusterSize;
+            }
+
         }
 
         private FileAttributes _Attributes = FileAttributes.Normal;
@@ -552,7 +566,7 @@ namespace SizeOnDisk.ViewModel
         public void LogException(Exception ex)
         {
             TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
-            this.Parent.Log(new VMLog(this,formatter.GetInnerException().Message, formatter.Format()));
+            this.Parent.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
         }
     }
 }
