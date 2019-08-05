@@ -12,7 +12,7 @@ namespace SizeOnDisk.ViewModel
             this.TimeStamp = timeStamp;
             this.File = file;
             this.ShortText = shortText;
-            this.LongText = LongText;
+            this.LongText = longText;
             if (string.IsNullOrWhiteSpace(LongText))
                 LongText = ShortText;
         }
