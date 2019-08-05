@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SizeOnDisk.ViewModel
 {
+    [DebuggerDisplay("{File.Name} {ShortText}")]
     public class VMLog
     {
         public VMLog(VMFile file, string shortText, string LongText = null) : this(DateTime.UtcNow, file, shortText, LongText) { }

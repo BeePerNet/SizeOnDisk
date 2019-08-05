@@ -16,32 +16,6 @@ namespace SizeOnDisk.Shell
     /// </summary>
     internal static class IOHelper
     {
-        internal static void ThrowWinIOError(int errorCode, string path)
-        {
-            int num = errorCode;
-            switch (num)
-            {
-                case 2:
-                    throw new FileNotFoundException(null, path);
-
-                case 3:
-                    throw new DirectoryNotFoundException(path);
-
-                case 5:
-                    throw new UnauthorizedAccessException(path);
-
-                case 0xce:
-                    throw new PathTooLongException(path);
-
-                case 15:
-                    throw new DriveNotFoundException(path);
-            }
-            if ((num != 0x3e3) && (num != 0x4c7))
-            {
-                throw new IOException(new Win32Exception(errorCode).Message, Marshal.GetHRForLastWin32Error());
-            }
-            throw new OperationCanceledException();
-        }
 
         internal static class SafeNativeMethods
         {
@@ -139,7 +113,7 @@ namespace SizeOnDisk.Shell
                 }
                 else if (num != 0)
                 {
-                    IOHelper.ThrowWinIOError(num, string.Join(", ", FullSource));
+                    Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
                 }
                 return true;
             }
@@ -325,8 +299,7 @@ namespace SizeOnDisk.Shell
                 {
                     if (handle.IsInvalid)
                     {
-                        int error = Marshal.GetLastWin32Error();
-                        IOHelper.ThrowWinIOError(error, folderPath);
+                        Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
                     }
                     else
                     {
