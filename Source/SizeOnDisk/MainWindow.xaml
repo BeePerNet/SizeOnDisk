@@ -7,10 +7,8 @@
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
         xmlns:conv="clr-namespace:SizeOnDisk.Converters"
         xmlns:vm="clr-namespace:SizeOnDisk.ViewModel"
+        Style="{StaticResource WindowStyle}"
         mc:Ignorable="d" 
-        lex:ResxLocalizationProvider.DefaultAssembly="SizeOnDisk"
-        lex:ResxLocalizationProvider.DefaultDictionary="Localization"
-        lex:LocalizeDictionary.DesignCulture="fr"
         cmd:CommandBehavior.Context="{Binding}"
         MinWidth="350"
         MinHeight="200"
@@ -19,7 +17,7 @@
         Title="{Binding Path=SelectedRootFolder.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
-        Loaded="Window_Loaded" Closing="Window_Closing" UseLayoutRounding="True" Icon="Icons/Hard_Drive.ico">
+        Loaded="Window_Loaded" Closing="Window_Closing" Icon="Icons/Hard_Drive.ico">
     <Window.DataContext>
         <vm:VMRootHierarchy />
     </Window.DataContext>

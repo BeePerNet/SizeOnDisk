@@ -2,14 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
-        xmlns:this="clr-namespace:SizeOnDisk"
         xmlns:conv="clr-namespace:SizeOnDisk.Converters"
+        Style="{StaticResource WindowStyle}"
         Title="{lex:Loc Legend}"
         ResizeMode="NoResize"
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         WindowStyle="SingleBorderWindow"
-        DataContext="{x:Static this:Localization.LegendDocument}"
+        DataContext="{lex:Loc LegendDocument}"
         Width="180"
         ShowInTaskbar="False">
     <Window.Resources>

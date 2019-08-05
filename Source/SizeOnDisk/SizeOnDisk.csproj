@@ -122,6 +122,9 @@
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SizeOnDisk.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -166,8 +169,7 @@
     <Compile Include="Converters\IsRunningConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Converters\UISizeFormatType.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Localization.Designer.cs">
+    <Compile Include="Languages\Localization.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Localization.resx</DependentUpon>
@@ -175,8 +177,8 @@
     <Compile Include="Legend.xaml.cs">
       <DependentUpon>Legend.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainConfiguration.cs" />
-    <Compile Include="MainConfigurationSection.cs" />
+    <Compile Include="Configurations\MainConfiguration.cs" />
+    <Compile Include="Configurations\MainConfigurationSection.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -229,7 +231,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Resource Include="Themes\Default.xaml">
+    <Resource Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
@@ -242,24 +244,24 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="Localization.de.resx">
+    <EmbeddedResource Include="Languages\Localization.de.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Localization.es.resx">
+    <EmbeddedResource Include="Languages\Localization.es.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Localization.fa.resx" />
-    <EmbeddedResource Include="Localization.fr.resx" />
-    <EmbeddedResource Include="Localization.it.resx" />
-    <EmbeddedResource Include="Localization.pt.resx" />
-    <EmbeddedResource Include="Localization.resx">
+    <EmbeddedResource Include="Languages\Localization.fa.resx" />
+    <EmbeddedResource Include="Languages\Localization.fr.resx" />
+    <EmbeddedResource Include="Languages\Localization.it.resx" />
+    <EmbeddedResource Include="Languages\Localization.pt.resx" />
+    <EmbeddedResource Include="Languages\Localization.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <AppDesigner Include="Properties\" />
-    <EmbeddedResource Include="Localization.ru.resx" />
-    <EmbeddedResource Include="Localization.sv.resx" />
+    <EmbeddedResource Include="Languages\Localization.ru.resx" />
+    <EmbeddedResource Include="Languages\Localization.sv.resx" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Folder.png" />
@@ -341,7 +343,7 @@
     <Resource Include="Icons\List.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="DefaultConfiguration.xml" />
+    <Resource Include="Configurations\DefaultConfiguration.xml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Properties.png" />

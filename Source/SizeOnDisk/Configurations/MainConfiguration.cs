@@ -8,7 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace SizeOnDisk
+namespace SizeOnDisk.Configurations
 {
     [Serializable]
     [XmlRoot(sectionName)]
@@ -41,7 +41,7 @@ namespace SizeOnDisk
                             XmlReader reader = null;
                             if (config == null)
                             {
-                                Stream stream = Application.GetResourceStream(new Uri("pack://application:,,,/SizeOnDisk;component/DefaultConfiguration.xml")).Stream;
+                                Stream stream = Application.GetResourceStream(new Uri("pack://application:,,,/SizeOnDisk;component/Configurations/DefaultConfiguration.xml")).Stream;
                                 reader = XmlReader.Create(stream);
                             }
                             else

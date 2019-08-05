@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Linq;
 
-namespace SizeOnDisk
+namespace SizeOnDisk.Configurations
 {
     public class MainConfigurationSection : ConfigurationSection
     {

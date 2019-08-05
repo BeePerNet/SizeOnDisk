@@ -1,4 +1,5 @@
-﻿using SizeOnDisk.ViewModel;
+﻿using SizeOnDisk.Languages;
+using SizeOnDisk.ViewModel;
 using System;
 using System.Windows.Data;
 using System.Windows.Shell;

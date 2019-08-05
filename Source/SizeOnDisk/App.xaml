@@ -12,7 +12,7 @@
                 <!--ResourceDictionary Source="/PresentationFramework.Aero2, Version=4.0.0.0,
                        Culture=neutral, PublicKeyToken=31bf3856ad364e35,
                        ProcessorArchitecture=MSIL;component/themes/Aero2.normalcolor.xaml" /-->
-                <ResourceDictionary Source="Themes/Default.xaml" />
+                <ResourceDictionary Source="Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

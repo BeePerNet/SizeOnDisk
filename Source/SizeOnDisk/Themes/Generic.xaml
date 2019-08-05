@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:provider="clr-namespace:WPFLocalizeExtension.Providers;assembly=WPFLocalizeExtension"
+                    xmlns:engine="clr-namespace:WPFLocalizeExtension.Engine;assembly=WPFLocalizeExtension"
+                    >
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightGray" />
+    <Style x:Key="WindowStyle" TargetType="Window">
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="provider:ResxLocalizationProvider.DefaultAssembly" Value="SizeOnDisk" />
+        <Setter Property="provider:ResxLocalizationProvider.DefaultDictionary" Value="Languages.Localization" />
+        <Setter Property="engine:LocalizeDictionary.DesignCulture" Value="fr" />
+    </Style>
+</ResourceDictionary>

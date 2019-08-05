@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using SizeOnDisk.Configurations;
 using SizeOnDisk.Shell;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
