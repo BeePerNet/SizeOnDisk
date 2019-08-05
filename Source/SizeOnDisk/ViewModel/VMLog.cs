@@ -7,7 +7,7 @@ namespace SizeOnDisk.ViewModel
     public class VMLog
     {
         public VMLog(VMFile file, string shortText, string LongText = null) : this(DateTime.UtcNow, file, shortText, LongText) { }
-        public VMLog(DateTime timeStamp, VMFile file, string shortText, string LongText = null)
+        public VMLog(DateTime timeStamp, VMFile file, string shortText, string longText = null)
         {
             this.TimeStamp = timeStamp;
             this.File = file;
