@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Xml;
 
-namespace SizeOnDisk
+namespace SizeOnDisk.Windows
 {
     /// <summary>
     /// Interaction logic for AboutBox.xaml

@@ -1,4 +1,4 @@
-﻿<Window x:Class="SizeOnDisk.MainWindow"
+﻿<Window x:Class="SizeOnDisk.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -17,7 +17,7 @@
         Title="{Binding Path=SelectedRootFolder.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
-        Loaded="Window_Loaded" Closing="Window_Closing" Icon="Icons/Hard_Drive.ico">
+        Loaded="Window_Loaded" Closing="Window_Closing" Icon="../Icons/Hard_Drive.ico">
     <Window.DataContext>
         <vm:VMRootHierarchy />
     </Window.DataContext>
@@ -30,25 +30,6 @@
         <conv:IsRunningConverter x:Key="IsRunningConverter" />
         <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
-        <Style x:Key="ColoredName" TargetType="TextBlock">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Compressed}" Value="True">
-                    <Setter Property="Foreground" Value="#3299CA" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Encrypted}" Value="True">
-                    <Setter Property="Foreground" Value="LimeGreen"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsProtected}" Value="true">
-                    <Setter Property="Foreground" Value="Red"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Hidden}" Value="True">
-                    <Setter Property="Opacity" Value="0.6" />
-                </DataTrigger>
-            </Style.Triggers>
-            <Style.Setters>
-                <Setter Property="ToolTip" Value="{Binding Name}" />
-            </Style.Setters>
-        </Style>
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
                      ItemsSource="{Binding FileCommands}" />
     </Window.Resources>
@@ -61,54 +42,24 @@
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.StopCommand}" Margin="2" />
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.CloseCommand}" Margin="2" />
                 <Separator />
-                <ToggleButton ToolTip="Details view"
-                              Margin="2"
-                    IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}">
-                    <Image Source="Icons/Detail.png" />
+                <ToggleButton ToolTip="Details view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}" Margin="2">
+                    <Image Source="../Icons/Detail.png" />
                 </ToggleButton>
-                <ToggleButton ToolTip="List view"
-                              Margin="2"
-                    IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Tile}}">
-                    <Image Source="Icons/List.png" />
+                <ToggleButton ToolTip="List view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Tile}}" Margin="2">
+                    <Image Source="../Icons/List.png" />
                 </ToggleButton>
                 <Separator />
-                <Button ToolTip="{lex:Loc Legend}"
-                    Click="ButtonLegend_Click"
-                    Margin="2">
-                    <Button.Content>
-                        <Image Width="16"
-                           Height="16"
-                           Source="/SizeOnDisk;component/Icons/LegendHS.png" />
-                    </Button.Content>
+                <Button ToolTip="{lex:Loc Legend}" Click="ButtonLegend_Click" Margin="2">
+                    <Image Source="../Icons/LegendHS.png" />
                 </Button>
-                <Button Name="RunAsAdmin"
-                    Click="RunAsAdmin_Click"
-                    ToolTip="{lex:Loc RunAsAdministrator}"
-                    Margin="2">
-                    <Button.Content>
-                        <cmd:AutoDisablingImage Width="16"
-                                           Height="16"
-                                           Source="/SizeOnDisk;component/Icons/Shield.png" />
-                    </Button.Content>
+                <Button Name="RunAsAdmin" Click="RunAsAdmin_Click" ToolTip="{lex:Loc RunAsAdministrator}" Margin="2">
+                    <cmd:AutoDisablingImage Source="../Icons/Shield.png" />
                 </Button>
-                <Button ToolTip="{lex:Loc Options}"
-                    Click="ButtonOptions_Click"
-                    Margin="2">
-                    <Button.Content>
-                        <Image Width="16"
-                           Height="16"
-                           Source="/SizeOnDisk;component/Icons/Options.png" />
-                    </Button.Content>
+                <Button ToolTip="{lex:Loc Options}" Click="ButtonOptions_Click" Margin="2">
+                    <Image Source="../Icons/Options.png" />
                 </Button>
-                <Button 
-                    Margin="2"
-                    Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                    Click="AboutButton_Click">
-                    <Button.Content>
-                        <Image Width="16"
-                           Height="16"
-                           Source="/SizeOnDisk;component/Icons/Help.png" />
-                    </Button.Content>
+                <Button Click="AboutButton_Click">
+                    <Image Source="../Icons/Help.png" />
                 </Button>
             </ToolBar>
         </ToolBarTray>

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
-namespace SizeOnDisk
+namespace SizeOnDisk.Windows
 {
     /// <summary>
     /// Interaction logic for RechTextToolWindow.xaml

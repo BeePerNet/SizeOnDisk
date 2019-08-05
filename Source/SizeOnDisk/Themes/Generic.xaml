@@ -2,12 +2,33 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:provider="clr-namespace:WPFLocalizeExtension.Providers;assembly=WPFLocalizeExtension"
                     xmlns:engine="clr-namespace:WPFLocalizeExtension.Engine;assembly=WPFLocalizeExtension"
+                    xmlns:cmd="http://wpfbyyourcommand.codeplex.com"
                     >
+    <cmd:IsEqualConverter x:Key="IsEqualConverter" />
     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightGray" />
     <Style x:Key="WindowStyle" TargetType="Window">
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="provider:ResxLocalizationProvider.DefaultAssembly" Value="SizeOnDisk" />
         <Setter Property="provider:ResxLocalizationProvider.DefaultDictionary" Value="Languages.Localization" />
         <Setter Property="engine:LocalizeDictionary.DesignCulture" Value="fr" />
+    </Style>
+    <Style x:Key="ColoredName" TargetType="TextBlock">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Compressed}" Value="True">
+                <Setter Property="Foreground" Value="#3299CA" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Encrypted}" Value="True">
+                <Setter Property="Foreground" Value="LimeGreen"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsProtected}" Value="true">
+                <Setter Property="Foreground" Value="Red"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Hidden}" Value="True">
+                <Setter Property="Opacity" Value="0.6" />
+            </DataTrigger>
+        </Style.Triggers>
+        <Style.Setters>
+            <Setter Property="ToolTip" Value="{Binding Name}" />
+        </Style.Setters>
     </Style>
 </ResourceDictionary>

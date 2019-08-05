@@ -161,7 +161,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AboutBox.xaml.cs">
+    <Compile Include="Windows\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\FileAttributesConverter.cs" />
@@ -174,7 +174,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
-    <Compile Include="Legend.xaml.cs">
+    <Compile Include="Windows\Legend.xaml.cs">
       <DependentUpon>Legend.xaml</DependentUpon>
     </Compile>
     <Compile Include="Configurations\MainConfiguration.cs" />
@@ -208,14 +208,14 @@
     <Compile Include="ViewModel\VMFile.cs" />
     <Compile Include="ViewModel\VMFolder.cs" />
     <Compile Include="ViewModel\VMViewMode.cs" />
-    <Compile Include="WindowOptions.xaml.cs">
+    <Compile Include="Windows\WindowOptions.xaml.cs">
       <DependentUpon>WindowOptions.xaml</DependentUpon>
     </Compile>
-    <Page Include="AboutBox.xaml">
+    <Page Include="Windows\AboutBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -223,11 +223,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Legend.xaml">
+    <Page Include="Windows\Legend.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -235,7 +235,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
-    <Page Include="WindowOptions.xaml">
+    <Page Include="Windows\WindowOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

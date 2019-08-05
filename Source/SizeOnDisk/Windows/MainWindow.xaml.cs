@@ -11,7 +11,7 @@ using System.Windows.Input;
 using WPFByYourCommand;
 using WPFByYourCommand.Commands;
 
-namespace SizeOnDisk
+namespace SizeOnDisk.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
