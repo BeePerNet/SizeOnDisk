@@ -55,7 +55,6 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                //BindingOperations.EnableCollectionSynchronization(this.Folders, this._listlock = new object());
                 _Timer = new DispatcherTimer(DispatcherPriority.DataBind)
                 {
                     Interval = new TimeSpan(0, 0, 1)
