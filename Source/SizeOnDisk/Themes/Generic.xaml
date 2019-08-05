@@ -12,7 +12,7 @@
         <Setter Property="provider:ResxLocalizationProvider.DefaultAssembly" Value="SizeOnDisk" />
         <Setter Property="provider:ResxLocalizationProvider.DefaultDictionary" Value="Languages.Localization" />
         <Setter Property="engine:LocalizeDictionary.DesignCulture" Value="fr" />
-        <Setter Property="beh:GlobalizationBehavior.UpdateGlobalization" Value="" />
+        <Setter Property="beh:GlobalizationBehavior.UpdateWindow" Value="" />
     </Style>
     <Style x:Key="ColoredName" TargetType="TextBlock">
         <Style.Triggers>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using WPFByYourCommand.Behaviors;
-using WPFLocalizeExtension.Engine;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -20,7 +19,7 @@ namespace SizeOnDisk.ViewModel
             set
             {
                 Properties.Settings.Default.UISizeFormat = value;
-                GlobalizationBehavior.CallUpdate();
+                GlobalizationBehavior.CallUpdate("UISize");
             }
         }
 

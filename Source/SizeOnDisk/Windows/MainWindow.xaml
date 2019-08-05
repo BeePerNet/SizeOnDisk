@@ -66,7 +66,7 @@
         <TextBox Margin="1" Padding="1" DockPanel.Dock="Top" Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
         <StatusBar DockPanel.Dock="Bottom"
                    Grid.Row="3"
-                   cmd:GlobalizationBehavior.UpdateGlobalization="">
+                   cmd:GlobalizationBehavior.UpdateItemsBindings=",UISize">
             <StatusBar.Resources>
                 <Style x:Key="{x:Type StatusBarItem}" TargetType="StatusBarItem">
                     <Setter Property="Padding" Value="4,2,4,3" />
@@ -242,8 +242,7 @@
                                         <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
                                             <Image Panel.ZIndex="42" Width="19" Height="19" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-big.png" 
                                                    Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                            <cmd:AutoDisablingImage Width="{Binding Details.Thumbnail.Width}" Height="{Binding Details.Thumbnail.Height}" 
-                                                                    Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Grid>
                                         <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                     </Grid>
@@ -251,7 +250,7 @@
                             </ListBox.ItemTemplate>
                         </ListView>
                         <DataGrid 
-                            cmd:GlobalizationBehavior.UpdateGlobalization=""
+                            cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
                                     Grid.Column="2"
                                     VirtualizingStackPanel.VirtualizationMode="Standard"
                                     cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
