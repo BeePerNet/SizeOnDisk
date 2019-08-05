@@ -6,7 +6,7 @@ namespace SizeOnDisk.ViewModel
     [DebuggerDisplay("{File.Name} {ShortText}")]
     public class VMLog
     {
-        public VMLog(VMFile file, string shortText, string LongText = null) : this(DateTime.UtcNow, file, shortText, LongText) { }
+        public VMLog(VMFile file, string shortText, string longText = null) : this(DateTime.UtcNow, file, shortText, longText) { }
         public VMLog(DateTime timeStamp, VMFile file, string shortText, string longText = null)
         {
             this.TimeStamp = timeStamp;
