@@ -46,15 +46,15 @@ namespace SizeOnDisk.Converters
 
         private enum IOSizeSuffixFactor : byte
         {
-            B = 0,
-            KB = 1,
-            MB = 2,
-            GB = 3,
-            TB = 4,
-            PB = 5,
-            EB = 6,
-            ZI = 7,
-            YI = 8
+            o = 0,
+            Ko = 1,
+            Mo = 2,
+            Go = 3,
+            To = 4,
+            Po = 5,
+            Eo = 6,
+            Zo = 7,
+            Yo = 8
         }
     }
 }
