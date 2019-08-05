@@ -64,8 +64,9 @@
             </ToolBar>
         </ToolBarTray>
         <TextBox Margin="1" Padding="1" DockPanel.Dock="Top" Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
-        <StatusBar Name="StatusBar" DockPanel.Dock="Bottom"
-                   Grid.Row="3">
+        <StatusBar DockPanel.Dock="Bottom"
+                   Grid.Row="3"
+                   cmd:GlobalizationBehavior.UpdateGlobalization="">
             <StatusBar.Resources>
                 <Style x:Key="{x:Type StatusBarItem}" TargetType="StatusBarItem">
                     <Setter Property="Padding" Value="4,2,4,3" />
@@ -182,7 +183,7 @@
                               ContextMenu="{StaticResource VMContextMenu}"
                               DisplayMemberPath="Name"
                               SelectedValuePath="Path"
-                              cmd:ItemsControlBehavior.FocusPreviewMouseRightButtonDown="True">
+                              cmd:UIElementBehavior.FocusPreviewMouseRightButtonDown="True">
                             <TreeView.ItemContainerStyle>
                                 <Style TargetType="{x:Type TreeViewItem}">
                                     <Setter Property="cmd:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
@@ -250,21 +251,21 @@
                             </ListBox.ItemTemplate>
                         </ListView>
                         <DataGrid 
-                Name="Listing"
-                    Grid.Column="2"
-                    VirtualizingStackPanel.VirtualizationMode="Standard"
-                    cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
-                    BorderThickness="1"
-                    ItemsSource="{Binding SelectedTreeItem.Childs}"
-                    SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
-                    AutoGenerateColumns="False"
-                Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                    HeadersVisibility="Column"
-                    ContextMenu="{StaticResource VMContextMenu}"
-                    HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                    VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                    ClipboardCopyMode="IncludeHeader"
-                    Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                            cmd:GlobalizationBehavior.UpdateGlobalization=""
+                                    Grid.Column="2"
+                                    VirtualizingStackPanel.VirtualizationMode="Standard"
+                                    cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
+                                    BorderThickness="1"
+                                    ItemsSource="{Binding SelectedTreeItem.Childs}"
+                                    SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
+                                    AutoGenerateColumns="False"
+                                Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+                                    HeadersVisibility="Column"
+                                    ContextMenu="{StaticResource VMContextMenu}"
+                                    HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                                    VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                                    ClipboardCopyMode="IncludeHeader"
+                                    Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
                             <DataGrid.Resources>
                                 <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
                                     <Setter Property="TextAlignment" Value="Right" />

@@ -1,9 +1,9 @@
 ﻿using SizeOnDisk.Converters;
-using SizeOnDisk.Windows;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
-using WPFByYourCommand;
+using WPFByYourCommand.Behaviors;
+using WPFLocalizeExtension.Engine;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -20,8 +20,7 @@ namespace SizeOnDisk.ViewModel
             set
             {
                 Properties.Settings.Default.UISizeFormat = value;
-                MainWindow window = (MainWindow)this.Owner;
-                window.UpdateUILanguage();
+                GlobalizationBehavior.CallUpdate();
             }
         }
 
@@ -34,9 +33,7 @@ namespace SizeOnDisk.ViewModel
             set
             {
                 Properties.Settings.Default.Language = value;
-                LanguagesHelper.ChangeLanguage(CultureInfo.GetCultureInfo(value));
-                MainWindow window = (MainWindow)this.Owner;
-                window.UpdateUILanguage();
+                GlobalizationBehavior.ChangeLanguage(value);
             }
         }
 
@@ -45,7 +42,7 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return LanguagesHelper.Cultures;
+                return GlobalizationBehavior.Cultures;
             }
         }
 

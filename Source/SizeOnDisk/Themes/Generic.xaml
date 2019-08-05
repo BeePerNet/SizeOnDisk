@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:provider="clr-namespace:WPFLocalizeExtension.Providers;assembly=WPFLocalizeExtension"
                     xmlns:engine="clr-namespace:WPFLocalizeExtension.Engine;assembly=WPFLocalizeExtension"
+                    xmlns:beh="clr-namespace:WPFByYourCommand.Behaviors;assembly=WPFByYourCommand"
                     xmlns:cmd="http://wpfbyyourcommand.codeplex.com"
                     >
     <cmd:IsEqualConverter x:Key="IsEqualConverter" />
@@ -11,6 +12,7 @@
         <Setter Property="provider:ResxLocalizationProvider.DefaultAssembly" Value="SizeOnDisk" />
         <Setter Property="provider:ResxLocalizationProvider.DefaultDictionary" Value="Languages.Localization" />
         <Setter Property="engine:LocalizeDictionary.DesignCulture" Value="fr" />
+        <Setter Property="beh:GlobalizationBehavior.UpdateGlobalization" Value="" />
     </Style>
     <Style x:Key="ColoredName" TargetType="TextBlock">
         <Style.Triggers>

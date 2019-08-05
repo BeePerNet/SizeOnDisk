@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.Properties;
 using System;
 using System.Windows;
+using WPFByYourCommand.Behaviors;
 using WPFByYourCommand.Exceptions;
 
 namespace SizeOnDisk
@@ -15,6 +16,8 @@ namespace SizeOnDisk
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             this.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(App_DispatcherUnhandledException);
             Settings.CheckUpgrade();
+
+            GlobalizationBehavior.ChangeLanguage(Settings.Default.Language);
         }
 
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
