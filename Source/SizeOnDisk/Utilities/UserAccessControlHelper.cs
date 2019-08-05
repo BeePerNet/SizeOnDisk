@@ -103,7 +103,7 @@ namespace SizeOnDisk.Utilities
             {
                 if (!NativeMethods.OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_READ, out IntPtr tokenHandle))
                 {
-                    throw new Win32Exception(Marshal.GetLastWin32Error(), CouldNotGetTokenMessage);
+                    Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
                 }
 
                 NativeMethods.TOKEN_ELEVATION_TYPE elevationResult = NativeMethods.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;

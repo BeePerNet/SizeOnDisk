@@ -17,7 +17,17 @@ namespace WixTools
             {
                 try
                 {
-                    result.Add(new CultureInfo(Convert.ToInt32(Marshal.PtrToStringAuto(lpUILanguageString), 16)));
+                    if (lpUILanguageString != IntPtr.Zero)
+                    {
+                        try
+                        {
+                            result.Add(new CultureInfo(Convert.ToInt32(Marshal.PtrToStringAuto(lpUILanguageString), 16)));
+                        }
+                        finally
+                        {
+                            Marshal.FreeCoTaskMem(lpUILanguageString);
+                        }
+                    }
                 }
                 catch (Exception)
                 {
@@ -29,8 +39,7 @@ namespace WixTools
 
             if (EnumUILanguages(enumCallback, 0, IntPtr.Zero) == false)
             {
-                int errorCode = Marshal.GetLastWin32Error();
-                throw new Win32Exception(errorCode);
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
             return result;
         }
@@ -125,8 +134,7 @@ namespace WixTools
 
             if (EnumSystemLocalesEx(enumCallback, cultureTypes, 0, IntPtr.Zero) == false)
             {
-                int errorCode = Marshal.GetLastWin32Error();
-                throw new Win32Exception(errorCode);
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
 
             // Add the two neutral cultures that Windows misses 

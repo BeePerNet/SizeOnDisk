@@ -350,7 +350,7 @@ namespace SizeOnDisk.Shell
                         {
                             num = Marshal.GetLastWin32Error();
                             if (num != 0)
-                                throw new Win32Exception(num);
+                                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
                         }
                     }
                     finally
@@ -400,8 +400,7 @@ namespace SizeOnDisk.Shell
             uint losize = SafeNativeMethods.GetCompressedFileSize(filename, out uint hosize);
             int error = Marshal.GetLastWin32Error();
             if (hosize == 0 && losize == 0xFFFFFFFF && error != 0)
-                //return null;
-                throw new Win32Exception(error);
+                return null;
             return ((long)hosize << 32) + losize;
         }
 
@@ -410,7 +409,7 @@ namespace SizeOnDisk.Shell
             string drive = System.IO.Path.GetPathRoot(path);
             bool result = SafeNativeMethods.GetDiskFreeSpace(drive, out uint sectorsPerCluster, out uint bytesPerSector, out uint _, out _);
             if (!result)
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             return sectorsPerCluster * bytesPerSector;
         }
 
