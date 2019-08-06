@@ -17,14 +17,7 @@ namespace WixTools
                 {
                     if (lpUILanguageString != IntPtr.Zero)
                     {
-                        try
-                        {
-                            result.Add(new CultureInfo(Convert.ToInt32(Marshal.PtrToStringAuto(lpUILanguageString), 16)));
-                        }
-                        finally
-                        {
-                            Marshal.FreeCoTaskMem(lpUILanguageString);
-                        }
+                        result.Add(new CultureInfo(Convert.ToInt32(Marshal.PtrToStringAuto(lpUILanguageString), 16)));
                     }
                 }
                 catch (Exception)
