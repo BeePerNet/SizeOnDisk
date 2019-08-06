@@ -171,7 +171,6 @@ namespace SizeOnDisk.Shell
             internal uint ftLastWriteTimeHigh;
             internal uint fileSizeHigh;
             internal uint fileSizeLow;
-            [SecurityCritical]
             public void PopulateFrom(IOHelper.WIN32_FIND_DATA findData)
             {
                 fileAttributes = findData.dwFileAttributes;
@@ -334,7 +333,7 @@ namespace SizeOnDisk.Shell
         /// <param name="tryagain">If false try get file attributes with GetFileAttributesEx function. If true try with the FindFirstFile function.</param>
         public static void FillAttributeInfo(string path, ref IOHelper.WIN32_FILE_ATTRIBUTE_DATA data, bool tryagain = false)
         {
-            int num = 0;
+            int num;
             if (tryagain)
             {
                 IOHelper.WIN32_FIND_DATA win_find_data = new IOHelper.WIN32_FIND_DATA();

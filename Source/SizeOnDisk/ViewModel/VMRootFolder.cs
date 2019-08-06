@@ -16,13 +16,11 @@ using WPFByYourCommand.Observables;
 
 namespace SizeOnDisk.ViewModel
 {
+    [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
     public class VMRootFolder : VMFolder, IDisposable
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx RefreshCommand = new RoutedCommandEx("refresh", "loc:PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootFolder), new KeyGesture(Key.F5, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:RefreshKeyDisplayString"));
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx StopCommand = new RoutedCommandEx("stop", "loc:PresentationCore:ExceptionStringTable:StopText", "pack://application:,,,/SizeOnDisk;component/Icons/StopHS.png", typeof(VMRootFolder), new KeyGesture(Key.Escape, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:StopKeyDisplayString"));
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly RoutedCommandEx CloseCommand = new RoutedCommandEx("close", "loc:PresentationCore:ExceptionStringTable:CloseText", "pack://application:,,,/SizeOnDisk;component/Icons/Close.png", typeof(VMRootFolder));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -34,9 +32,6 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(StopCommand, CallStopCommand, CanCallStopCommand));
             bindingCollection.Add(new CommandBinding(CloseCommand, CallCloseCommand));
         }
-
-        private readonly string _Path;
-        public override string Path => _Path;
 
         private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -142,11 +137,10 @@ namespace SizeOnDisk.ViewModel
 
         [DesignOnly(true)]
         internal VMRootFolder(VMRootHierarchy parent)
-            : base(null, "Drive 1\\Root Folder")
+            : base(null, "\\\\CanNotBeDrive\\Groot Folder")
         {
             IsDesign = true;
             Parent = parent;
-            _Path = "Drive 1\\Root Folder";
             HardDrivePath = "Drive 1";
 
             VMFolder newFolder = new VMFolder(this, "Blackbriar");
@@ -186,7 +180,6 @@ namespace SizeOnDisk.ViewModel
         {
             ClusterSize = IOHelper.GetClusterSize(path);
             Parent = parent;
-            _Path = path;
             HardDrivePath = System.IO.Path.GetPathRoot(path);
             SetInternalIsTreeSelected();
 

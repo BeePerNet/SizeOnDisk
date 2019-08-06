@@ -243,7 +243,7 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                            <Image Panel.ZIndex="42" Width="19" Height="19" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-big.png" 
+                                            <Image Panel.ZIndex="42" Width="19" Height="19" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-big.png" 
                                                    Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
                                             <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Grid>
@@ -296,7 +296,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                                <Image Width="7" Height="7" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-small.png" 
+                                                <Image Width="7" Height="7" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-small.png" 
                                                        Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
                                                 <cmd:AutoDisablingImage Width="16" Height="16" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>

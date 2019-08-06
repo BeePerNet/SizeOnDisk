@@ -8,7 +8,6 @@ namespace SizeOnDisk.Shell
     /// Smaller FileInfo class like System.IO.FileInfo. 
     /// Bypass the PathTooLongException.
     /// </summary>
-    [SecurityCritical]
     public class LittleFileInfo
     {
         private IOHelper.WIN32_FILE_ATTRIBUTE_DATA _data;

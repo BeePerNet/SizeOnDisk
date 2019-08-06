@@ -1,5 +1,6 @@
 ﻿using SizeOnDisk.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -16,8 +17,7 @@ namespace SizeOnDisk.Configurations
     {
         [XmlArray("editors")]
         [XmlArrayItem("editor")]
-        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "<En attente>")]
-        public DefaultEditorItem[] Editors { get; set; }
+        public IEnumerable<DefaultEditorItem> Editors { get; set; }
 
         private const string sectionName = "SizeOnDisk";
 

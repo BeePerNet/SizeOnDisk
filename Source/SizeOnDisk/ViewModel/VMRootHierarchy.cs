@@ -3,6 +3,7 @@ using SizeOnDisk.Utilities;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -68,7 +69,10 @@ namespace SizeOnDisk.ViewModel
 
         public void AddRootFolder(string path)
         {
-            VMRootFolder newFolder = new VMRootFolder(this, path, path);
+            string name = path;
+            if (name.Count(T => T == '\\') > 1)
+                name = Path.GetFileName(path);
+            VMRootFolder newFolder = new VMRootFolder(this, name, path);
             Folders.Add(newFolder);
 
             newFolder.IsExpanded = true;
