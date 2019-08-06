@@ -18,7 +18,7 @@ namespace SizeOnDisk.ViewModel
     public class VMFile : CommandViewModel
     {
         private const string MessageIsNotVMFile = "OriginalSource is not VMFile";
-               
+
 
         public static readonly RoutedCommandEx OpenCommand = new RoutedCommandEx("open", "loc:PresentationCore:ExceptionStringTable:OpenText", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:OpenKeyDisplayString"));
         public static readonly RoutedCommandEx EditCommand = new RoutedCommandEx("edit", "loc:Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "loc:EditKey"));
@@ -34,7 +34,10 @@ namespace SizeOnDisk.ViewModel
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
             if (bindingCollection == null)
+            {
                 return;
+            }
+
             bindingCollection.Add(new CommandBinding(OpenCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(OpenAsCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
@@ -141,40 +144,45 @@ namespace SizeOnDisk.ViewModel
 
         public virtual ulong? FileTotal
         {
-            get { return 1; }
+            get => 1;
             protected set { }
         }
 
         public virtual ulong? FolderTotal
         {
-            get { return null; }
+            get => null;
             protected set { }
         }
 
         public ulong? DiskSize
         {
-            get { return _DiskSize; }
-            protected set { SetProperty(ref _DiskSize, value); }
+            get => _DiskSize;
+            protected set => SetProperty(ref _DiskSize, value);
         }
 
 
         public ulong? FileSize
         {
-            get { return _FileSize; }
-            protected set { SetProperty(ref _FileSize, value); }
+            get => _FileSize;
+            protected set => SetProperty(ref _FileSize, value);
         }
 
         public bool IsProtected
         {
-            get { return (_Attributes & FileAttributesEx.Protected) == FileAttributesEx.Protected; }
+            get => (_Attributes & FileAttributesEx.Protected) == FileAttributesEx.Protected;
             protected set
             {
                 if (value != IsProtected)
                 {
                     if (value)
+                    {
                         _Attributes |= FileAttributesEx.Protected;
+                    }
                     else
+                    {
                         _Attributes &= ~FileAttributesEx.Protected;
+                    }
+
                     OnPropertyChanged(nameof(IsProtected));
                 }
             }
@@ -183,18 +191,25 @@ namespace SizeOnDisk.ViewModel
 
         public bool IsSelected
         {
-            get { return (_Attributes & FileAttributesEx.Selected) == FileAttributesEx.Selected; }
+            get => (_Attributes & FileAttributesEx.Selected) == FileAttributesEx.Selected;
             set
             {
                 if (value != IsSelected)
                 {
                     if (value)
+                    {
                         _Attributes |= FileAttributesEx.Selected;
+                    }
                     else
+                    {
                         _Attributes &= ~FileAttributesEx.Selected;
+                    }
+
                     OnPropertyChanged(nameof(IsSelected));
                     if (value)
+                    {
                         SelectListItem(this);
+                    }
                 }
             }
         }
@@ -226,31 +241,31 @@ namespace SizeOnDisk.ViewModel
         }
 
         protected FileAttributesEx _Attributes = FileAttributesEx.Normal;
-        public FileAttributesEx Attributes
-        {
-            get { return _Attributes; }
-        }
+        public FileAttributesEx Attributes => _Attributes;
 
         [SuppressMessage("Design", "CA2213")]
-        VMFileDetails _Details;
+        private VMFileDetails _Details;
         public VMFileDetails Details
         {
             get
             {
                 if (_Details == null)
+                {
                     _Details = new VMFileDetails(this);
+                }
+
                 return _Details;
             }
-            private set
-            {
-                SetProperty(ref _Details, value);
-            }
+            private set => SetProperty(ref _Details, value);
         }
 
         public void RefreshOnView()
         {
             if (Details == null)
+            {
                 Details = new VMFileDetails(this);
+            }
+
             LittleFileInfo fileInfo = Details.Load();
             Refresh(fileInfo);
         }
@@ -267,7 +282,9 @@ namespace SizeOnDisk.ViewModel
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
+            {
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
 
             if (file.IsSelected)
             {
@@ -292,7 +309,9 @@ namespace SizeOnDisk.ViewModel
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
+            {
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
 
             if (file.IsSelected)
             {
@@ -317,7 +336,9 @@ namespace SizeOnDisk.ViewModel
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
+            {
                 return;
+            }
 
             e.CanExecute = !file.IsProtected && !(file is VMRootFolder);
         }
@@ -329,10 +350,14 @@ namespace SizeOnDisk.ViewModel
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
+            {
                 return;
+            }
 
             if (!(e.Command is RoutedCommand command))
+            {
                 return;
+            }
 
             if (command == PropertiesCommand || command == ExploreCommand || command == FindCommand)
             {
@@ -371,10 +396,14 @@ namespace SizeOnDisk.ViewModel
 
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
+            {
                 throw new ArgumentOutOfRangeException(nameof(e), MessageIsNotVMFile);
+            }
 
             if (!(e.Command is RoutedCommand command))
+            {
                 throw new ArgumentOutOfRangeException(nameof(e), "Command is not RoutedCommand");
+            }
 
             if ((e.Command as IMenuCommand)?.Tag != null)
             {
@@ -394,7 +423,10 @@ namespace SizeOnDisk.ViewModel
             }
             string path = file.Path;
             if (e.Command == FindCommand && (file.IsFile || file.IsProtected))
+            {
                 path = file.Parent.Path;
+            }
+
             ShellHelper.ShellExecute(path, null, command.Name.ToLowerInvariant());
         }
 
@@ -429,7 +461,9 @@ namespace SizeOnDisk.ViewModel
 
                 string workingDirectory = Path;
                 if (IsFile)
+                {
                     workingDirectory = Parent.Path;
+                }
 
                 if (parameters.Contains('%'))
                 {
@@ -448,13 +482,7 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        public virtual VMRootFolder Root
-        {
-            get
-            {
-                return Parent.Root;
-            }
-        }
+        public virtual VMRootFolder Root => Parent.Root;
 
         public void LogException(Exception ex)
         {

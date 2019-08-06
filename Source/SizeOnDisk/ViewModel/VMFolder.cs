@@ -27,11 +27,18 @@ namespace SizeOnDisk.ViewModel
                     {
                         bool exists = false;
                         if (file.IsFile)
+                        {
                             exists = File.Exists(file.Path);
+                        }
                         else
+                        {
                             exists = Directory.Exists(file.Path);
+                        }
+
                         if (!exists)
+                        {
                             deletedfiles.Add(file);
+                        }
                     }
                     RefreshAfterCommand();
                 }
@@ -52,11 +59,18 @@ namespace SizeOnDisk.ViewModel
                     {
                         bool exists = false;
                         if (file.IsFile)
+                        {
                             exists = File.Exists(file.Path);
+                        }
                         else
+                        {
                             exists = Directory.Exists(file.Path);
+                        }
+
                         if (!exists)
+                        {
                             deletedfiles.Add(file);
+                        }
                     }
                     RefreshAfterCommand();
                 }
@@ -78,9 +92,14 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name, null)
         {
             if (parent == null)
+            {
                 _Path = name;
+            }
             else
+            {
                 _Path = System.IO.Path.Combine(parent.Path, name);
+            }
+
             RefreshCount();
         }
 
@@ -92,45 +111,30 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public override bool IsFile
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool IsFile => false;
 
 
 
 
-        public override string Extension
-        {
-            get
-            {
-                return string.Empty;
-            }
-        }
+        public override string Extension => string.Empty;
 
 
 
         private ulong? _FileTotal = 1;
         private ulong? _FolderTotal = null;
 
-        public ulong? FileCount
-        {
-            get { return (ulong?)(Childs?.Count - Folders?.Count); }
-        }
+        public ulong? FileCount => (ulong?)(Childs?.Count - Folders?.Count);
 
         public override ulong? FileTotal
         {
-            get { return _FileTotal; }
-            protected set { SetProperty(ref _FileTotal, value); }
+            get => _FileTotal;
+            protected set => SetProperty(ref _FileTotal, value);
         }
 
         public override ulong? FolderTotal
         {
-            get { return _FolderTotal; }
-            protected set { SetProperty(ref _FolderTotal, value); }
+            get => _FolderTotal;
+            protected set => SetProperty(ref _FolderTotal, value);
         }
 
 
@@ -149,7 +153,7 @@ namespace SizeOnDisk.ViewModel
 
         public bool IsTreeSelected
         {
-            get { return (_Attributes & FileAttributesEx.TreeSelected) == FileAttributesEx.TreeSelected; }
+            get => (_Attributes & FileAttributesEx.TreeSelected) == FileAttributesEx.TreeSelected;
             set
             {
                 if (value != IsTreeSelected)
@@ -159,7 +163,9 @@ namespace SizeOnDisk.ViewModel
                         _Attributes |= FileAttributesEx.TreeSelected;
                         //this.IsExpanded = true;    Maybe
                         if (value && Parent != null)
+                        {
                             Parent.IsExpanded = true;
+                        }
 
                         SelectTreeItem(this);
                     }
@@ -192,18 +198,24 @@ namespace SizeOnDisk.ViewModel
 
         public bool IsExpanded
         {
-            get { return (_Attributes & FileAttributesEx.Expanded) == FileAttributesEx.Expanded; }
+            get => (_Attributes & FileAttributesEx.Expanded) == FileAttributesEx.Expanded;
             set
             {
                 if (value != IsExpanded)
                 {
                     if (value)
+                    {
                         _Attributes |= FileAttributesEx.Expanded;
+                    }
                     else
+                    {
                         _Attributes &= ~FileAttributesEx.Expanded;
+                    }
 
                     if (value && Parent != null)
+                    {
                         Parent.IsExpanded = true;
+                    }
 
                     OnPropertyChanged(nameof(IsExpanded));
                 }
@@ -273,8 +285,10 @@ namespace SizeOnDisk.ViewModel
         {
             ulong total = 0;
 
-            foreach (var item in source.Where(T => T.HasValue))
+            foreach (ulong? item in source.Where(T => T.HasValue))
+            {
                 total = total + item ?? 0;
+            }
 
             return total;
         }
@@ -315,13 +329,20 @@ namespace SizeOnDisk.ViewModel
                             {
                                 found = new VMFolder(this, fileInfo.FileName, fileInfo.FullPath);
                                 if (refreshOnNew)
+                                {
                                     (found as VMFolder).Refresh(new ParallelOptions());
+                                }
                             }
                             else
+                            {
                                 found = new VMFile(this, fileInfo.FileName);
+                            }
+
                             addChilds.Add(found);
                             if (refreshOnNew && Parent.IsTreeSelected)
+                            {
                                 RefreshOnView();
+                            }
                         }
                         else
                         {
@@ -350,7 +371,10 @@ namespace SizeOnDisk.ViewModel
         public virtual void Refresh(ParallelOptions parallelOptions)
         {
             if (Root.IsDesign || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
+            {
                 return;
+            }
+
             try
             {
                 FillChildList();
@@ -375,7 +399,10 @@ namespace SizeOnDisk.ViewModel
                 LogException(ex);
             }
             if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
+            {
                 return;
+            }
+
             RefreshCount();
         }
 

@@ -14,16 +14,24 @@ namespace SizeOnDisk.Converters
             if (targetType == typeof(TaskbarItemProgressState))
             {
                 if (convertible != null && convertible.ToBoolean(culture))
+                {
                     return TaskbarItemProgressState.Indeterminate;
+                }
+
                 return TaskbarItemProgressState.None;
             }
             if (targetType == typeof(bool))
             {
                 if (value is TaskExecutionState)
+                {
                     return ((TaskExecutionState)value) == TaskExecutionState.Running;
+                }
 
                 if (convertible != null && convertible.ToBoolean(culture))
+                {
                     return true;
+                }
+
                 return false;
             }
             if (value != null && value is TaskExecutionState)
@@ -47,7 +55,10 @@ namespace SizeOnDisk.Converters
                 }
             }
             if (convertible != null && convertible.ToBoolean(culture))
+            {
                 return Localization.Calculating;
+            }
+
             return Localization.Ready;
         }
 

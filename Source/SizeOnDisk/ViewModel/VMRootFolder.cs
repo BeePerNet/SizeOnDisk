@@ -26,7 +26,10 @@ namespace SizeOnDisk.ViewModel
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
             if (bindingCollection == null)
+            {
                 throw new ArgumentNullException(nameof(bindingCollection));
+            }
+
             base.AddCommandModels(bindingCollection);
             bindingCollection.Add(new CommandBinding(RefreshCommand, CallRefreshCommand, CanCallRefreshCommand));
             bindingCollection.Add(new CommandBinding(StopCommand, CallStopCommand, CanCallStopCommand));
@@ -76,55 +79,43 @@ namespace SizeOnDisk.ViewModel
 
         #endregion fields
 
-        public IEnumerable<VMRootFolder> DummyMe
-        {
-            get
-            {
-                return new VMRootFolder[] { this };
-            }
-        }
+        public IEnumerable<VMRootFolder> DummyMe => new VMRootFolder[] { this };
 
         public new VMRootHierarchy Parent { get; }
 
 
         #region properties
 
-        VMFolder _SelectedTreeItem;
+        private VMFolder _SelectedTreeItem;
 
         public VMFolder SelectedTreeItem
         {
-            get { return _SelectedTreeItem; }
-            set { SetProperty(ref _SelectedTreeItem, value); }
+            get => _SelectedTreeItem;
+            set => SetProperty(ref _SelectedTreeItem, value);
         }
 
-        VMFile _SelectedListItem;
+        private VMFile _SelectedListItem;
 
         public VMFile SelectedListItem
         {
-            get { return _SelectedListItem; }
-            set { SetProperty(ref _SelectedListItem, value); }
+            get => _SelectedListItem;
+            set => SetProperty(ref _SelectedListItem, value);
         }
 
         public string HardDrivePath { get; }
 
-        public TimeSpan RunTime
-        {
-            get
-            {
-                return _Runwatch.Elapsed;
-            }
-        }
+        public TimeSpan RunTime => _Runwatch.Elapsed;
 
         public long HardDriveUsage
         {
-            get { return _HardDriveUsage; }
-            protected set { SetProperty(ref _HardDriveUsage, value); }
+            get => _HardDriveUsage;
+            protected set => SetProperty(ref _HardDriveUsage, value);
         }
 
         public long HardDriveFree
         {
-            get { return _HardDriveFree; }
-            protected set { SetProperty(ref _HardDriveFree, value); }
+            get => _HardDriveFree;
+            protected set => SetProperty(ref _HardDriveFree, value);
         }
 
         #endregion properties
@@ -223,9 +214,13 @@ namespace SizeOnDisk.ViewModel
                 _Runwatch.Stop();
                 OnPropertyChanged(nameof(RunTime));
                 if (parallelOptions != null && parallelOptions.CancellationToken != null)
+                {
                     ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
+                }
                 else
+                {
                     ExecutionState = TaskExecutionState.Unknown;
+                }
             }
         }
 
@@ -242,7 +237,9 @@ namespace SizeOnDisk.ViewModel
         private ParallelOptions GetParallelOptions()
         {
             if (_CancellationTokenSource != null && _CancellationTokenSource.Token != null && !_CancellationTokenSource.Token.CanBeCanceled)
+            {
                 _ParallelOptions = null;
+            }
 
             if (_ParallelOptions == null)
             {
@@ -251,7 +248,9 @@ namespace SizeOnDisk.ViewModel
                     if (_ParallelOptions == null)
                     {
                         if (_CancellationTokenSource != null)
+                        {
                             _CancellationTokenSource.Dispose();
+                        }
 
                         _ParallelOptions = new ParallelOptions();
                         _CancellationTokenSource = new CancellationTokenSource();
@@ -270,7 +269,9 @@ namespace SizeOnDisk.ViewModel
                 {
                     Exception ex = TaskHelper.SafeExecute(action);
                     if (ex != null)
+                    {
                         LogException(ex);
+                    }
                 }),
                 parallelOptions.CancellationToken,
                 (highpriority ? TaskCreationOptions.LongRunning : TaskCreationOptions.None) | TaskCreationOptions.DenyChildAttach,
@@ -331,7 +332,10 @@ namespace SizeOnDisk.ViewModel
                     {
                         cts = _CancellationTokenSource;
                         if (cts.Token.CanBeCanceled)
+                        {
                             cts.Cancel(true);
+                        }
+
                         _CancellationTokenSource = null;
                         _ParallelOptions = null;
                     }
@@ -358,10 +362,7 @@ namespace SizeOnDisk.ViewModel
 
         public TaskExecutionState ExecutionState
         {
-            get
-            {
-                return _ExecutionState;
-            }
+            get => _ExecutionState;
             private set
             {
                 if (_ExecutionState != value)
@@ -383,17 +384,21 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        bool _disposed = false;
+        private bool _disposed = false;
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
+            {
                 return;
+            }
 
             if (disposing)
             {
                 Stop();
                 if (_CancellationTokenSource != null)
+                {
                     _CancellationTokenSource.Dispose();
+                }
             }
             // free native resources
             _disposed = true;
@@ -412,13 +417,7 @@ namespace SizeOnDisk.ViewModel
             Logs.DoAdd((logs) => log);
         }
 
-        public override VMRootFolder Root
-        {
-            get
-            {
-                return this;
-            }
-        }
+        public override VMRootFolder Root => this;
 
 
 

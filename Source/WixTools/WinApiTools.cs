@@ -45,14 +45,13 @@ namespace WixTools
 
 
         [DllImport("Kernel32.dll", CharSet = CharSet.Auto)]
-        static extern System.Boolean EnumUILanguages(
+        private static bool EnumUILanguages(
             EnumUILanguagesProcDelegate lpUILanguageEnumProc,
-            System.UInt32 dwFlags,
+            uint dwFlags,
             System.IntPtr lParam
             );
 
-
-        delegate System.Boolean EnumUILanguagesProcDelegate(
+        private delegate bool EnumUILanguagesProcDelegate(
             System.IntPtr lpUILanguageString,
             System.IntPtr lParam
             );
@@ -84,7 +83,7 @@ namespace WixTools
         #region Windows API
 
         private delegate bool EnumLocalesProcExDelegate(
-           [MarshalAs(UnmanagedType.LPWStr)]String lpLocaleString,
+           [MarshalAs(UnmanagedType.LPWStr)]string lpLocaleString,
            LocaleType dwFlags, int lParam);
 
         [DllImport(@"kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]

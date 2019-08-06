@@ -9,10 +9,7 @@ namespace SizeOnDisk.ViewModel
     {
         public UISizeFormatType UISizeFormat
         {
-            get
-            {
-                return Properties.Settings.Default.UISizeFormat;
-            }
+            get => Properties.Settings.Default.UISizeFormat;
             set
             {
                 Properties.Settings.Default.UISizeFormat = value;
@@ -22,10 +19,7 @@ namespace SizeOnDisk.ViewModel
 
         public string Language
         {
-            get
-            {
-                return CultureInfo.CurrentCulture.Name;
-            }
+            get => CultureInfo.CurrentCulture.Name;
             set
             {
                 Properties.Settings.Default.Language = value;
@@ -34,13 +28,7 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        public static Dictionary<string, string> Languages
-        {
-            get
-            {
-                return GlobalizationBehavior.Cultures;
-            }
-        }
+        public static Dictionary<string, string> Languages => GlobalizationBehavior.Cultures;
 
 
 

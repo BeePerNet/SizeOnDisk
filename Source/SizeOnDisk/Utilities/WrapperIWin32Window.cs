@@ -22,13 +22,7 @@ namespace SizeOnDisk.Utilities
         }
 
         // Properties
-        IntPtr IWin32Window.Handle
-        {
-            get
-            {
-                return _handle;
-            }
-        }
+        IntPtr IWin32Window.Handle => _handle;
     }
 
 }

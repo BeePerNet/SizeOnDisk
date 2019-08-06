@@ -20,13 +20,13 @@ namespace SizeOnDisk
             GlobalizationBehavior.ChangeLanguage(Settings.Default.Language);
         }
 
-        void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             ExceptionBox.ShowException(e.Exception);
             e.Handled = true;
         }
 
-        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             ExceptionBox.ShowException(e.ExceptionObject as Exception);
         }

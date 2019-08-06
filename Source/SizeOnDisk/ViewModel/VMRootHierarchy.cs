@@ -18,8 +18,7 @@ namespace SizeOnDisk.ViewModel
     {
         public ObservableImmutableCollection<VMRootFolder> Folders { get; } = new ObservableImmutableCollection<VMRootFolder>();
 
-
-        void TimerTick(object sender, EventArgs e)
+        private void TimerTick(object sender, EventArgs e)
         {
             RunningThreads = Process.GetCurrentProcess().Threads.Count;
         }
@@ -29,16 +28,16 @@ namespace SizeOnDisk.ViewModel
         private int _RunningThreads = 0;
         public int RunningThreads
         {
-            get { return _RunningThreads; }
-            set { SetProperty(ref _RunningThreads, value); }
+            get => _RunningThreads;
+            set => SetProperty(ref _RunningThreads, value);
         }
 
-        VMRootFolder _SelectedRootFolder;
+        private VMRootFolder _SelectedRootFolder;
 
         public VMRootFolder SelectedRootFolder
         {
-            get { return _SelectedRootFolder; }
-            set { SetProperty(ref _SelectedRootFolder, value); }
+            get => _SelectedRootFolder;
+            set => SetProperty(ref _SelectedRootFolder, value);
         }
 
         private readonly DispatcherTimer _Timer;
@@ -71,7 +70,10 @@ namespace SizeOnDisk.ViewModel
         {
             string name = path;
             if (name.Count(T => T == '\\') > 1)
+            {
                 name = Path.GetFileName(path);
+            }
+
             VMRootFolder newFolder = new VMRootFolder(this, name, path);
             Folders.Add(newFolder);
 
@@ -84,7 +86,10 @@ namespace SizeOnDisk.ViewModel
         public void RemoveRootFolder(VMRootFolder folder)
         {
             if (SelectedRootFolder == folder)
+            {
                 SelectedRootFolder = null;
+            }
+
             Folders.Remove(folder);
         }
 
@@ -92,20 +97,16 @@ namespace SizeOnDisk.ViewModel
         {
             Task[] tasks = Folders.Select(T => (T as VMRootFolder).Stop()).Where(T => T != null).ToArray();
             if (tasks.Length > 0)
+            {
                 Task.WaitAll(tasks);
+            }
         }
 
         #endregion function
 
         #region Commands
 
-        public bool IsRunning
-        {
-            get
-            {
-                return Folders.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
-            }
-        }
+        public bool IsRunning => Folders.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
 
         internal void RefreshIsRunning()
         {
@@ -124,7 +125,10 @@ namespace SizeOnDisk.ViewModel
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
             if (bindingCollection == null)
+            {
                 throw new ArgumentNullException(nameof(bindingCollection));
+            }
+
             bindingCollection.Add(new CommandBinding(OpenFolderCommand, CallOpenCommand));
             bindingCollection.Add(new CommandBinding(RefreshAllCommand, CallRefreshCommand, CanCallRefreshCommand));
         }
@@ -151,7 +155,9 @@ namespace SizeOnDisk.ViewModel
         {
             e.Handled = true;
             foreach (VMRootFolder folder in Folders)
+            {
                 folder.RefreshAsync();
+            }
         }
 
         public override void AddInputModels(InputBindingCollection bindingCollection)

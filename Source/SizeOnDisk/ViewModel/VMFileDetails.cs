@@ -22,7 +22,10 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFileBigIcon()
         {
             if (defaultFileBigIcon == null)
+            {
                 defaultFileBigIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileBig.png");
+            }
+
             return defaultFileBigIcon;
         }
 
@@ -30,7 +33,10 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFileIcon()
         {
             if (defaultFileIcon == null)
+            {
                 defaultFileIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
+            }
+
             return defaultFileIcon;
         }
 
@@ -38,7 +44,10 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFolderBigIcon()
         {
             if (defaultFolderBigIcon == null)
+            {
                 defaultFolderBigIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderBig.png");
+            }
+
             return defaultFolderBigIcon;
         }
 
@@ -46,7 +55,10 @@ namespace SizeOnDisk.ViewModel
         private static BitmapImage GetDefaultFolderIcon()
         {
             if (defaultFolderIcon == null)
+            {
                 defaultFolderIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderSmall.png");
+            }
+
             return defaultFolderIcon;
         }
 
@@ -74,9 +86,13 @@ namespace SizeOnDisk.ViewModel
             get
             {
                 if (!_vmFile.Root.IsDesign && _vmFile.IsFile)
+                {
                     return ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
+                }
                 else
+                {
                     return string.Empty;
+                }
             }
         }
 
@@ -91,13 +107,20 @@ namespace SizeOnDisk.ViewModel
                 try
                 {
                     if (!_vmFile.Root.IsDesign)
+                    {
                         icon = ShellHelper.GetIcon(_vmFile.Path, 16);
+                    }
+
                     if (icon == null)
                     {
                         if (_vmFile.IsFile)
+                        {
                             icon = GetDefaultFileIcon();
+                        }
                         else
+                        {
                             icon = GetDefaultFolderIcon();
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -111,8 +134,9 @@ namespace SizeOnDisk.ViewModel
 
 
         private bool thumbnailInitialized = false;
+
         //Seems to have problems with VOB
-        BitmapSource _Thumbnail = null;
+        private BitmapSource _Thumbnail = null;
         public BitmapSource Thumbnail
         {
             get
@@ -122,13 +146,20 @@ namespace SizeOnDisk.ViewModel
                     if (!thumbnailInitialized)
                     {
                         if (!_vmFile.Root.IsDesign)
+                        {
                             _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+                        }
+
                         if (_Thumbnail == null)
                         {
                             if (_vmFile.IsFile)
+                            {
                                 _Thumbnail = GetDefaultFileBigIcon();
+                            }
                             else
+                            {
                                 _Thumbnail = GetDefaultFolderBigIcon();
+                            }
                         }
                         else
                         {
@@ -168,7 +199,7 @@ namespace SizeOnDisk.ViewModel
 
 
         private IEnumerable<string> _Verbs;
-        public IEnumerable<string> Verbs { get { return _Verbs; } set { SetProperty(ref _Verbs, value); } }
+        public IEnumerable<string> Verbs { get => _Verbs; set => SetProperty(ref _Verbs, value); }
 
         public IEnumerable<ICommand> FileCommands
         {
@@ -193,9 +224,14 @@ namespace SizeOnDisk.ViewModel
                             added = true;
                             string display = item.Id;
                             if (display.StartsWith("loc:", StringComparison.OrdinalIgnoreCase))
+                            {
                                 display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
+                            }
+
                             if (string.IsNullOrEmpty(display))
+                            {
                                 display = item.Id;
+                            }
 
                             DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), _vmFile.ExecuteCommand, _vmFile.CanExecuteCommand)
                             {
@@ -215,7 +251,9 @@ namespace SizeOnDisk.ViewModel
                         }
                     }
                     if (added)
+                    {
                         commands.Add(SeparatorDummyCommand.Instance);
+                    }
 
                     ShellCommandRoot root = ShellHelper.GetShellCommands(_vmFile.Path, !_vmFile.IsFile);
                     string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
@@ -246,7 +284,10 @@ namespace SizeOnDisk.ViewModel
                                         Tag = verb.Command
                                     };
                                     if (verb.Verb.ToUpperInvariant().Contains("PRINT"))
+                                    {
                                         cmd.Icon = VMFile.PrintCommand.Icon;
+                                    }
+
                                     parent.Childs.Add(cmd);
                                 }
                             }

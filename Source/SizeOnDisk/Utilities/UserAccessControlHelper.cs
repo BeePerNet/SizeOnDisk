@@ -24,7 +24,7 @@ namespace SizeOnDisk.Utilities
         {
             [DllImport("advapi32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool OpenProcessToken(IntPtr ProcessHandle, UInt32 DesiredAccess, out IntPtr TokenHandle);
+            internal static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
 
             [DllImport("advapi32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
@@ -75,24 +75,12 @@ namespace SizeOnDisk.Utilities
         /// <summary>
         /// Check if the operating system contain UAC security system
         /// </summary>
-        public static bool SupportUserAccessControl
-        {
-            get
-            {
-                return System.Environment.OSVersion.Version.Major >= 6;
-            }
-        }
+        public static bool SupportUserAccessControl => System.Environment.OSVersion.Version.Major >= 6;
 
         /// <summary>
         /// Check if process run in elevated privilege
         /// </summary>
-        public static bool IsProcessElevated
-        {
-            get
-            {
-                return GetIsProcessElevated();
-            }
-        }
+        public static bool IsProcessElevated => GetIsProcessElevated();
 
         [SecurityCritical]
         [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Assertion)]

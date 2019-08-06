@@ -10,7 +10,9 @@ namespace SizeOnDisk.ViewModel
             try
             {
                 if (action == null)
+                {
                     throw new ArgumentNullException(nameof(action));
+                }
 
                 action();
             }

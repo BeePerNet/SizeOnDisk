@@ -14,7 +14,9 @@ namespace SizeOnDisk.ViewModel
             ShortText = shortText;
             LongText = longText;
             if (string.IsNullOrWhiteSpace(LongText))
+            {
                 LongText = ShortText;
+            }
         }
 
         public DateTime TimeStamp { get; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Security;
 
 namespace SizeOnDisk.Shell
 {
@@ -18,14 +17,23 @@ namespace SizeOnDisk.Shell
             Path = path;
             FullPath = filename;
             if (string.IsNullOrEmpty(path))
+            {
                 Path = filename;
+            }
             else
+            {
                 FullPath = System.IO.Path.Combine(path, FullPath);
+            }
+
             string fullfilename = string.Concat("\\\\?\\", FullPath);
             IOHelper.FillAttributeInfo(fullfilename, ref _data);
             if ((Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
+            {
                 if ((Attributes & FileAttributes.Directory) == 0)
+                {
                     CompressedSize = (ulong?)IOHelper.GetCompressedFileSize(fullfilename);
+                }
+            }
         }
 
         internal LittleFileInfo(string path, string filename, IOHelper.WIN32_FILE_ATTRIBUTE_DATA data)
@@ -35,8 +43,12 @@ namespace SizeOnDisk.Shell
             FullPath = System.IO.Path.Combine(path, filename);
             _data = data;
             if ((Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
+            {
                 if ((Attributes & FileAttributes.Directory) == 0)
+                {
                     CompressedSize = (ulong?)IOHelper.GetCompressedFileSize(string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename)));
+                }
+            }
         }
 
         public bool IsFolder => (_data.fileAttributes & (int)FileAttributes.Directory) > 0;

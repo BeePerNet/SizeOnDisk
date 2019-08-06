@@ -51,7 +51,10 @@ namespace SizeOnDisk.Shell
         public static string GetFriendlyName(string extension)
         {
             if (string.IsNullOrWhiteSpace(extension))
+            {
                 return string.Empty;
+            }
+
             if (currentCulture != CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
             {
                 associations = new ConcurrentDictionary<string, string>();
@@ -74,8 +77,10 @@ namespace SizeOnDisk.Shell
             // Create a native shellitem from our path
             int retCode = SafeNativeMethods.SHCreateItemFromParsingNameIShellItemImageFactory(path, IntPtr.Zero, typeof(SafeNativeMethods.IShellItemImageFactory).GUID, out SafeNativeMethods.IShellItemImageFactory imageFactory);
             if (retCode != 0 || imageFactory == null)
+            {
                 //return new BitmapImage(new Uri("pack://application:,,,/SizeOnDisk;component/Icons/File.png"));
                 return null;
+            }
             //throw new ExternalException("ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR(retCode));
 
 
@@ -86,9 +91,14 @@ namespace SizeOnDisk.Shell
 
             SafeNativeMethods.SIIGBF options = SafeNativeMethods.SIIGBF.ResizeToFit;
             if (!thumbnail)
+            {
                 options = SafeNativeMethods.SIIGBF.IconOnly;
+            }
+
             if (cache)
+            {
                 options |= SafeNativeMethods.SIIGBF.MemoryOnly;
+            }
 
             IntPtr hBitmap = IntPtr.Zero;
             try
@@ -100,7 +110,10 @@ namespace SizeOnDisk.Shell
                 Marshal.FinalReleaseComObject(imageFactory);
             }
             if (hBitmap == IntPtr.Zero)
+            {
                 return null;
+            }
+
             try
             {
                 // return a System.Media.Imaging.BitmapSource
@@ -187,7 +200,9 @@ namespace SizeOnDisk.Shell
                             {
                                 values = outBuff.ToString().Split(',');
                                 if (values != null && values.Length == 2)
+                                {
                                     return SafeNativeMethods.ExtractStringFromDLL(values[0], int.Parse(values[1], CultureInfo.InvariantCulture));
+                                }
                             }
                             else
                             {
@@ -207,7 +222,9 @@ namespace SizeOnDisk.Shell
         private static ShellCommandVerb GetVerb(RegistryKey verbkey, string id, string appUserModeId)
         {
             if (id.ToUpperInvariant() == "RUNAS")
+            {
                 return null;
+            }
             //We are not taking DDE
             RegistryKey cmd = verbkey.OpenSubKey("ddeexec");
             if (cmd != null && !string.IsNullOrEmpty(cmd.GetValue(string.Empty, string.Empty).ToString()))
@@ -223,7 +240,10 @@ namespace SizeOnDisk.Shell
 
             string name = verbkey.GetValue("MUIVerb", string.Empty).ToString();
             if (string.IsNullOrEmpty(name))
+            {
                 name = verbkey.GetValue(string.Empty, string.Empty).ToString();
+            }
+
             if (name.StartsWith("@", StringComparison.Ordinal))
             {
                 StringBuilder outBuff = new StringBuilder(1024);
@@ -236,7 +256,10 @@ namespace SizeOnDisk.Shell
             {
                 string locname = LocExtension.GetLocalizedValue<string>($"PresentationCore:ExceptionStringTable:{id}Text");
                 if (string.IsNullOrEmpty(locname))
+                {
                     locname = LocExtension.GetLocalizedValue<string>(id);
+                }
+
                 if (!string.IsNullOrEmpty(locname))
                 {
                     verb.Name = locname;
@@ -270,7 +293,9 @@ namespace SizeOnDisk.Shell
                             {
                                 name = cmd.GetValue(string.Empty, string.Empty).ToString();
                                 if (!string.IsNullOrEmpty(name))
+                                {
                                     verb.Command = name;
+                                }
                             }
                             if (string.IsNullOrEmpty(name))
                             {
@@ -279,7 +304,9 @@ namespace SizeOnDisk.Shell
                                 {
                                     name = cmd.GetValue(string.Empty, string.Empty).ToString();
                                     if (!string.IsNullOrEmpty(name))
+                                    {
                                         verb.Command = "dll:" + name;
+                                    }
                                 }
                             }
                         }
@@ -290,7 +317,9 @@ namespace SizeOnDisk.Shell
             if (string.IsNullOrEmpty(verb.Command))
             {
                 if (!string.IsNullOrEmpty(appUserModeId))
+                {
                     verb.Command = "Id:" + appUserModeId;
+                }
             }
 
             if (string.IsNullOrEmpty(verb.Command))
@@ -328,7 +357,9 @@ namespace SizeOnDisk.Shell
                 name = GetText(name);
             }
             if (!string.IsNullOrEmpty(name))
+            {
                 soft.Name = name;
+            }
 
             string value = ShellHelper.FileExtentionInfo(ShellHelper.AssocStr.DefaultIcon, id);
             soft.Icon = GetIcon(value);
@@ -387,7 +418,9 @@ namespace SizeOnDisk.Shell
                     {
                         soft.Verbs.Add(verb);
                         if (defaultverb == appverb)
+                        {
                             soft.Default = verb;
+                        }
                     }
                 }
             }
@@ -395,13 +428,19 @@ namespace SizeOnDisk.Shell
             {
                 string application = appkey.GetValue(string.Empty, string.Empty).ToString();
                 if (!string.IsNullOrWhiteSpace(application))
+                {
                     soft.Name = application;
+                }
                 else
+                {
                     soft.Name = id;
+                }
             }
 
             if (soft.Verbs.Count <= 0)
+            {
                 return null;
+            }
 
             if (soft.Icon == null)
             {
@@ -444,12 +483,17 @@ namespace SizeOnDisk.Shell
 
                     List<string> subvalues = new List<string>(); ;
                     if (key != null)
+                    {
                         subvalues.AddRange(key.GetValueNames());
+                    }
 
                     if (!string.IsNullOrWhiteSpace(defaultApp))
                     {
                         if (subvalues.Contains(defaultApp))
+                        {
                             subvalues.Remove(defaultApp);
+                        }
+
                         subvalues.Insert(0, defaultApp);
                     }
 
@@ -482,7 +526,9 @@ namespace SizeOnDisk.Shell
                             RegistryKey appkey = Registry.ClassesRoot.OpenSubKey("Applications\\" + subkey);
                             ShellCommandSoftware soft = GetSoftware(appkey, subkey);
                             if (soft != null)
+                            {
                                 result.Softwares.Add(soft);
+                            }
                         }
                     }
                 }
@@ -509,7 +555,10 @@ namespace SizeOnDisk.Shell
             info.hwnd = window;
             info.cbSize = Marshal.SizeOf(info);
             if (!flags.HasValue)
+            {
                 flags = !string.IsNullOrWhiteSpace(verb) && (verb != "find") ? ShellExecuteFlags.INVOKEIDLIST : ShellExecuteFlags.DEFAULT;
+            }
+
             flags = flags | ShellExecuteFlags.NOUI | ShellExecuteFlags.UNICODE;
             info.fMask = (uint)flags;
             SafeNativeMethods.ShellExecuteEx(ref info);
@@ -525,10 +574,16 @@ namespace SizeOnDisk.Shell
         {
             IntPtr pcchOut = IntPtr.Zero;
             if (SafeNativeMethods.AssocQueryString(AssocF.Verify, assocStr, doctype, null, null, ref pcchOut) != 1)
+            {
                 return null;
+            }
+
             StringBuilder pszOut = new StringBuilder((int)pcchOut);
             if (SafeNativeMethods.AssocQueryString(AssocF.Verify, assocStr, doctype, null, pszOut, ref pcchOut) != 0)
+            {
                 return null;
+            }
+
             return pszOut.ToString();
         }
 
@@ -544,7 +599,9 @@ namespace SizeOnDisk.Shell
                     {
                         pos = cmd.IndexOf('\"', pos);
                         if (pos < 0 || pos >= cmd.Length)
+                        {
                             pos = cmd.Length;
+                        }
                         else if (cmd[pos + 1] != '\"')
                         {
                             parameters = cmd.Substring(pos + 1);
@@ -557,9 +614,15 @@ namespace SizeOnDisk.Shell
                 {
                     pos = cmd.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase);
                     if (pos < 0)
+                    {
                         pos = cmd.IndexOf(".cmd ", StringComparison.OrdinalIgnoreCase);
+                    }
+
                     if (pos < 0)
+                    {
                         pos = cmd.IndexOf(".bat ", StringComparison.OrdinalIgnoreCase);
+                    }
+
                     if (pos > 0 && pos < cmd.Length)
                     {
                         parameters = cmd.Substring(pos + 5);
@@ -577,7 +640,10 @@ namespace SizeOnDisk.Shell
                 }
             }
             else
+            {
                 cmd = string.Empty;
+            }
+
             return new Tuple<string, string>(cmd.Trim(), parameters.Trim());
         }
 
@@ -613,7 +679,9 @@ namespace SizeOnDisk.Shell
             catch (Win32Exception ex)
             {
                 if (!(ex.ErrorCode == -2147467259 && ex.NativeErrorCode == 1223))
+                {
                     ExceptionBox.ShowException(ex);
+                }
             }
             catch (Exception ex)
             {
@@ -721,20 +789,20 @@ namespace SizeOnDisk.Shell
             {
                 // Activates the specified immersive application for the "Launch" contract, passing the provided arguments
                 // string into the application.  Callers can obtain the process Id of the application instance fulfilling this contract.
-                IntPtr ActivateApplication([In] String appUserModelId, [In] String arguments, [In] ActivateOptions options, [Out] out UInt32 processId);
-                IntPtr ActivateForFile([In] String appUserModelId, [In] IShellItemArray /*IShellItemArray* */ itemArray, [In] String verb, [Out] out UInt32 processId);
-                IntPtr ActivateForProtocol([In] String appUserModelId, [In] IntPtr /* IShellItemArray* */itemArray, [Out] out UInt32 processId);
+                IntPtr ActivateApplication([In] string appUserModelId, [In] string arguments, [In] ActivateOptions options, [Out] out uint processId);
+                IntPtr ActivateForFile([In] string appUserModelId, [In] IShellItemArray /*IShellItemArray* */ itemArray, [In] string verb, [Out] out uint processId);
+                IntPtr ActivateForProtocol([In] string appUserModelId, [In] IntPtr /* IShellItemArray* */itemArray, [Out] out uint processId);
             }
 
             [ComImport, Guid("45BA127D-10A8-46EA-8AB7-56EA9078943C")]//Application Activation Manager
             internal class ApplicationActivationManager : IApplicationActivationManager
             {
                 [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)/*, PreserveSig*/]
-                public extern IntPtr ActivateApplication([In] String appUserModelId, [In] String arguments, [In] ActivateOptions options, [Out] out UInt32 processId);
+                public extern IntPtr ActivateApplication([In] string appUserModelId, [In] string arguments, [In] ActivateOptions options, [Out] out uint processId);
                 [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-                public extern IntPtr ActivateForFile([In] String appUserModelId, [In] IShellItemArray /*IShellItemArray* */ itemArray, [In] String verb, [Out] out UInt32 processId);
+                public extern IntPtr ActivateForFile([In] string appUserModelId, [In] IShellItemArray /*IShellItemArray* */ itemArray, [In] string verb, [Out] out uint processId);
                 [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-                public extern IntPtr ActivateForProtocol([In] String appUserModelId, [In] IntPtr /* IShellItemArray* */itemArray, [Out] out UInt32 processId);
+                public extern IntPtr ActivateForProtocol([In] string appUserModelId, [In] IntPtr /* IShellItemArray* */itemArray, [Out] out uint processId);
             }
 
             public enum GETPROPERTYSTOREFLAGS
@@ -961,18 +1029,22 @@ namespace SizeOnDisk.Shell
             internal static extern bool DestroyIcon(IntPtr hIcon);
 
             [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-            static extern uint ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
+            private static extern uint ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
 
             public static BitmapSource ExtractIconFromDLL(string file, int index)
             {
                 if (file.StartsWith("@%", StringComparison.Ordinal))
+                {
                     file = file.Substring(1);
+                }
 
                 IntPtr[] handles = new IntPtr[1];
                 System.IntPtr hIcon = IntPtr.Zero;
 
                 if (SafeNativeMethods.ExtractIconEx(file, index, null, handles, 1) > 0)
+                {
                     hIcon = handles[0];
+                }
 
                 //System.IntPtr hIcon = ExtractIcon(Process.GetCurrentProcess().Handle, file, number);
                 if (hIcon == IntPtr.Zero)
@@ -1020,7 +1092,10 @@ namespace SizeOnDisk.Shell
             public static string ExtractStringFromDLL(string file, int number)
             {
                 if (file.StartsWith("@", StringComparison.Ordinal))
+                {
                     file = file.Substring(1);
+                }
+
                 IntPtr lib = LoadLibrary(file);
                 StringBuilder result = new StringBuilder(256);
                 try

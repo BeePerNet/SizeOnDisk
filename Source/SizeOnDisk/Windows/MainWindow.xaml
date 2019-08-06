@@ -245,7 +245,9 @@
                                         <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
                                             <Image Panel.ZIndex="42" Width="19" Height="19" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-big.png" 
                                                    Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                            <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <cmd:AutoDisablingImage Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                                                    Width="{Binding Details.Thumbnail.PixelWidth}"
+                                                                    Height="{Binding Details.Thumbnail.PixelHeight}" />
                                         </Grid>
                                         <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                     </Grid>

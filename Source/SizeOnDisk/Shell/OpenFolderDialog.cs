@@ -29,14 +29,17 @@ namespace SizeOnDisk.Shell
         internal bool ShowDialog(IWin32Window owner)
         {
             if (Environment.OSVersion.Version.Major >= 6)
+            {
                 return ShowVistaDialog(owner);
+            }
+
             return ShowLegacyDialog(owner);
         }
 
         private bool ShowVistaDialog(IWin32Window owner)
         {
             Guid riid = typeof(ShellHelper.SafeNativeMethods.IShellItem).GUID;
-            var frm = (ShellHelper.SafeNativeMethods.IFileDialog)(new ShellHelper.SafeNativeMethods.FileOpenDialogRCW());
+            ShellHelper.SafeNativeMethods.IFileDialog frm = (ShellHelper.SafeNativeMethods.IFileDialog)(new ShellHelper.SafeNativeMethods.FileOpenDialogRCW());
             frm.GetOptions(out ShellHelper.SafeNativeMethods.FileOpenOptions options);
             options |= ShellHelper.SafeNativeMethods.FileOpenOptions.PickFolders | ShellHelper.SafeNativeMethods.FileOpenOptions.ForceFilesystem | ShellHelper.SafeNativeMethods.FileOpenOptions.NoValidate | ShellHelper.SafeNativeMethods.FileOpenOptions.NoTestFileCreate | ShellHelper.SafeNativeMethods.FileOpenOptions.DontAddToRecent;
             frm.SetOptions(options);

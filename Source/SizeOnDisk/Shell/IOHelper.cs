@@ -51,7 +51,9 @@ namespace SizeOnDisk.Shell
             private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 
             private static SHFILEOPSTRUCT GetShellOperationInfo(FileOperationType OperationType, FileOperationFlags OperationFlags, string[] SourcePath)
-                => GetShellOperationInfo(OperationType, OperationFlags, SourcePath, null);
+            {
+                return GetShellOperationInfo(OperationType, OperationFlags, SourcePath, null);
+            }
 
             private static string GetShellPath(string[] FullPaths)
             {
@@ -123,7 +125,9 @@ namespace SizeOnDisk.Shell
             /// <param name="path">Location of directory or file to recycle</param>
             /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
             public static bool MoveToRecycleBin(params string[] path)
-                => ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, path);
+            {
+                return ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, path);
+            }
 
 
             /// <summary>
@@ -132,8 +136,9 @@ namespace SizeOnDisk.Shell
             /// <param name="path">Location of directory or file to recycle</param>
             /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
             public static bool PermanentDelete(params string[] path)
-                => ShellDeleteOperation(0, path);
-
+            {
+                return ShellDeleteOperation(0, path);
+            }
         }
 
         /// <summary>
@@ -280,7 +285,9 @@ namespace SizeOnDisk.Shell
                 : base(true) { }
 
             protected override bool ReleaseHandle()
-                => SafeNativeMethods.FindClose(base.handle);
+            {
+                return SafeNativeMethods.FindClose(base.handle);
+            }
         }
 
 
@@ -348,7 +355,9 @@ namespace SizeOnDisk.Shell
                         {
                             num = Marshal.GetLastWin32Error();
                             if (num != 0)
+                            {
                                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+                            }
                         }
                     }
                     finally
@@ -398,7 +407,10 @@ namespace SizeOnDisk.Shell
             uint losize = SafeNativeMethods.GetCompressedFileSize(filename, out uint hosize);
             int error = Marshal.GetLastWin32Error();
             if (hosize == 0 && losize == 0xFFFFFFFF && error != 0)
+            {
                 return null;
+            }
+
             return ((long)hosize << 32) + losize;
         }
 
@@ -407,7 +419,10 @@ namespace SizeOnDisk.Shell
             string drive = System.IO.Path.GetPathRoot(path);
             bool result = SafeNativeMethods.GetDiskFreeSpace(drive, out uint sectorsPerCluster, out uint bytesPerSector, out uint _, out _);
             if (!result)
+            {
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+            }
+
             return sectorsPerCluster * bytesPerSector;
         }
 
