@@ -11,7 +11,7 @@ namespace WixTools
         public static ICollection<CultureInfo> GetInstalledCultures()
         {
             List<CultureInfo> result = new List<CultureInfo>();
-            EnumUILanguagesProcDelegate enumCallback = (lpUILanguageString, lParam) =>
+            bool enumCallback(IntPtr lpUILanguageString, IntPtr lParam)
             {
                 try
                 {
@@ -33,7 +33,7 @@ namespace WixTools
                     // Must be ignored.
                 }
                 return true;
-            };
+            }
 
             if (EnumUILanguages(enumCallback, 0, IntPtr.Zero) == false)
             {
@@ -45,7 +45,7 @@ namespace WixTools
 
 
         [DllImport("Kernel32.dll", CharSet = CharSet.Auto)]
-        private static bool EnumUILanguages(
+        private static extern bool EnumUILanguages(
             EnumUILanguagesProcDelegate lpUILanguageEnumProc,
             uint dwFlags,
             System.IntPtr lParam
@@ -90,6 +90,7 @@ namespace WixTools
         private static extern bool EnumSystemLocalesEx(EnumLocalesProcExDelegate pEnumProcEx,
            LocaleType dwFlags, int lParam, IntPtr lpReserved);
 
+        [Flags]
         public enum LocaleType : uint
         {
             LocaleAll = 0x00000000,             // Enumerate all named based locales
@@ -102,6 +103,7 @@ namespace WixTools
 
         #endregion
 
+        [Flags]
         public enum CultureTypes : uint
         {
             SpecificCultures = LocaleType.LocaleSpecificData,
@@ -115,7 +117,7 @@ namespace WixTools
            LocaleType cultureTypes)
         {
             List<CultureInfo> cultures = new List<CultureInfo>();
-            EnumLocalesProcExDelegate enumCallback = (locale, flags, lParam) =>
+            bool enumCallback(string locale, LocaleType flags, int lParam)
             {
                 try
                 {
@@ -127,7 +129,7 @@ namespace WixTools
                     // Must be ignored.
                 }
                 return true;
-            };
+            }
 
             if (EnumSystemLocalesEx(enumCallback, cultureTypes, 0, IntPtr.Zero) == false)
             {
