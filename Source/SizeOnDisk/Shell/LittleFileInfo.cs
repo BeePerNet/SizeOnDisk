@@ -24,8 +24,8 @@ namespace SizeOnDisk.Shell
                 FullPath = System.IO.Path.Combine(path, FullPath);
             string fullfilename = string.Concat("\\\\?\\", FullPath);
             IOHelper.FillAttributeInfo(fullfilename, ref _data);
-            if ((this.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
-                if ((this.Attributes & FileAttributes.Directory) == 0)
+            if ((Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
+                if ((Attributes & FileAttributes.Directory) == 0)
                     CompressedSize = (ulong?)IOHelper.GetCompressedFileSize(fullfilename);
         }
 
@@ -35,8 +35,8 @@ namespace SizeOnDisk.Shell
             Path = path;
             FullPath = System.IO.Path.Combine(path, filename);
             _data = data;
-            if ((this.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
-                if ((this.Attributes & FileAttributes.Directory) == 0)
+            if ((Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
+                if ((Attributes & FileAttributes.Directory) == 0)
                     CompressedSize = (ulong?)IOHelper.GetCompressedFileSize(string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename)));
         }
 

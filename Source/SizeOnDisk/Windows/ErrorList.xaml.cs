@@ -13,8 +13,8 @@ namespace SizeOnDisk.Windows
         public ErrorList(Window owner, VMRootFolder folder)
         {
             InitializeComponent();
-            this.Owner = owner;
-            this.DataContext = folder;
+            Owner = owner;
+            DataContext = folder;
         }
 
         private void DataGridRow_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

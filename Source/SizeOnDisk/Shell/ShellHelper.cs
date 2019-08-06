@@ -759,13 +759,13 @@ namespace SizeOnDisk.Shell
             {
                 private readonly Guid fmtid;
                 private readonly int pid;
-                public Guid FormatId => this.fmtid;
-                public int PropertyId => this.pid;
+                public Guid FormatId => fmtid;
+                public int PropertyId => pid;
 
                 public REFPROPERTYKEY(Guid formatId, int propertyId)
                 {
-                    this.fmtid = formatId;
-                    this.pid = propertyId;
+                    fmtid = formatId;
+                    pid = propertyId;
                 }
                 public static readonly REFPROPERTYKEY PKEY_DateCreated = new REFPROPERTYKEY(new Guid("B725F130-47EF-101A-A5F1-02608C9EEBAC"), 15);
             }
@@ -1059,7 +1059,7 @@ namespace SizeOnDisk.Shell
                 // use only when QuadPart canot be passed
                 public long ToInt64()
                 {
-                    return ((long)this.High << 32) | (uint)this.Low;
+                    return ((long)High << 32) | (uint)Low;
                 }
 
                 // just for demonstration

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -175,15 +174,15 @@ namespace SizeOnDisk.Shell
             [SecurityCritical]
             public void PopulateFrom(IOHelper.WIN32_FIND_DATA findData)
             {
-                this.fileAttributes = findData.dwFileAttributes;
-                this.ftCreationTimeLow = findData.ftCreationTime_dwLowDateTime;
-                this.ftCreationTimeHigh = findData.ftCreationTime_dwHighDateTime;
-                this.ftLastAccessTimeLow = findData.ftLastAccessTime_dwLowDateTime;
-                this.ftLastAccessTimeHigh = findData.ftLastAccessTime_dwHighDateTime;
-                this.ftLastWriteTimeLow = findData.ftLastWriteTime_dwLowDateTime;
-                this.ftLastWriteTimeHigh = findData.ftLastWriteTime_dwHighDateTime;
-                this.fileSizeHigh = findData.nFileSizeHigh;
-                this.fileSizeLow = findData.nFileSizeLow;
+                fileAttributes = findData.dwFileAttributes;
+                ftCreationTimeLow = findData.ftCreationTime_dwLowDateTime;
+                ftCreationTimeHigh = findData.ftCreationTime_dwHighDateTime;
+                ftLastAccessTimeLow = findData.ftLastAccessTime_dwLowDateTime;
+                ftLastAccessTimeHigh = findData.ftLastAccessTime_dwHighDateTime;
+                ftLastWriteTimeLow = findData.ftLastWriteTime_dwLowDateTime;
+                ftLastWriteTimeHigh = findData.ftLastWriteTime_dwHighDateTime;
+                fileSizeHigh = findData.nFileSizeHigh;
+                fileSizeLow = findData.nFileSizeLow;
             }
         }
 

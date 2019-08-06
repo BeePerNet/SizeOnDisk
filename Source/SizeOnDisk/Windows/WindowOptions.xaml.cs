@@ -1,5 +1,4 @@
-﻿using SizeOnDisk.ViewModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
 namespace SizeOnDisk.Windows
@@ -13,7 +12,7 @@ namespace SizeOnDisk.Windows
         public WindowOptions(Window owner)
         {
             InitializeComponent();
-            this.Owner = owner;
+            Owner = owner;
         }
 
     }

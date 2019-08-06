@@ -101,18 +101,18 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                if (this.Parent.Path == null)
+                if (Parent.Path == null)
                 {
 
                 }
-                return System.IO.Path.Combine(this.Parent.Path, this.Name);
+                return System.IO.Path.Combine(Parent.Path, Name);
             }
         }
 
         public string Name
         {
             get => _Name;
-            set => this.Rename(value);
+            set => Rename(value);
         }
 
         public virtual string Extension => System.IO.Path.GetExtension(Name).Replace(".", "");
@@ -127,25 +127,25 @@ namespace SizeOnDisk.ViewModel
 
         public void Rename(string newName)
         {
-            if (this.Name != newName)
+            if (Name != newName)
             {
                 ExecuteTaskAsync(() =>
                 {
-                    string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Path), newName);
-                    if (this.IsFile)
+                    string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), newName);
+                    if (IsFile)
                     {
-                        File.Move(this.Path, newPath);
+                        File.Move(Path, newPath);
                     }
                     else
                     {
-                        Directory.Move(this.Path, newPath);
+                        Directory.Move(Path, newPath);
                     }
                     _Name = newName;
-                    this.OnPropertyChanged(nameof(Name));
-                    this.OnPropertyChanged(nameof(Path));
-                    this.OnPropertyChanged(nameof(Extension));
-                    this.RefreshOnView();
-                    this.Parent.RefreshAfterCommand();
+                    OnPropertyChanged(nameof(Name));
+                    OnPropertyChanged(nameof(Path));
+                    OnPropertyChanged(nameof(Extension));
+                    RefreshOnView();
+                    Parent.RefreshAfterCommand();
                 });
             }
         }
@@ -220,21 +220,21 @@ namespace SizeOnDisk.ViewModel
 
         protected virtual void SelectListItem(VMFile selected)
         {
-            this.Parent.SelectListItem(selected);
+            Parent.SelectListItem(selected);
         }
 
-        public bool IsLink => ((this.Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint)
-                    || (this.IsFile && Extension.ToUpperInvariant() == "LNK");
+        public bool IsLink => ((Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint)
+                    || (IsFile && Extension.ToUpperInvariant() == "LNK");
 
 
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
-            this._Attributes = ((FileAttributesEx)fileInfo.Attributes) | (this._Attributes & FileAttributesEx.ExMask);
+            _Attributes = ((FileAttributesEx)fileInfo.Attributes) | (_Attributes & FileAttributesEx.ExMask);
             OnPropertyChanged(nameof(IsLink));
-            if (this.IsFile)
+            if (IsFile)
             {
-                this.FileSize = (ulong)fileInfo.Size;
-                this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + (ulong)this.Root.ClusterSize - 1) / (ulong)this.Root.ClusterSize) * (ulong)this.Root.ClusterSize;
+                FileSize = fileInfo.Size;
+                DiskSize = (((fileInfo.CompressedSize ?? FileSize) + Root.ClusterSize - 1) / Root.ClusterSize) * Root.ClusterSize;
             }
 
         }
@@ -266,7 +266,7 @@ namespace SizeOnDisk.ViewModel
             if (Details == null)
                 Details = new VMFileDetails(this);
             LittleFileInfo fileInfo = Details.Load();
-            this.Refresh(fileInfo);
+            Refresh(fileInfo);
         }
 
         #endregion functions
@@ -416,7 +416,7 @@ namespace SizeOnDisk.ViewModel
 
         internal bool CanExecuteCommand(IMenuCommand command, object _)
         {
-            return !this.IsProtected && !string.IsNullOrEmpty(command.Tag);
+            return !IsProtected && !string.IsNullOrEmpty(command.Tag);
         }
 
         internal void ExecuteCommand(IMenuCommand command, object _)
@@ -425,12 +425,12 @@ namespace SizeOnDisk.ViewModel
             if (cmd.StartsWith("Id:", StringComparison.Ordinal))
             {
                 cmd = cmd.Substring(3);
-                ShellHelper.Activate(cmd, this.Path, command.Name);
+                ShellHelper.Activate(cmd, Path, command.Name);
             }
             else if (cmd.StartsWith("cmd:", StringComparison.OrdinalIgnoreCase))
             {
                 cmd = cmd.Substring(4);
-                ShellHelper.ShellExecute(cmd, $"\"{this.Path}\"");
+                ShellHelper.ShellExecute(cmd, $"\"{Path}\"");
             }
             else if (cmd.StartsWith("dll:", StringComparison.OrdinalIgnoreCase))
             {
@@ -441,20 +441,20 @@ namespace SizeOnDisk.ViewModel
                 Tuple<string, string> cmdParam = ShellHelper.SplitCommandAndParameters(cmd);
                 string parameters = cmdParam.Item2;
 
-                string workingDirectory = this.Path;
-                if (this.IsFile)
-                    workingDirectory = this.Parent.Path;
+                string workingDirectory = Path;
+                if (IsFile)
+                    workingDirectory = Parent.Path;
 
                 if (parameters.Contains('%'))
                 {
-                    parameters = Regex.Replace(parameters, "%1", this.Path, RegexOptions.IgnoreCase);
-                    parameters = Regex.Replace(parameters, "%l", this.Path, RegexOptions.IgnoreCase);
+                    parameters = Regex.Replace(parameters, "%1", Path, RegexOptions.IgnoreCase);
+                    parameters = Regex.Replace(parameters, "%l", Path, RegexOptions.IgnoreCase);
                     parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
                     parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
                 }
                 else
                 {
-                    parameters = string.Concat(parameters, "\"", this.Path, "\"");
+                    parameters = string.Concat(parameters, "\"", Path, "\"");
                 }
 
                 ShellHelper.ShellExecute(cmdParam.Item1, parameters);
@@ -466,14 +466,14 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return this.Parent.Root;
+                return Parent.Root;
             }
         }
 
         public void LogException(Exception ex)
         {
             TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
-            this.Root.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
+            Root.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
         }
 
 

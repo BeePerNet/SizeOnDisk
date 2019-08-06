@@ -9,20 +9,20 @@ namespace SizeOnDisk.Utilities
     {
         // Fields
         [SecurityCritical]
-        private IntPtr _handle;
+        private readonly IntPtr _handle;
 
         // Methods
         [SecurityCritical]
         public WrapperIWin32Window(IntPtr handle)
         {
-            this._handle = handle;
+            _handle = handle;
         }
 
         // Methods
         [SecurityCritical]
         public WrapperIWin32Window(Window window)
         {
-            this._handle = new System.Windows.Interop.WindowInteropHelper(window).Handle;
+            _handle = new System.Windows.Interop.WindowInteropHelper(window).Handle;
         }
 
         // Properties
@@ -30,7 +30,7 @@ namespace SizeOnDisk.Utilities
         {
             get
             {
-                return this._handle;
+                return _handle;
             }
         }
     }

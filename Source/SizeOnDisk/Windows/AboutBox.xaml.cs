@@ -30,7 +30,7 @@ namespace SizeOnDisk.Windows
         public AboutBox(Window parent)
             : this()
         {
-            this.Owner = parent;
+            Owner = parent;
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace SizeOnDisk.Windows
             {
                 if (xmlDoc == null)
                 {
-                    if (this.TryFindResource("aboutProvider") is XmlDataProvider provider)
+                    if (TryFindResource("aboutProvider") is XmlDataProvider provider)
                     {
                         // save away the XmlDocument, so we don't have to get it multiple times.
                         xmlDoc = provider.Document;
@@ -220,7 +220,7 @@ namespace SizeOnDisk.Windows
         {
             string result = string.Empty;
             // get the About xml information from the resources.
-            XmlDocument doc = this.ResourceXmlDocument;
+            XmlDocument doc = ResourceXmlDocument;
             if (doc != null)
             {
                 // if we found the XmlDocument, then look for the specified data. 

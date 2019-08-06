@@ -41,21 +41,21 @@ namespace SizeOnDisk.ViewModel
         private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = this.ExecutionState == TaskExecutionState.Running;
+            e.CanExecute = ExecutionState == TaskExecutionState.Running;
         }
 
         private void CallStopCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            this.Stop();
+            Stop();
         }
 
         private void CallCloseCommand(object sender, ExecutedRoutedEventArgs e)
         {
             ExecuteTaskAsync(() =>
             {
-                this.Stop()?.Wait();
-                (this.Parent as VMRootHierarchy).RemoveRootFolder(this);
+                Stop()?.Wait();
+                (Parent as VMRootHierarchy).RemoveRootFolder(this);
             }, true);
         }
 
@@ -63,13 +63,13 @@ namespace SizeOnDisk.ViewModel
         private void CanCallRefreshCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = this.ExecutionState != TaskExecutionState.Running;
+            e.CanExecute = ExecutionState != TaskExecutionState.Running;
         }
 
         private void CallRefreshCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            this.RefreshAsync();
+            RefreshAsync();
         }
 
         #region fields
@@ -89,7 +89,7 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        new public VMRootHierarchy Parent { get; }
+        public new VMRootHierarchy Parent { get; }
 
 
         #region properties
@@ -145,13 +145,13 @@ namespace SizeOnDisk.ViewModel
             : base(null, "Drive 1\\Root Folder")
         {
             IsDesign = true;
-            this.Parent = parent;
-            this._Path = "Drive 1\\Root Folder";
-            this.HardDrivePath = "Drive 1";
+            Parent = parent;
+            _Path = "Drive 1\\Root Folder";
+            HardDrivePath = "Drive 1";
 
             VMFolder newFolder = new VMFolder(this, "Blackbriar");
-            this.Childs.Add(newFolder);
-            this.Folders.Add(newFolder);
+            Childs.Add(newFolder);
+            Folders.Add(newFolder);
             VMFile newFile = new VMFile(this, "SubFile.txt", (ulong)1.44 * 1000 * 1024);
             newFolder.Childs.Add(newFile);
             newFile = new VMFile(this, "SubFile.txt", (ulong)10 * 1024 * 1000 * 1000);
@@ -159,26 +159,26 @@ namespace SizeOnDisk.ViewModel
             newFolder.RefreshCount();
 
             newFolder = new VMFolder(this, "Threadstone");
-            this.Childs.Add(newFolder);
-            this.Folders.Add(newFolder);
+            Childs.Add(newFolder);
+            Folders.Add(newFolder);
             newFile = new VMFile(this, "Filezzz.txt", (uint)(1.44 * 1000 * 1024));
             newFolder.Childs.Add(newFile);
             newFolder.RefreshCount();
 
             newFile = new VMFile(this, "Arecibo.txt", 1679);
-            this.Childs.Add(newFile);
+            Childs.Add(newFile);
 
             newFile = new VMFile(this, "42.zip", 4503599626321920);
-            this.Childs.Add(newFile);
+            Childs.Add(newFile);
 
-            this.LogException(new Exception("Flagada"));
+            LogException(new Exception("Flagada"));
 
-            this.RefreshCount();
-            this._ExecutionState = TaskExecutionState.Designing;
+            RefreshCount();
+            _ExecutionState = TaskExecutionState.Designing;
 
-            this.SetInternalIsTreeSelected();
-            this.SelectedTreeItem = this;
-            this.SelectedListItem = this;
+            SetInternalIsTreeSelected();
+            SelectedTreeItem = this;
+            SelectedListItem = this;
         }
 
         internal VMRootFolder(VMRootHierarchy parent, string name, string path)
@@ -205,12 +205,12 @@ namespace SizeOnDisk.ViewModel
 
         protected override void SelectTreeItem(VMFolder folder)
         {
-            this.SelectedTreeItem = folder;
-            this.SelectedListItem = folder;
+            SelectedTreeItem = folder;
+            SelectedListItem = folder;
         }
         protected override void SelectListItem(VMFile selected)
         {
-            this.SelectedListItem = selected;
+            SelectedListItem = selected;
         }
 
         public override void Refresh(ParallelOptions parallelOptions)
@@ -220,19 +220,19 @@ namespace SizeOnDisk.ViewModel
                 _Runwatch.Restart();
 
                 DriveInfo info = new DriveInfo(HardDrivePath);
-                this.HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
-                this.HardDriveFree = info.AvailableFreeSpace;
+                HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
+                HardDriveFree = info.AvailableFreeSpace;
 
                 base.Refresh(parallelOptions);
             }
             finally
             {
                 _Runwatch.Stop();
-                this.OnPropertyChanged(nameof(RunTime));
+                OnPropertyChanged(nameof(RunTime));
                 if (parallelOptions != null && parallelOptions.CancellationToken != null)
-                    this.ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
+                    ExecutionState = (parallelOptions.CancellationToken.IsCancellationRequested ? TaskExecutionState.Canceled : TaskExecutionState.Finished);
                 else
-                    this.ExecutionState = TaskExecutionState.Unknown;
+                    ExecutionState = TaskExecutionState.Unknown;
             }
         }
 
@@ -286,7 +286,7 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshAsync()
         {
-            this.ExecutionState = TaskExecutionState.Running;
+            ExecutionState = TaskExecutionState.Running;
             if (_Timer == null)
             {
                 _Timer = new DispatcherTimer(DispatcherPriority.DataBind, Application.Current.Dispatcher)
@@ -301,8 +301,8 @@ namespace SizeOnDisk.ViewModel
                 try
                 {
                     _Timer.Start();
-                    this.Refresh(this.GetParallelOptions());
-                    this.ExecutionState = TaskExecutionState.Finished;
+                    Refresh(GetParallelOptions());
+                    ExecutionState = TaskExecutionState.Finished;
                 }
                 finally
                 {
@@ -315,8 +315,8 @@ namespace SizeOnDisk.ViewModel
         {
             try
             {
-                this.OnPropertyChanged(nameof(RunTime));
-                this.RefreshCount();
+                OnPropertyChanged(nameof(RunTime));
+                RefreshCount();
             }
             catch (Exception ex)
             {
@@ -331,7 +331,7 @@ namespace SizeOnDisk.ViewModel
             {
                 if (_CancellationTokenSource != null && _CancellationTokenSource.Token.CanBeCanceled)
                 {
-                    this.ExecutionState = TaskExecutionState.Canceling;
+                    ExecutionState = TaskExecutionState.Canceling;
 
                     CancellationTokenSource cts;
                     lock (_lock)
@@ -350,7 +350,7 @@ namespace SizeOnDisk.ViewModel
                         }
                         finally
                         {
-                            this.ExecutionState = TaskExecutionState.Canceled;
+                            ExecutionState = TaskExecutionState.Canceled;
                         }
                     }, true);
                 }
@@ -374,8 +374,8 @@ namespace SizeOnDisk.ViewModel
                 if (_ExecutionState != value)
                 {
                     _ExecutionState = value;
-                    this.OnPropertyChanged(nameof(ExecutionState));
-                    this.Parent.RefreshIsRunning();
+                    OnPropertyChanged(nameof(ExecutionState));
+                    Parent.RefreshIsRunning();
                 }
             }
         }
@@ -398,7 +398,7 @@ namespace SizeOnDisk.ViewModel
 
             if (disposing)
             {
-                this.Stop();
+                Stop();
                 if (_CancellationTokenSource != null)
                     _CancellationTokenSource.Dispose();
             }

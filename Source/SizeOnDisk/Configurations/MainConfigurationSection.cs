@@ -15,13 +15,13 @@ namespace SizeOnDisk.Configurations
 
         protected override void DeserializeSection(XmlReader reader)
         {
-            this.document = XDocument.Load(reader);
+            document = XDocument.Load(reader);
         }
 
         protected override object GetRuntimeObject()
         {
             // This is cached by ConfigurationManager, so no point in duplicating it to stop other people from modifying it
-            return this.document;
+            return document;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace SizeOnDisk.ViewModel
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
                 VMRootFolder newFolder = new VMRootFolder(this);
-                this.Folders.Add(newFolder);
+                Folders.Add(newFolder);
                 _SelectedRootFolder = newFolder;
 
                 newFolder.IsExpanded = true;
@@ -69,10 +69,10 @@ namespace SizeOnDisk.ViewModel
         public void AddRootFolder(string path)
         {
             VMRootFolder newFolder = new VMRootFolder(this, path, path);
-            this.Folders.Add(newFolder);
+            Folders.Add(newFolder);
 
             newFolder.IsExpanded = true;
-            this.SelectedRootFolder = newFolder;
+            SelectedRootFolder = newFolder;
 
             newFolder.RefreshAsync();
         }
@@ -80,13 +80,13 @@ namespace SizeOnDisk.ViewModel
         public void RemoveRootFolder(VMRootFolder folder)
         {
             if (SelectedRootFolder == folder)
-                this.SelectedRootFolder = null;
-            this.Folders.Remove(folder);
+                SelectedRootFolder = null;
+            Folders.Remove(folder);
         }
 
         public void StopAllAsync()
         {
-            Task[] tasks = this.Folders.Select(T => (T as VMRootFolder).Stop()).Where(T => T != null).ToArray();
+            Task[] tasks = Folders.Select(T => (T as VMRootFolder).Stop()).Where(T => T != null).ToArray();
             if (tasks.Length > 0)
                 Task.WaitAll(tasks);
         }
@@ -99,13 +99,13 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                return this.Folders.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
+                return Folders.Cast<VMRootFolder>().Any(T => T.ExecutionState == TaskExecutionState.Running);
             }
         }
 
         internal void RefreshIsRunning()
         {
-            this.OnPropertyChanged(nameof(IsRunning));
+            OnPropertyChanged(nameof(IsRunning));
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 CommandManager.InvalidateRequerySuggested();
@@ -132,7 +132,7 @@ namespace SizeOnDisk.ViewModel
             OpenFolderDialog dialog = new OpenFolderDialog();
             if (dialog.ShowDialog(new WrapperIWin32Window(System.Windows.Application.Current.MainWindow)))
             {
-                this.AddRootFolder(dialog.Folder);
+                AddRootFolder(dialog.Folder);
             }
         }
 
@@ -140,13 +140,13 @@ namespace SizeOnDisk.ViewModel
         private void CanCallRefreshCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = this.Folders.Count > 0;
+            e.CanExecute = Folders.Count > 0;
         }
 
         private void CallRefreshCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            foreach (VMRootFolder folder in this.Folders)
+            foreach (VMRootFolder folder in Folders)
                 folder.RefreshAsync();
         }
 

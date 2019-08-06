@@ -21,8 +21,8 @@ namespace SizeOnDisk.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.RunAsAdmin.Visibility = (UserAccessControlHelper.SupportUserAccessControl ? Visibility.Visible : Visibility.Collapsed);
-            this.RunAsAdmin.IsEnabled = !UserAccessControlHelper.IsProcessElevated;
+            RunAsAdmin.Visibility = (UserAccessControlHelper.SupportUserAccessControl ? Visibility.Visible : Visibility.Collapsed);
+            RunAsAdmin.IsEnabled = !UserAccessControlHelper.IsProcessElevated;
         }
 
 
@@ -73,13 +73,13 @@ namespace SizeOnDisk.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            (this.DataContext as VMRootHierarchy).StopAllAsync();
+            (DataContext as VMRootHierarchy).StopAllAsync();
             Application.Current.Shutdown();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            new ErrorList(this, (this.DataContext as VMRootHierarchy).SelectedRootFolder).ShowDialog();
+            new ErrorList(this, (DataContext as VMRootHierarchy).SelectedRootFolder).ShowDialog();
         }
     }
 }

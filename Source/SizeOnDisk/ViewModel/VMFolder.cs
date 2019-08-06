@@ -17,7 +17,7 @@ namespace SizeOnDisk.ViewModel
         {
             ExecuteTaskAsync(() =>
             {
-                VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
+                VMFile[] files = Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
 
                 if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(filenames))
@@ -33,7 +33,7 @@ namespace SizeOnDisk.ViewModel
                         if (!exists)
                             deletedfiles.Add(file);
                     }
-                    this.RefreshAfterCommand();
+                    RefreshAfterCommand();
                 }
             }, true);
         }
@@ -42,7 +42,7 @@ namespace SizeOnDisk.ViewModel
         {
             ExecuteTaskAsync(() =>
             {
-                VMFile[] files = this.Childs.Where(T => T.IsSelected).ToArray();
+                VMFile[] files = Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
 
                 if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(filenames))
@@ -58,7 +58,7 @@ namespace SizeOnDisk.ViewModel
                         if (!exists)
                             deletedfiles.Add(file);
                     }
-                    this.RefreshAfterCommand();
+                    RefreshAfterCommand();
                 }
             }, true);
         }
@@ -70,7 +70,7 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name)
         {
             FileTotal = null;
-            this._Path = fullPath;
+            _Path = fullPath;
         }
 
         [DesignOnly(true)]
@@ -78,9 +78,9 @@ namespace SizeOnDisk.ViewModel
             : base(parent, name, null)
         {
             if (parent == null)
-                this._Path = name;
+                _Path = name;
             else
-                this._Path = System.IO.Path.Combine(parent.Path, name);
+                _Path = System.IO.Path.Combine(parent.Path, name);
             RefreshCount();
         }
 
@@ -118,7 +118,7 @@ namespace SizeOnDisk.ViewModel
 
         public ulong? FileCount
         {
-            get { return (ulong?)(this.Childs?.Count - this.Folders?.Count); }
+            get { return (ulong?)(Childs?.Count - Folders?.Count); }
         }
 
         public override ulong? FileTotal
@@ -137,7 +137,7 @@ namespace SizeOnDisk.ViewModel
 
         protected virtual void SelectTreeItem(VMFolder folder)
         {
-            this.Parent.SelectTreeItem(folder);
+            Parent.SelectTreeItem(folder);
         }
 
 
@@ -158,24 +158,24 @@ namespace SizeOnDisk.ViewModel
                     {
                         _Attributes |= FileAttributesEx.TreeSelected;
                         //this.IsExpanded = true;    Maybe
-                        if (value && this.Parent != null)
-                            this.Parent.IsExpanded = true;
+                        if (value && Parent != null)
+                            Parent.IsExpanded = true;
 
-                        this.SelectTreeItem(this);
+                        SelectTreeItem(this);
                     }
                     else
                     {
                         _Attributes &= ~FileAttributesEx.TreeSelected;
                     }
 
-                    this.OnPropertyChanged(nameof(IsTreeSelected));
-                    if (value && !this.Root.IsDesign && Application.Current != null)
+                    OnPropertyChanged(nameof(IsTreeSelected));
+                    if (value && !Root.IsDesign && Application.Current != null)
                     {
                         ExecuteTaskAsync(() =>
                         {
-                            this.FillChildList();
+                            FillChildList();
 
-                            Parallel.ForEach(this.Childs.ToList(), (T) => T.RefreshOnView());
+                            Parallel.ForEach(Childs.ToList(), (T) => T.RefreshOnView());
 
                             RefreshAfterCommand();
                         }, true);
@@ -202,8 +202,8 @@ namespace SizeOnDisk.ViewModel
                     else
                         _Attributes &= ~FileAttributesEx.Expanded;
 
-                    if (value && this.Parent != null)
-                        this.Parent.IsExpanded = true;
+                    if (value && Parent != null)
+                        Parent.IsExpanded = true;
 
                     OnPropertyChanged(nameof(IsExpanded));
                 }
@@ -251,20 +251,20 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshCount()
         {
-            this.OnPropertyChanged(nameof(this.FileCount));
-            if (this.IsProtected)
+            OnPropertyChanged(nameof(FileCount));
+            if (IsProtected)
             {
-                this.FileTotal = null;
-                this.FolderTotal = null;
-                this.DiskSize = null;
-                this.FileSize = null;
+                FileTotal = null;
+                FolderTotal = null;
+                DiskSize = null;
+                FileSize = null;
             }
             else
             {
-                this.FileTotal = Sum(this.Childs.Select(T => T.FileTotal));
-                this.FolderTotal = Sum(this.Folders.Select(T => T.FolderTotal)) + (ulong)this.Folders.Count;
-                this.DiskSize = Sum(this.Childs.Select(T => T.DiskSize));
-                this.FileSize = Sum(this.Childs.Select(T => T.FileSize));
+                FileTotal = Sum(Childs.Select(T => T.FileTotal));
+                FolderTotal = Sum(Folders.Select(T => T.FolderTotal)) + (ulong)Folders.Count;
+                DiskSize = Sum(Childs.Select(T => T.DiskSize));
+                FileSize = Sum(Childs.Select(T => T.FileSize));
             }
         }
 
@@ -282,10 +282,10 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshParents()
         {
-            if (this.Parent != null)
+            if (Parent != null)
             {
-                this.Parent.RefreshCount();
-                this.Parent.RefreshParents();
+                Parent.RefreshCount();
+                Parent.RefreshParents();
             }
         }
 
@@ -305,7 +305,7 @@ namespace SizeOnDisk.ViewModel
                     List<VMFile> tmpChilds = Childs.ToList();
                     List<VMFile> addChilds = new List<VMFile>();
                     VMFile found = null;
-                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(this.Path);
+                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(Path);
                     foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
                     {
                         found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);
@@ -320,8 +320,8 @@ namespace SizeOnDisk.ViewModel
                             else
                                 found = new VMFile(this, fileInfo.FileName);
                             addChilds.Add(found);
-                            if (refreshOnNew && this.Parent.IsTreeSelected)
-                                this.RefreshOnView();
+                            if (refreshOnNew && Parent.IsTreeSelected)
+                                RefreshOnView();
                         }
                         else
                         {
@@ -337,33 +337,33 @@ namespace SizeOnDisk.ViewModel
                 }
                 catch (DirectoryNotFoundException ex)
                 {
-                    this.LogException(ex);
+                    LogException(ex);
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    this.LogException(ex);
-                    this.IsProtected = true;
+                    LogException(ex);
+                    IsProtected = true;
                 }
             }
         }
 
         public virtual void Refresh(ParallelOptions parallelOptions)
         {
-            if (this.Root.IsDesign || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
+            if (Root.IsDesign || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
                 return;
             try
             {
-                this.FillChildList();
-                if (this.Childs != null && this.Childs.Count > 0)
+                FillChildList();
+                if (Childs != null && Childs.Count > 0)
                 {
-                    if (this.IsTreeSelected)
+                    if (IsTreeSelected)
                     {
                         ExecuteTaskAsync(() =>
                         {
-                            Parallel.ForEach(this.Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
+                            Parallel.ForEach(Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
                         }, true);
                     }
-                    Parallel.ForEach(this.Folders.ToList(), parallelOptions, (T) => T.Refresh(parallelOptions));
+                    Parallel.ForEach(Folders.ToList(), parallelOptions, (T) => T.Refresh(parallelOptions));
                 }
             }
             catch (OperationCanceledException)
@@ -372,11 +372,11 @@ namespace SizeOnDisk.ViewModel
             catch (Exception ex)
             {
                 ExceptionBox.ShowException(ex);
-                this.LogException(ex);
+                LogException(ex);
             }
             if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
                 return;
-            this.RefreshCount();
+            RefreshCount();
         }
 
         //TODO: This code was used before to detect if it was a reparse point

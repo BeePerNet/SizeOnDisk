@@ -59,12 +59,12 @@ namespace SizeOnDisk.ViewModel
         public LittleFileInfo Load()
         {
             LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
-            this.CreationTime = fileInfo.CreationTime;
-            this.LastAccessTime = fileInfo.LastAccessTime;
-            this.LastWriteTime = fileInfo.LastWriteTime;
+            CreationTime = fileInfo.CreationTime;
+            LastAccessTime = fileInfo.LastAccessTime;
+            LastWriteTime = fileInfo.LastWriteTime;
 
-            this.thumbnailInitialized = false;
-            this.OnPropertyChanged(nameof(Thumbnail));
+            thumbnailInitialized = false;
+            OnPropertyChanged(nameof(Thumbnail));
 
             return fileInfo;
         }
@@ -103,7 +103,7 @@ namespace SizeOnDisk.ViewModel
                 catch (Exception ex)
                 {
                     ExceptionBox.ShowException(ex);
-                    this._vmFile.LogException(ex);
+                    _vmFile.LogException(ex);
                 }
                 return icon;
             }
@@ -122,13 +122,13 @@ namespace SizeOnDisk.ViewModel
                     if (!thumbnailInitialized)
                     {
                         if (!_vmFile.Root.IsDesign)
-                            this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
-                        if (this._Thumbnail == null)
+                            _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+                        if (_Thumbnail == null)
                         {
                             if (_vmFile.IsFile)
-                                this._Thumbnail = GetDefaultFileBigIcon();
+                                _Thumbnail = GetDefaultFileBigIcon();
                             else
-                                this._Thumbnail = GetDefaultFolderBigIcon();
+                                _Thumbnail = GetDefaultFolderBigIcon();
                         }
                         else
                         {
@@ -142,7 +142,7 @@ namespace SizeOnDisk.ViewModel
                                 catch (Exception ex)
                                 {
                                     ExceptionBox.ShowException(ex);
-                                    this._vmFile.LogException(ex);
+                                    _vmFile.LogException(ex);
                                 }
                             }, TaskCreationOptions.LongRunning);
                         }
@@ -152,7 +152,7 @@ namespace SizeOnDisk.ViewModel
                 catch (Exception ex)
                 {
                     ExceptionBox.ShowException(ex);
-                    this._vmFile.LogException(ex);
+                    _vmFile.LogException(ex);
                 }
 
                 return _Thumbnail;
@@ -188,7 +188,7 @@ namespace SizeOnDisk.ViewModel
                     bool added = false;
                     foreach (ShellCommandSoftware item in DefaultEditors.Editors)
                     {
-                        if (item.ForFolder || this._vmFile.IsFile)
+                        if (item.ForFolder || _vmFile.IsFile)
                         {
                             added = true;
                             string display = item.Id;
@@ -217,9 +217,9 @@ namespace SizeOnDisk.ViewModel
                     if (added)
                         commands.Add(SeparatorDummyCommand.Instance);
 
-                    ShellCommandRoot root = ShellHelper.GetShellCommands(this._vmFile.Path, !this._vmFile.IsFile);
+                    ShellCommandRoot root = ShellHelper.GetShellCommands(_vmFile.Path, !_vmFile.IsFile);
                     string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
-                    this.Verbs = verbs;
+                    Verbs = verbs;
                     if (verbs.Length > 0)
                     {
                         foreach (ShellCommandSoftware soft in root.Softwares)
@@ -241,7 +241,7 @@ namespace SizeOnDisk.ViewModel
                                 //TODO ------------------------>
                                 if (!verb.Verb.ToUpperInvariant().Contains("NEW"))// && !string.IsNullOrEmpty(verb.Command))
                                 {
-                                    DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", "_"), null, typeof(VMFile), this._vmFile.ExecuteCommand, this._vmFile.CanExecuteCommand)
+                                    DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", "_"), null, typeof(VMFile), _vmFile.ExecuteCommand, _vmFile.CanExecuteCommand)
                                     {
                                         Tag = verb.Command
                                     };

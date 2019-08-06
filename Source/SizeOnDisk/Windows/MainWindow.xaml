@@ -37,31 +37,31 @@
         cmd:CommandBehavior.Context="{Binding SelectedRootFolder}">
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Margin="2" />
-                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.RefreshCommand}" Margin="2" />
-                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.StopCommand}" Margin="2" />
-                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.CloseCommand}" Margin="2" />
-                <Button ToolTip="Errors" IsEnabled="{Binding SelectedRootFolder.Logs.Count, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=0, FallbackValue=False}" Click="Button_Click">
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Padding="3" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.RefreshCommand}" Padding="3" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.StopCommand}" Padding="3" />
+                <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.CloseCommand}" Padding="3" />
+                <Button ToolTip="Errors" IsEnabled="{Binding SelectedRootFolder.Logs.Count, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=0, FallbackValue=False}" Click="Button_Click" Padding="3">
                     <cmd:AutoDisablingImage Source="../Icons/Log.png" />
                 </Button>
                 <Separator />
-                <ToggleButton ToolTip="Details view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}" Margin="2">
+                <ToggleButton ToolTip="Details view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}" Padding="3">
                     <Image Source="../Icons/Detail.png" />
                 </ToggleButton>
-                <ToggleButton ToolTip="List view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Tile}}" Margin="2">
+                <ToggleButton ToolTip="List view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Tile}}" Padding="3">
                     <Image Source="../Icons/List.png" />
                 </ToggleButton>
                 <Separator />
-                <Button ToolTip="{lex:Loc Legend}" Click="ButtonLegend_Click" Margin="2">
+                <Button ToolTip="{lex:Loc Legend}" Click="ButtonLegend_Click" Padding="3">
                     <Image Source="../Icons/LegendHS.png" />
                 </Button>
-                <Button Name="RunAsAdmin" Click="RunAsAdmin_Click" ToolTip="{lex:Loc RunAsAdministrator}" Margin="2">
+                <Button Name="RunAsAdmin" Click="RunAsAdmin_Click" ToolTip="{lex:Loc RunAsAdministrator}" Padding="3">
                     <cmd:AutoDisablingImage Source="../Icons/Shield.png" />
                 </Button>
-                <Button ToolTip="{lex:Loc Options}" Click="ButtonOptions_Click" Margin="2">
+                <Button ToolTip="{lex:Loc Options}" Click="ButtonOptions_Click" Padding="3">
                     <Image Source="../Icons/Options.png" />
                 </Button>
-                <Button Click="AboutButton_Click">
+                <Button Click="AboutButton_Click" Padding="3">
                     <Image Source="../Icons/Help.png" />
                 </Button>
             </ToolBar>

@@ -9,10 +9,10 @@ namespace SizeOnDisk.ViewModel
         public VMLog(VMFile file, string shortText, string longText = null) : this(DateTime.Now, file, shortText, longText) { }
         public VMLog(DateTime timeStamp, VMFile file, string shortText, string longText = null)
         {
-            this.TimeStamp = timeStamp;
-            this.File = file;
-            this.ShortText = shortText;
-            this.LongText = longText;
+            TimeStamp = timeStamp;
+            File = file;
+            ShortText = shortText;
+            LongText = longText;
             if (string.IsNullOrWhiteSpace(LongText))
                 LongText = ShortText;
         }

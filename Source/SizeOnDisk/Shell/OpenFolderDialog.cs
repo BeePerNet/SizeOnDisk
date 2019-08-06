@@ -40,17 +40,17 @@ namespace SizeOnDisk.Shell
             frm.GetOptions(out ShellHelper.SafeNativeMethods.FileOpenOptions options);
             options |= ShellHelper.SafeNativeMethods.FileOpenOptions.PickFolders | ShellHelper.SafeNativeMethods.FileOpenOptions.ForceFilesystem | ShellHelper.SafeNativeMethods.FileOpenOptions.NoValidate | ShellHelper.SafeNativeMethods.FileOpenOptions.NoTestFileCreate | ShellHelper.SafeNativeMethods.FileOpenOptions.DontAddToRecent;
             frm.SetOptions(options);
-            if (this.InitialFolder != null)
+            if (InitialFolder != null)
             {
-                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(this.InitialFolder, IntPtr.Zero, riid);
+                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(InitialFolder, IntPtr.Zero, riid);
                 if (shellItem != null)
                 {
                     frm.SetFolder(shellItem);
                 }
             }
-            if (this.DefaultFolder != null)
+            if (DefaultFolder != null)
             {
-                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(this.DefaultFolder, IntPtr.Zero, riid);
+                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(DefaultFolder, IntPtr.Zero, riid);
                 if (shellItem != null)
                 {
                     frm.SetDefaultFolder(shellItem);
@@ -67,7 +67,7 @@ namespace SizeOnDisk.Shell
                         {
                             try
                             {
-                                this.Folder = Marshal.PtrToStringAuto(pszString);
+                                Folder = Marshal.PtrToStringAuto(pszString);
                                 return true;
                             }
                             finally
@@ -92,13 +92,13 @@ namespace SizeOnDisk.Shell
                 //frm.CreatePrompt = false;
                 //frm.Filter = "|" + Guid.Empty.ToString();
                 //frm.FileName = "any";
-                if (this.InitialFolder != null) { frm.InitialDirectory = this.InitialFolder; }
+                if (InitialFolder != null) { frm.InitialDirectory = InitialFolder; }
                 //frm.OverwritePrompt = false;
                 frm.Title = LocExtension.GetLocalizedValue<string>("ChooseFolder");
                 frm.ValidateNames = false;
                 if (frm.ShowDialog(owner) == DialogResult.OK)
                 {
-                    this.Folder = Path.GetDirectoryName(frm.FileName);
+                    Folder = Path.GetDirectoryName(frm.FileName);
                     return true;
                 }
                 else
