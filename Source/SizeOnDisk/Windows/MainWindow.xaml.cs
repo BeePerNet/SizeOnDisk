@@ -63,23 +63,23 @@ namespace SizeOnDisk.Windows
 
         private void ButtonOptions_Click(object sender, RoutedEventArgs e)
         {
-            WindowOptions options = new WindowOptions(this)
-            {
-                Owner = this
-            };
-            options.ShowDialog();
+            new WindowOptions(this).ShowDialog();
         }
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
-            AboutBox aboutBox = new AboutBox(this);
-            aboutBox.ShowDialog();
+            new AboutBox(this).ShowDialog();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             (this.DataContext as VMRootHierarchy).StopAllAsync();
             Application.Current.Shutdown();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            new ErrorList(this, (this.DataContext as VMRootHierarchy).SelectedRootFolder).ShowDialog();
         }
     }
 }

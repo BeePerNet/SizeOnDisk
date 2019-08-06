@@ -175,6 +175,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ErrorList.xaml.cs">
+      <DependentUpon>ErrorList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\Legend.xaml.cs">
       <DependentUpon>Legend.xaml</DependentUpon>
     </Compile>
@@ -213,6 +216,10 @@
       <DependentUpon>WindowOptions.xaml</DependentUpon>
     </Compile>
     <Page Include="Windows\AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ErrorList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

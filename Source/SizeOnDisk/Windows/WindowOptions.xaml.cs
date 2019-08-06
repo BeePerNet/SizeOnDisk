@@ -10,12 +10,10 @@ namespace SizeOnDisk.Windows
     [SuppressMessage("Design", "CA1501")]
     public partial class WindowOptions : Window
     {
-        VMOptions options;
         public WindowOptions(Window owner)
         {
             InitializeComponent();
-            options = (VMOptions)this.DataContext;
-            options.Owner = owner;
+            this.Owner = owner;
         }
 
     }

@@ -66,11 +66,18 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
+
         internal VMFile(VMFolder parent, string name)
         {
             _Name = name;
             Parent = parent;
         }
+
+        /*[DesignOnly(true)]
+        public VMFile() : this(new VMRootFolder(null, "DummyRoot"), "DummyFile", (ulong)121500)
+        {
+            this.Parent.Childs.Add(this);
+        }*/
 
         [DesignOnly(true)]
         internal VMFile(VMFolder parent, string name, ulong? fileSize) : this(parent, name)
@@ -462,6 +469,13 @@ namespace SizeOnDisk.ViewModel
                 return this.Parent.Root;
             }
         }
+
+        public void LogException(Exception ex)
+        {
+            TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
+            this.Root.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
+        }
+
 
 
     }

@@ -1,15 +1,12 @@
 ﻿using SizeOnDisk.Converters;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Windows;
 using WPFByYourCommand.Behaviors;
 
 namespace SizeOnDisk.ViewModel
 {
     public class VMOptions
     {
-        public Window Owner { get; set; }
-
         public UISizeFormatType UISizeFormat
         {
             get

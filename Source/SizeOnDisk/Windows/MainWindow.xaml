@@ -10,14 +10,14 @@
         Style="{StaticResource WindowStyle}"
         mc:Ignorable="d" 
         cmd:CommandBehavior.Context="{Binding}"
-        MinWidth="350"
-        MinHeight="200"
+        MinWidth="200"
+        MinHeight="150"
         Height="600"
         Width="1050"
         Title="{Binding Path=SelectedRootFolder.Path, StringFormat=SizeOnDisk - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootHierarchy}, IsDesignTimeCreatable=True}"
-        Loaded="Window_Loaded" Closing="Window_Closing" Icon="../Icons/Hard_Drive.ico">
+        Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.DataContext>
         <vm:VMRootHierarchy />
     </Window.DataContext>
@@ -41,6 +41,9 @@
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.RefreshCommand}" Margin="2" />
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.StopCommand}" Margin="2" />
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.CloseCommand}" Margin="2" />
+                <Button ToolTip="Errors" IsEnabled="{Binding SelectedRootFolder.Logs.Count, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=0, FallbackValue=False}" Click="Button_Click">
+                    <cmd:AutoDisablingImage Source="../Icons/Log.png" />
+                </Button>
                 <Separator />
                 <ToggleButton ToolTip="Details view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}" Margin="2">
                     <Image Source="../Icons/Detail.png" />

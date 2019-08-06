@@ -46,7 +46,7 @@ namespace SizeOnDisk.ViewModel
         {
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                VMRootFolder newFolder = new VMRootFolder(this, "\\\\Root Folder");
+                VMRootFolder newFolder = new VMRootFolder(this);
                 this.Folders.Add(newFolder);
                 _SelectedRootFolder = newFolder;
 

@@ -103,7 +103,7 @@ namespace SizeOnDisk.ViewModel
                 catch (Exception ex)
                 {
                     ExceptionBox.ShowException(ex);
-                    this._vmFile.Root.LogException(ex);
+                    this._vmFile.LogException(ex);
                 }
                 return icon;
             }
@@ -142,7 +142,7 @@ namespace SizeOnDisk.ViewModel
                                 catch (Exception ex)
                                 {
                                     ExceptionBox.ShowException(ex);
-                                    this._vmFile?.Root.LogException(ex);
+                                    this._vmFile.LogException(ex);
                                 }
                             }, TaskCreationOptions.LongRunning);
                         }
@@ -152,7 +152,7 @@ namespace SizeOnDisk.ViewModel
                 catch (Exception ex)
                 {
                     ExceptionBox.ShowException(ex);
-                    this._vmFile.Root.LogException(ex);
+                    this._vmFile.LogException(ex);
                 }
 
                 return _Thumbnail;

@@ -169,7 +169,7 @@ namespace SizeOnDisk.ViewModel
                     }
 
                     this.OnPropertyChanged(nameof(IsTreeSelected));
-                    if (value && this.Path != null && this.Root.ClusterSize != -1 && Application.Current != null)
+                    if (value && !this.Root.IsDesign && Application.Current != null)
                     {
                         ExecuteTaskAsync(() =>
                         {
@@ -337,11 +337,11 @@ namespace SizeOnDisk.ViewModel
                 }
                 catch (DirectoryNotFoundException ex)
                 {
-                    this.Root.LogException(ex);
+                    this.LogException(ex);
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    this.Root.LogException(ex);
+                    this.LogException(ex);
                     this.IsProtected = true;
                 }
             }
@@ -372,7 +372,7 @@ namespace SizeOnDisk.ViewModel
             catch (Exception ex)
             {
                 ExceptionBox.ShowException(ex);
-                this.Root.LogException(ex);
+                this.LogException(ex);
             }
             if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
                 return;

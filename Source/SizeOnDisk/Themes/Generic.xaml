@@ -12,6 +12,7 @@
         <Setter Property="provider:ResxLocalizationProvider.DefaultDictionary" Value="Languages.Localization" />
         <Setter Property="engine:LocalizeDictionary.DesignCulture" Value="fr" />
         <Setter Property="beh:GlobalizationBehavior.UpdateWindow" Value="" />
+        <Setter Property="Icon" Value="../Icons/Hard_Drive.ico" />
     </Style>
     <Style x:Key="ColoredName" TargetType="TextBlock">
         <Style.Triggers>

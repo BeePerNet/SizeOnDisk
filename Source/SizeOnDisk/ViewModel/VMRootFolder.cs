@@ -137,12 +137,17 @@ namespace SizeOnDisk.ViewModel
         #region creator
 
         [DesignOnly(true)]
-        internal VMRootFolder(VMRootHierarchy parent, string name)
-            : base(null, name)
+        public VMRootFolder() : this(null) { }
+
+
+        [DesignOnly(true)]
+        internal VMRootFolder(VMRootHierarchy parent)
+            : base(null, "Drive 1\\Root Folder")
         {
             IsDesign = true;
             this.Parent = parent;
-            this._Path = name;
+            this._Path = "Drive 1\\Root Folder";
+            this.HardDrivePath = "Drive 1";
 
             VMFolder newFolder = new VMFolder(this, "Blackbriar");
             this.Childs.Add(newFolder);
@@ -165,6 +170,8 @@ namespace SizeOnDisk.ViewModel
 
             newFile = new VMFile(this, "42.zip", 4503599626321920);
             this.Childs.Add(newFile);
+
+            this.LogException(new Exception("Flagada"));
 
             this.RefreshCount();
             this._ExecutionState = TaskExecutionState.Designing;
@@ -411,13 +418,6 @@ namespace SizeOnDisk.ViewModel
         {
             Logs.DoAdd((logs) => log);
         }
-
-        public void LogException(Exception ex)
-        {
-            TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
-            this.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
-        }
-
 
         public override VMRootFolder Root
         {
