@@ -2,15 +2,9 @@
 using SizeOnDisk.Utilities;
 using SizeOnDisk.ViewModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq;
 using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Input;
-using WPFByYourCommand;
 using WPFByYourCommand.Commands;
-using WPFLocalizeExtension.Engine;
 
 namespace SizeOnDisk.Windows
 {

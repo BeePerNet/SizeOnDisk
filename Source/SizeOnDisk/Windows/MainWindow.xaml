@@ -31,7 +31,7 @@
         <conv:FileAttributesConverter x:Key="FileAttributesConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
-                     ItemsSource="{Binding FileCommands}" />
+                     ItemsSource="{Binding Details.FileCommands}" />
     </Window.Resources>
     <DockPanel 
         cmd:CommandBehavior.Context="{Binding SelectedRootFolder}">
@@ -183,7 +183,7 @@
                               ContextMenu="{StaticResource VMContextMenu}"
                               DisplayMemberPath="Name"
                               SelectedValuePath="Path"
-                              cmd:UIElementBehavior.FocusPreviewMouseRightButtonDown="True">
+                              cmd:ControlBehavior.FocusMouseRightButtonDown="True">
                             <TreeView.ItemContainerStyle>
                                 <Style TargetType="{x:Type TreeViewItem}">
                                     <Setter Property="cmd:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
@@ -295,7 +295,7 @@
                                             <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
                                                 <Image Width="7" Height="7" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="Icons/Shortcut-small.png" 
                                                        Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                                <cmd:AutoDisablingImage Width="17" Height="17" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <cmd:AutoDisablingImage Width="16" Height="16" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>

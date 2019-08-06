@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using SizeOnDisk.ViewModel;
+using System;
 using System.Text;
 using System.Windows.Data;
 
@@ -12,36 +12,36 @@ namespace SizeOnDisk.Converters
             if (value == null)
                 return null;
 
-            FileAttributes attributes = (FileAttributes)value;
+            FileAttributesEx attributes = (FileAttributesEx)value;
 
             if (targetType == typeof(string))
             {
                 StringBuilder sb = new StringBuilder(15);
-                if (((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly))
+                if (((attributes & FileAttributesEx.ReadOnly) == FileAttributesEx.ReadOnly))
                     sb.Append('R');
-                if (((attributes & FileAttributes.Hidden) == FileAttributes.Hidden))
+                if (((attributes & FileAttributesEx.Hidden) == FileAttributesEx.Hidden))
                     sb.Append('H');
-                if (((attributes & FileAttributes.System) == FileAttributes.System))
+                if (((attributes & FileAttributesEx.System) == FileAttributesEx.System))
                     sb.Append('S');
-                if (((attributes & FileAttributes.Archive) == FileAttributes.Archive))
+                if (((attributes & FileAttributesEx.Archive) == FileAttributesEx.Archive))
                     sb.Append('A');
-                if (((attributes & FileAttributes.Device) == FileAttributes.Device))
+                if (((attributes & FileAttributesEx.Device) == FileAttributesEx.Device))
                     sb.Append('D');
-                if (((attributes & FileAttributes.Normal) == FileAttributes.Normal))
+                if (((attributes & FileAttributesEx.Normal) == FileAttributesEx.Normal))
                     sb.Append('N');
-                if (((attributes & FileAttributes.Temporary) == FileAttributes.Temporary))
+                if (((attributes & FileAttributesEx.Temporary) == FileAttributesEx.Temporary))
                     sb.Append('T');
-                if (((attributes & FileAttributes.SparseFile) == FileAttributes.SparseFile))
+                if (((attributes & FileAttributesEx.SparseFile) == FileAttributesEx.SparseFile))
                     sb.Append("Sf");
-                if (((attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint))
+                if (((attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint))
                     sb.Append("Rp");
-                if (((attributes & FileAttributes.Compressed) == FileAttributes.Compressed))
+                if (((attributes & FileAttributesEx.Compressed) == FileAttributesEx.Compressed))
                     sb.Append('C');
-                if (((attributes & FileAttributes.Offline) == FileAttributes.Offline))
+                if (((attributes & FileAttributesEx.Offline) == FileAttributesEx.Offline))
                     sb.Append('O');
-                if (((attributes & FileAttributes.NotContentIndexed) == FileAttributes.NotContentIndexed))
+                if (((attributes & FileAttributesEx.NotContentIndexed) == FileAttributesEx.NotContentIndexed))
                     sb.Append('I');
-                if (((attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted))
+                if (((attributes & FileAttributesEx.Encrypted) == FileAttributesEx.Encrypted))
                     sb.Append('E');
                 return sb.ToString();
             }

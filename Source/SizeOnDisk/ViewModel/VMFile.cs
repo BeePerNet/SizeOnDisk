@@ -1,6 +1,5 @@
 ﻿using SizeOnDisk.Shell;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -8,11 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
 using WPFByYourCommand.Exceptions;
-using WPFLocalizeExtension.Extensions;
 
 namespace SizeOnDisk.ViewModel
 {
@@ -63,29 +60,26 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        #region fields
 
         private string _Name;
-        private bool _IsProtected = false;
 
-        #endregion fields
 
         #region constructor
 
-        internal VMFile(VMFolder parent, string name, string path)
+        internal VMFile(VMFolder parent, string name)
         {
             _Name = name;
-            Path = path;
             Parent = parent;
         }
 
         [DesignOnly(true)]
-        internal VMFile(VMFolder parent, string name, string path, ulong? fileSize) : this(parent, name, path)
+        internal VMFile(VMFolder parent, string name, ulong? fileSize) : this(parent, name)
         {
             if (fileSize.HasValue)
             {
                 FileSize = fileSize;
                 DiskSize = Convert.ToUInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
+                _Details = new VMFileDetails(this.IsFile);
             }
         }
 
@@ -96,32 +90,27 @@ namespace SizeOnDisk.ViewModel
 
         public VMFolder Parent { get; }
 
-        public string Path { get; private set; }
+        public virtual string Path
+        {
+            get
+            {
+                if (this.Parent.Path == null)
+                {
+
+                }
+                return System.IO.Path.Combine(this.Parent.Path, this.Name);
+            }
+        }
 
         public string Name
         {
-            get { return _Name; }
-            set
-            {
-                this.Rename(value);
-            }
+            get => _Name;
+            set => this.Rename(value);
         }
 
-        public virtual string Extension
-        {
-            get
-            {
-                return System.IO.Path.GetExtension(Name).Replace(".", "");
-            }
-        }
+        public virtual string Extension => System.IO.Path.GetExtension(Name).Replace(".", "");
 
-        public virtual bool IsFile
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public virtual bool IsFile => true;
 
 
         public virtual Task ExecuteTaskAsync(Action action, bool highpriority = false)
@@ -145,7 +134,6 @@ namespace SizeOnDisk.ViewModel
                         Directory.Move(this.Path, newPath);
                     }
                     _Name = newName;
-                    Path = newPath;
                     this.OnPropertyChanged(nameof(Name));
                     this.OnPropertyChanged(nameof(Path));
                     this.OnPropertyChanged(nameof(Extension));
@@ -185,20 +173,36 @@ namespace SizeOnDisk.ViewModel
 
         public bool IsProtected
         {
-            get { return _IsProtected; }
-            protected set { SetProperty(ref _IsProtected, value); }
+            get { return (_Attributes & FileAttributesEx.Protected) == FileAttributesEx.Protected; }
+            protected set
+            {
+                if (value != IsProtected)
+                {
+                    if (value)
+                        _Attributes |= FileAttributesEx.Protected;
+                    else
+                        _Attributes &= ~FileAttributesEx.Protected;
+                    OnPropertyChanged(nameof(IsProtected));
+                }
+            }
         }
 
 
-        private bool _isSelected = false;
-        public virtual bool IsSelected
+        public bool IsSelected
         {
-            get { return _isSelected; }
+            get { return (_Attributes & FileAttributesEx.Selected) == FileAttributesEx.Selected; }
             set
             {
-                SetProperty(ref _isSelected, value);
-                if (value)
-                    SelectListItem(this);
+                if (value != IsSelected)
+                {
+                    if (value)
+                        _Attributes |= FileAttributesEx.Selected;
+                    else
+                        _Attributes &= ~FileAttributesEx.Selected;
+                    OnPropertyChanged(nameof(IsSelected));
+                    if (value)
+                        SelectListItem(this);
+                }
             }
         }
 
@@ -212,18 +216,13 @@ namespace SizeOnDisk.ViewModel
             this.Parent.SelectListItem(selected);
         }
 
-        public bool IsLink
-        {
-            get
-            {
-                return ((this.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
+        public bool IsLink => ((this.Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint)
                     || (this.IsFile && Extension.ToUpperInvariant() == "LNK");
-            }
-        }
+
 
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
-            this.Attributes = fileInfo.Attributes;
+            this._Attributes = ((FileAttributesEx)fileInfo.Attributes) | (this._Attributes & FileAttributesEx.ExMask);
             OnPropertyChanged(nameof(IsLink));
             if (this.IsFile)
             {
@@ -233,14 +232,10 @@ namespace SizeOnDisk.ViewModel
 
         }
 
-        private FileAttributes _Attributes = FileAttributes.Normal;
-        public FileAttributes Attributes
+        protected FileAttributesEx _Attributes = FileAttributesEx.Normal;
+        public FileAttributesEx Attributes
         {
             get { return _Attributes; }
-            protected set
-            {
-                SetProperty(ref _Attributes, value);
-            }
         }
 
         [SuppressMessage("Design", "CA2213")]
@@ -249,6 +244,8 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
+                if (_Details == null)
+                    _Details = new VMFileDetails(this);
                 return _Details;
             }
             private set
@@ -287,7 +284,7 @@ namespace SizeOnDisk.ViewModel
             {
                 file.ExecuteTaskAsync(() =>
                 {
-                    if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
+                    if (IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }
@@ -312,7 +309,7 @@ namespace SizeOnDisk.ViewModel
             {
                 TaskHelper.SafeExecute(() =>
                 {
-                    if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
+                    if (IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }
@@ -370,7 +367,7 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
 
-            e.CanExecute = file.Verbs != null && file.Verbs.Any(T => T == command.Name);
+            e.CanExecute = file.Details != null && file.Details.Verbs != null && file.Details.Verbs.Any(T => T == command.Name);
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]
@@ -410,12 +407,12 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Commands
 
-        private bool CanExecuteCommand(IMenuCommand command, object parameter)
+        internal bool CanExecuteCommand(IMenuCommand command, object _)
         {
             return !this.IsProtected && !string.IsNullOrEmpty(command.Tag);
         }
 
-        private void ExecuteCommand(IMenuCommand command, object parameter)
+        internal void ExecuteCommand(IMenuCommand command, object _)
         {
             string cmd = command.Tag;
             if (cmd.StartsWith("Id:", StringComparison.Ordinal))
@@ -458,115 +455,14 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-
-
-        private IEnumerable<string> _Verbs;
-        public IEnumerable<string> Verbs { get { return _Verbs; } set { SetProperty(ref _Verbs, value); } }
-
-        public IEnumerable<ICommand> FileCommands
+        public virtual VMRootFolder Root
         {
             get
             {
-                List<ICommand> commands = new List<ICommand>
-                {
-                    VMFile.OpenCommand,
-                    VMFile.EditCommand,
-                    VMFile.OpenAsCommand,
-                    VMFile.ExploreCommand,
-                    VMFile.PrintCommand,
-                    SeparatorDummyCommand.Instance
-                };
-                TaskHelper.SafeExecute(() =>
-                {
-                    bool added = false;
-                    foreach (ShellCommandSoftware item in DefaultEditors.Editors)
-                    {
-                        if (item.ForFolder || this.IsFile)
-                        {
-                            added = true;
-                            string display = item.Id;
-                            if (display.StartsWith("loc:", StringComparison.OrdinalIgnoreCase))
-                                display = LocExtension.GetLocalizedValue<string>(display.Remove(0, 4));
-                            if (string.IsNullOrEmpty(display))
-                                display = item.Id;
-
-                            DirectCommand command = new DirectCommand(item.Id, display, null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
-                            {
-                                Tag = item.Name
-                            };
-
-                            if (item.Icon != null)
-                            {
-                                command.Icon = new Image
-                                {
-                                    Source = item.Icon,
-                                    Width = 16,
-                                    Height = 16
-                                };
-                            }
-                            commands.Add(command);
-                        }
-                    }
-                    if (added)
-                        commands.Add(SeparatorDummyCommand.Instance);
-
-                    ShellCommandRoot root = ShellHelper.GetShellCommands(this.Path, !this.IsFile);
-                    string[] verbs = root.Softwares.SelectMany(T => T.Verbs).Select(T => T.Verb).Distinct().ToArray();
-                    this.Verbs = verbs;
-                    if (verbs.Length > 0)
-                    {
-                        foreach (ShellCommandSoftware soft in root.Softwares)
-                        {
-                            ParentCommand parent = new ParentCommand(soft.Id, soft.Name, typeof(VMFile));
-
-                            if (soft.Icon != null)
-                            {
-                                parent.Icon = new Image
-                                {
-                                    Source = soft.Icon,
-                                    Width = 16,
-                                    Height = 16
-                                };
-                            }
-
-                            foreach (ShellCommandVerb verb in soft.Verbs)
-                            {
-                                //TODO ------------------------>
-                                if (!verb.Verb.ToUpperInvariant().Contains("NEW"))// && !string.IsNullOrEmpty(verb.Command))
-                                {
-                                    DirectCommand cmd = new DirectCommand(verb.Verb, verb.Name.Replace("&", "_"), null, typeof(VMFile), ExecuteCommand, CanExecuteCommand)
-                                    {
-                                        Tag = verb.Command
-                                    };
-                                    if (verb.Verb.ToUpperInvariant().Contains("PRINT"))
-                                        cmd.Icon = PrintCommand.Icon;
-                                    parent.Childs.Add(cmd);
-                                }
-                            }
-                            //if (parent.Childs.Count == 1)
-                            if (parent.Childs.Count > 0)
-                            {
-                                commands.Add(parent);
-                            }
-                        }
-                        commands.Add(SeparatorDummyCommand.Instance);
-                    }
-
-                    //commands.Add(VMFile.FindCommand);
-                    //commands.Add(SeparatorDummyCommand.Instance);
-                    commands.Add(VMFile.DeleteCommand);
-                    commands.Add(VMFile.PermanentDeleteCommand);
-                    commands.Add(SeparatorDummyCommand.Instance);
-                    commands.Add(VMFile.PropertiesCommand);
-                });
-                return commands;
+                return this.Parent.Root;
             }
         }
 
-        public void LogException(Exception ex)
-        {
-            TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
-            this.Parent.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
-        }
+
     }
 }

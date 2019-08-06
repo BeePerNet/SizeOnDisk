@@ -68,19 +68,28 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        protected VMFolder(VMFolder parent, string name, string path, int clusterSize)
-            : base(parent, name, path)
+        protected VMFolder(VMFolder parent, string name, string fullPath, int clusterSize)
+            : base(parent, name)
         {
             this.clusterSize = clusterSize;
             FileTotal = null;
+            this._Path = fullPath;
         }
 
         [DesignOnly(true)]
-        internal VMFolder(VMFolder parent, string name, string path)
-            : base(parent, name, path, null)
+        internal VMFolder(VMFolder parent, string name)
+            : base(parent, name, null)
         {
+            if (parent == null)
+                this._Path = name;
+            else
+                this._Path = System.IO.Path.Combine(parent.Path, name);
             RefreshCount();
         }
+
+        private readonly string _Path;
+        public override string Path => _Path;
+
 
         #endregion constructor
 
@@ -95,25 +104,7 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        private bool _isExpanded;
 
-        public bool IsExpanded
-        {
-            get { return _isExpanded; }
-            set
-            {
-                if (value != _isExpanded)
-                {
-                    _isExpanded = value;
-
-                    // Expand all the way up to the root.
-                    if (_isExpanded && this.Parent != null)
-                        this.Parent.IsExpanded = true;
-
-                    this.OnPropertyChanged(nameof(IsExpanded));
-                }
-            }
-        }
 
         public override string Extension
         {
@@ -154,27 +145,30 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        private bool _isTreeSelected = false;
-
         protected void SetInternalIsTreeSelected()
         {
-            _isTreeSelected = true;
+            _Attributes |= FileAttributesEx.TreeSelected;
         }
 
         public bool IsTreeSelected
         {
-            get { return _isTreeSelected; }
+            get { return (_Attributes & FileAttributesEx.TreeSelected) == FileAttributesEx.TreeSelected; }
             set
             {
-                if (value != _isTreeSelected)
+                if (value != IsTreeSelected)
                 {
-                    _isTreeSelected = value;
-                    this.OnPropertyChanged(nameof(IsTreeSelected));
-                    if (_isTreeSelected)
+                    if (value)
                     {
-                        this.IsExpanded = true;
+                        _Attributes |= FileAttributesEx.TreeSelected;
+                        //this.IsExpanded = true;    Maybe
                         this.SelectTreeItem(this);
                     }
+                    else
+                    {
+                        _Attributes &= ~FileAttributesEx.TreeSelected;
+                    }
+
+                    this.OnPropertyChanged(nameof(IsTreeSelected));
                     //clusterSize: Check if not in designer
                     if (value && this.Path != null && this.clusterSize != -1 && Application.Current != null)
                     {
@@ -190,6 +184,52 @@ namespace SizeOnDisk.ViewModel
                 }
             }
         }
+
+
+
+
+
+
+
+        public bool IsExpanded
+        {
+            get { return (_Attributes & FileAttributesEx.Expanded) == FileAttributesEx.Expanded; }
+            set
+            {
+                if (value != IsExpanded)
+                {
+                    if (value)
+                        _Attributes |= FileAttributesEx.Expanded;
+                    else
+                        _Attributes &= ~FileAttributesEx.Expanded;
+
+                    if (value && this.Parent != null)
+                        this.Parent.IsExpanded = true;
+
+                    OnPropertyChanged(nameof(IsExpanded));
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public void RefreshAfterCommand()
         {
@@ -275,12 +315,12 @@ namespace SizeOnDisk.ViewModel
                         {
                             if (fileInfo.IsFolder)
                             {
-                                found = new VMFolder(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName), this.ClusterSize);
+                                found = new VMFolder(this, fileInfo.FileName, fileInfo.FullPath, this.ClusterSize);
                                 if (refreshOnNew)
                                     (found as VMFolder).Refresh(new ParallelOptions());
                             }
                             else
-                                found = new VMFile(this, fileInfo.FileName, System.IO.Path.Combine(fileInfo.Path, fileInfo.FileName));
+                                found = new VMFile(this, fileInfo.FileName);
                             addChilds.Add(found);
                             if (refreshOnNew && this.Parent.IsTreeSelected)
                                 this.RefreshOnView();
@@ -299,11 +339,11 @@ namespace SizeOnDisk.ViewModel
                 }
                 catch (DirectoryNotFoundException ex)
                 {
-                    LogException(ex);
+                    this.Root.LogException(ex);
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    LogException(ex);
+                    this.Root.LogException(ex);
                     this.IsProtected = true;
                 }
             }
@@ -334,7 +374,7 @@ namespace SizeOnDisk.ViewModel
             catch (Exception ex)
             {
                 ExceptionBox.ShowException(ex);
-                LogException(ex);
+                this.Root.LogException(ex);
             }
             if (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested)
                 return;
@@ -363,11 +403,5 @@ namespace SizeOnDisk.ViewModel
         //}
 
         #endregion functions
-
-
-        public virtual void Log(VMLog log)
-        {
-            this.Parent.Log(log);
-        }
     }
 }

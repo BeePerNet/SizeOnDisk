@@ -6,7 +6,6 @@
                     xmlns:cmd="http://wpfbyyourcommand.codeplex.com"
                     >
     <cmd:IsEqualConverter x:Key="IsEqualConverter" />
-    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightGray" />
     <Style x:Key="WindowStyle" TargetType="Window">
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="provider:ResxLocalizationProvider.DefaultAssembly" Value="SizeOnDisk" />

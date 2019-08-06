@@ -17,12 +17,12 @@ namespace SizeOnDisk.Shell
         {
             FileName = FileName;
             Path = path;
-            string fullfilename = filename;
+            FullPath = filename;
             if (string.IsNullOrEmpty(path))
                 Path = filename;
             else
-                fullfilename = System.IO.Path.Combine(path, filename);
-            fullfilename = string.Concat("\\\\?\\", fullfilename);
+                FullPath = System.IO.Path.Combine(path, FullPath);
+            string fullfilename = string.Concat("\\\\?\\", FullPath);
             IOHelper.FillAttributeInfo(fullfilename, ref _data);
             if ((this.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
                 if ((this.Attributes & FileAttributes.Directory) == 0)
@@ -33,6 +33,7 @@ namespace SizeOnDisk.Shell
         {
             FileName = filename;
             Path = path;
+            FullPath = System.IO.Path.Combine(path, filename);
             _data = data;
             if ((this.Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
                 if ((this.Attributes & FileAttributes.Directory) == 0)
@@ -55,5 +56,6 @@ namespace SizeOnDisk.Shell
 
         public string FileName { get; }
         public string Path { get; }
+        public string FullPath { get; }
     }
 }

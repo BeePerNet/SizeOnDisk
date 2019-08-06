@@ -35,6 +35,9 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(CloseCommand, CallCloseCommand));
         }
 
+        private readonly string _Path;
+        public override string Path => _Path;
+
         private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
@@ -135,30 +138,31 @@ namespace SizeOnDisk.ViewModel
 
         [DesignOnly(true)]
         internal VMRootFolder(VMRootHierarchy parent, string name)
-            : base(null, name, name)
+            : base(null, name)
         {
             this.Parent = parent;
+            this._Path = name;
 
-            VMFolder newFolder = new VMFolder(this, "Blackbriar", "\\\\Root Folder\\Folder1");
+            VMFolder newFolder = new VMFolder(this, "Blackbriar");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            VMFile newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", (ulong)1.44 * 1000 * 1024);
+            VMFile newFile = new VMFile(this, "SubFile.txt", (ulong)1.44 * 1000 * 1024);
             newFolder.Childs.Add(newFile);
-            newFile = new VMFile(this, "SubFile.txt", "\\\\Root Folder\\Folder 2\\SubFile.txt", (ulong)10 * 1024 * 1000 * 1000);
+            newFile = new VMFile(this, "SubFile.txt", (ulong)10 * 1024 * 1000 * 1000);
             newFolder.Childs.Add(newFile);
             newFolder.RefreshCount();
 
-            newFolder = new VMFolder(this, "Threadstone", "\\\\Root Folder\\Folder2");
+            newFolder = new VMFolder(this, "Threadstone");
             this.Childs.Add(newFolder);
             this.Folders.Add(newFolder);
-            newFile = new VMFile(this, "Filezzz.txt", "\\\\Root Folder\\Folder 2\\Filezzz.txt", (uint)(1.44 * 1000 * 1024));
+            newFile = new VMFile(this, "Filezzz.txt", (uint)(1.44 * 1000 * 1024));
             newFolder.Childs.Add(newFile);
             newFolder.RefreshCount();
 
-            newFile = new VMFile(this, "Arecibo.txt", "\\\\Root Folder\\Arecibo.txt", 1679);
+            newFile = new VMFile(this, "Arecibo.txt", 1679);
             this.Childs.Add(newFile);
 
-            newFile = new VMFile(this, "42.zip", "\\\\Root Folder\\42.zip", 4503599626321920);
+            newFile = new VMFile(this, "42.zip", 4503599626321920);
             this.Childs.Add(newFile);
 
             this.RefreshCount();
@@ -173,6 +177,7 @@ namespace SizeOnDisk.ViewModel
             : base(null, name, path, (int)IOHelper.GetClusterSize(path))
         {
             this.Parent = parent;
+            this._Path = path;
             HardDrivePath = System.IO.Path.GetPathRoot(path);
             this.SetInternalIsTreeSelected();
 
@@ -394,10 +399,26 @@ namespace SizeOnDisk.ViewModel
 
         public ObservableImmutableCollection<VMLog> Logs { get; } = new ObservableImmutableCollection<VMLog>();
 
-        public override void Log(VMLog log)
+        public void Log(VMLog log)
         {
             Logs.DoAdd((logs) => log);
         }
+
+        public void LogException(Exception ex)
+        {
+            TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
+            this.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
+        }
+
+
+        public override VMRootFolder Root
+        {
+            get
+            {
+                return this;
+            }
+        }
+
 
 
     }
