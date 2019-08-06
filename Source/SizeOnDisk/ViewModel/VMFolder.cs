@@ -13,8 +13,6 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMFolder : VMFile
     {
-        private readonly int clusterSize = -1;
-
         public void PermanentDeleteAllSelectedFiles()
         {
             ExecuteTaskAsync(() =>
@@ -68,10 +66,9 @@ namespace SizeOnDisk.ViewModel
 
         #region constructor
 
-        protected VMFolder(VMFolder parent, string name, string fullPath, int clusterSize)
+        protected VMFolder(VMFolder parent, string name, string fullPath)
             : base(parent, name)
         {
-            this.clusterSize = clusterSize;
             FileTotal = null;
             this._Path = fullPath;
         }
@@ -161,6 +158,9 @@ namespace SizeOnDisk.ViewModel
                     {
                         _Attributes |= FileAttributesEx.TreeSelected;
                         //this.IsExpanded = true;    Maybe
+                        if (value && this.Parent != null)
+                            this.Parent.IsExpanded = true;
+
                         this.SelectTreeItem(this);
                     }
                     else
@@ -169,8 +169,7 @@ namespace SizeOnDisk.ViewModel
                     }
 
                     this.OnPropertyChanged(nameof(IsTreeSelected));
-                    //clusterSize: Check if not in designer
-                    if (value && this.Path != null && this.clusterSize != -1 && Application.Current != null)
+                    if (value && this.Path != null && this.Root.ClusterSize != -1 && Application.Current != null)
                     {
                         ExecuteTaskAsync(() =>
                         {
@@ -245,7 +244,6 @@ namespace SizeOnDisk.ViewModel
 
         private VMFile selectedItem;
         public VMFile SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
-        public int ClusterSize { get => clusterSize; }
 
         #endregion properties
 
@@ -271,12 +269,12 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        public static ulong? Sum(IEnumerable<ulong?> source)
+        public static ulong Sum(IEnumerable<ulong?> source)
         {
-            ulong? total = null;
+            ulong total = 0;
 
             foreach (var item in source.Where(T => T.HasValue))
-                total = (total ?? 0) + item;
+                total = total + item ?? 0;
 
             return total;
         }
@@ -315,7 +313,7 @@ namespace SizeOnDisk.ViewModel
                         {
                             if (fileInfo.IsFolder)
                             {
-                                found = new VMFolder(this, fileInfo.FileName, fileInfo.FullPath, this.ClusterSize);
+                                found = new VMFolder(this, fileInfo.FileName, fileInfo.FullPath);
                                 if (refreshOnNew)
                                     (found as VMFolder).Refresh(new ParallelOptions());
                             }
@@ -351,7 +349,7 @@ namespace SizeOnDisk.ViewModel
 
         public virtual void Refresh(ParallelOptions parallelOptions)
         {
-            if (this.clusterSize == -1 || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
+            if (this.Root.IsDesign || (parallelOptions != null && parallelOptions.CancellationToken.IsCancellationRequested))
                 return;
             try
             {

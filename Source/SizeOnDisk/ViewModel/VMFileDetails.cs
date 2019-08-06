@@ -50,14 +50,6 @@ namespace SizeOnDisk.ViewModel
             return defaultFolderIcon;
         }
 
-        public VMFileDetails(bool isFile)
-        {
-            if (isFile)
-                this._Thumbnail = GetDefaultFileBigIcon();
-            else
-                this._Thumbnail = GetDefaultFolderBigIcon();
-            thumbnailInitialized = true;
-        }
 
         public VMFileDetails(VMFile vmFile)
         {
@@ -81,7 +73,7 @@ namespace SizeOnDisk.ViewModel
         {
             get
             {
-                if (_vmFile != null && _vmFile.IsFile)
+                if (!_vmFile.Root.IsDesign && _vmFile.IsFile)
                     return ShellHelper.GetFriendlyName(System.IO.Path.GetExtension(_vmFile.Name));
                 else
                     return string.Empty;
@@ -98,29 +90,20 @@ namespace SizeOnDisk.ViewModel
                 BitmapSource icon = null;
                 try
                 {
-                    if (_vmFile == null)
+                    if (!_vmFile.Root.IsDesign)
+                        icon = ShellHelper.GetIcon(_vmFile.Path, 16);
+                    if (icon == null)
                     {
-                        if (Thumbnail == GetDefaultFileBigIcon())
+                        if (_vmFile.IsFile)
                             icon = GetDefaultFileIcon();
                         else
                             icon = GetDefaultFolderIcon();
-                    }
-                    else
-                    {
-                        icon = ShellHelper.GetIcon(_vmFile.Path, 16);
-                        if (icon == null)
-                        {
-                            if (_vmFile.IsFile)
-                                icon = GetDefaultFileIcon();
-                            else
-                                icon = GetDefaultFolderIcon();
-                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     ExceptionBox.ShowException(ex);
-                    this._vmFile?.Root.LogException(ex);
+                    this._vmFile.Root.LogException(ex);
                 }
                 return icon;
             }
@@ -138,7 +121,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     if (!thumbnailInitialized)
                     {
-                        if (_Thumbnail == null)
+                        if (!_vmFile.Root.IsDesign)
                             this._Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
                         if (this._Thumbnail == null)
                         {
@@ -169,7 +152,7 @@ namespace SizeOnDisk.ViewModel
                 catch (Exception ex)
                 {
                     ExceptionBox.ShowException(ex);
-                    this._vmFile?.Root.LogException(ex);
+                    this._vmFile.Root.LogException(ex);
                 }
 
                 return _Thumbnail;

@@ -79,7 +79,7 @@ namespace SizeOnDisk.ViewModel
             {
                 FileSize = fileSize;
                 DiskSize = Convert.ToUInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
-                _Details = new VMFileDetails(this.IsFile);
+                _Details = new VMFileDetails(this);
             }
         }
 
@@ -227,7 +227,7 @@ namespace SizeOnDisk.ViewModel
             if (this.IsFile)
             {
                 this.FileSize = (ulong)fileInfo.Size;
-                this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + (ulong)this.Parent.ClusterSize - 1) / (ulong)this.Parent.ClusterSize) * (ulong)this.Parent.ClusterSize;
+                this.DiskSize = (((fileInfo.CompressedSize ?? this.FileSize) + (ulong)this.Root.ClusterSize - 1) / (ulong)this.Root.ClusterSize) * (ulong)this.Root.ClusterSize;
             }
 
         }

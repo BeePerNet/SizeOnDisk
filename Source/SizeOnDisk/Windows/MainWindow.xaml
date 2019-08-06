@@ -213,7 +213,7 @@
                           VerticalAlignment="Stretch" />
                         <ListView Grid.Column="2"
                                 SelectionMode="Extended"
-                                ItemsSource="{Binding Path=SelectedTreeItem.Childs}"
+                                ItemsSource="{Binding SelectedTreeItem.Childs}"
                                 BorderThickness="1"
                                 SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -250,29 +250,29 @@
                             </ListBox.ItemTemplate>
                         </ListView>
                         <DataGrid 
-                            cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
-                                    Grid.Column="2"
-                                    VirtualizingStackPanel.VirtualizationMode="Standard"
-                                    cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
-                                    BorderThickness="1"
-                                    ItemsSource="{Binding SelectedTreeItem.Childs}"
-                                    SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
-                                    AutoGenerateColumns="False"
+                                cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
+                                Grid.Column="2"
+                                VirtualizingStackPanel.VirtualizationMode="Standard"
+                                cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
+                                BorderThickness="1"
+                                ItemsSource="{Binding SelectedTreeItem.Childs}"
+                                SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
+                                AutoGenerateColumns="False"
                                 Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                    HeadersVisibility="Column"
-                                    ContextMenu="{StaticResource VMContextMenu}"
-                                    HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                                    VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                                    ClipboardCopyMode="IncludeHeader"
-                                    Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                                HeadersVisibility="Column"
+                                ContextMenu="{StaticResource VMContextMenu}"
+                                HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                                VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                                ClipboardCopyMode="IncludeHeader"
+                                Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
                             <DataGrid.Resources>
                                 <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
                                     <Setter Property="TextAlignment" Value="Right" />
                                 </Style>
                                 <Style TargetType="DataGridRow">
                                     <Setter Property="IsSelected" 
-                                 Value="{Binding IsSelected, Mode=TwoWay, 
-                                 UpdateSourceTrigger=PropertyChanged}"/>
+                                             Value="{Binding IsSelected, Mode=TwoWay, 
+                                             UpdateSourceTrigger=PropertyChanged}"/>
                                     <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                 </Style>
                                 <Style TargetType="DataGridCell">

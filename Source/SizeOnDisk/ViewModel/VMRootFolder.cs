@@ -140,6 +140,7 @@ namespace SizeOnDisk.ViewModel
         internal VMRootFolder(VMRootHierarchy parent, string name)
             : base(null, name)
         {
+            IsDesign = true;
             this.Parent = parent;
             this._Path = name;
 
@@ -174,16 +175,22 @@ namespace SizeOnDisk.ViewModel
         }
 
         internal VMRootFolder(VMRootHierarchy parent, string name, string path)
-            : base(null, name, path, (int)IOHelper.GetClusterSize(path))
+            : base(null, name, path)
         {
-            this.Parent = parent;
-            this._Path = path;
+            ClusterSize = IOHelper.GetClusterSize(path);
+            Parent = parent;
+            _Path = path;
             HardDrivePath = System.IO.Path.GetPathRoot(path);
-            this.SetInternalIsTreeSelected();
+            SetInternalIsTreeSelected();
 
-            this.SelectedTreeItem = this;
-            this.SelectedListItem = this;
+            SelectedTreeItem = this;
+            SelectedListItem = this;
         }
+
+        public uint ClusterSize { get; }
+
+        public bool IsDesign { get; } = false;
+
 
         #endregion creator
 
@@ -368,6 +375,7 @@ namespace SizeOnDisk.ViewModel
 
         private VMViewMode viewMode = VMViewMode.Details;
         public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
+
 
 
         #endregion Task
