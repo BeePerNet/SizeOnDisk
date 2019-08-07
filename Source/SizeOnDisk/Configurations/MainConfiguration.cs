@@ -17,7 +17,7 @@ namespace SizeOnDisk.Configurations
     {
         [XmlArray("editors")]
         [XmlArrayItem("editor")]
-        public IEnumerable<DefaultEditorItem> Editors { get; set; }
+        public DefaultEditorItem[] Editors { get; set; }
 
         private const string sectionName = "SizeOnDisk";
 
