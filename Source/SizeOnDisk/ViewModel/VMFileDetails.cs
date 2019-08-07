@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand;
 using WPFByYourCommand.Commands;
-using WPFByYourCommand.Exceptions;
 using WPFByYourCommand.Extensions;
 using WPFByYourCommand.Observables;
 using WPFLocalizeExtension.Extensions;
