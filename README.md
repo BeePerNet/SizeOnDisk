@@ -9,7 +9,7 @@ The main goal of this software is to parse all files as fast as possible to get 
 Connaître l'utilisation de l'espace disque utilisé par les fichiers.  
 Le but principal du logiciel est de passer tous les fichiers du disque dur le plus rapidement possible.  
 
-![SizeOnDisk](https://user-images.githubusercontent.com/46988275/62136808-dfca2300-b2b2-11e9-86c5-97184015fc0c.png)
+![image](https://user-images.githubusercontent.com/46988275/62584831-32dc4100-b884-11e9-990a-c2b715ee59e2.png)
 
 Last known as: [SizeOnDisk on CodePlex](https://archive.codeplex.com/?p=sizeondisk)  
 Anciennement: [SizeOnDisk sur CodePlex](https://archive.codeplex.com/?p=sizeondisk)  
