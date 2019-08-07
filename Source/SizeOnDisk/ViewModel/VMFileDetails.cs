@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using WPFByYourCommand;
 using WPFByYourCommand.Commands;
 using WPFByYourCommand.Exceptions;
+using WPFByYourCommand.Extensions;
 using WPFByYourCommand.Observables;
 using WPFLocalizeExtension.Extensions;
 
@@ -125,7 +126,6 @@ namespace SizeOnDisk.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    ExceptionBox.ShowException(ex);
                     _vmFile.LogException(ex);
                 }
                 return icon;
@@ -143,46 +143,57 @@ namespace SizeOnDisk.ViewModel
             {
                 try
                 {
-                    if (!thumbnailInitialized)
+                    if (!_vmFile.Root.IsDesign)
                     {
-                        if (!_vmFile.Root.IsDesign)
-                        {
-                            _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
-                        }
-
                         if (_Thumbnail == null)
-                        {
-                            if (_vmFile.IsFile)
-                            {
-                                _Thumbnail = GetDefaultFileBigIcon();
-                            }
-                            else
-                            {
-                                _Thumbnail = GetDefaultFolderBigIcon();
-                            }
-                        }
-                        else
+                            _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96);
+
+                        if (!thumbnailInitialized)
                         {
                             Task.Factory.StartNew(() =>
                             {
                                 try
                                 {
-                                    _Thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
-                                    OnPropertyChanged(nameof(Thumbnail));
+                                    BitmapSource thumbnail = ShellHelper.GetIcon(_vmFile.Path, 96, true);
+                                    if (thumbnail == null)
+                                    {
+                                        if (_vmFile.IsFile)
+                                        {
+                                            thumbnail = GetDefaultFileBigIcon();
+                                        }
+                                        else
+                                        {
+                                            thumbnail = GetDefaultFolderBigIcon();
+                                        }
+                                    }
+                                    if (!thumbnail.IsEqual(_Thumbnail))
+                                    {
+                                        _Thumbnail = thumbnail;
+                                        OnPropertyChanged(nameof(Thumbnail));
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
-                                    ExceptionBox.ShowException(ex);
                                     _vmFile.LogException(ex);
                                 }
                             }, TaskCreationOptions.LongRunning);
+                            thumbnailInitialized = true;
                         }
-                        thumbnailInitialized = true;
+                    }
+                    if (_Thumbnail == null)
+                    {
+                        if (_vmFile.IsFile)
+                        {
+                            _Thumbnail = GetDefaultFileBigIcon();
+                        }
+                        else
+                        {
+                            _Thumbnail = GetDefaultFolderBigIcon();
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    ExceptionBox.ShowException(ex);
                     _vmFile.LogException(ex);
                 }
 

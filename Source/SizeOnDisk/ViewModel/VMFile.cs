@@ -256,16 +256,10 @@ namespace SizeOnDisk.ViewModel
 
                 return _Details;
             }
-            private set => SetProperty(ref _Details, value);
         }
 
         public void RefreshOnView()
         {
-            if (Details == null)
-            {
-                Details = new VMFileDetails(this);
-            }
-
             LittleFileInfo fileInfo = Details.Load();
             Refresh(fileInfo);
         }
