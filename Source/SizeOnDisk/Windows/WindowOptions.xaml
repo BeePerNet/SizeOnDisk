@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:cmd="http://wpfbyyourcommand.codeplex.com"
         Style="{StaticResource WindowStyle}"
         mc:Ignorable="d" 
         d:DataContext="{d:DesignInstance {x:Type vm:VMOptions}}"
@@ -54,7 +55,7 @@
                        HorizontalAlignment="Right" />
             <ComboBox Grid.Column="1"
                       Name="LanguageSelector"
-                      ItemsSource="{Binding Languages}"
+                      ItemsSource="{x:Static cmd:GlobalizationBehavior.Cultures}"
                       DisplayMemberPath="Value"
                       SelectedValuePath="Key"
                       SelectedValue="{Binding Language}" />

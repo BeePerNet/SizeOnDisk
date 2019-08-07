@@ -1,5 +1,4 @@
 ﻿using SizeOnDisk.Converters;
-using System.Collections.Generic;
 using System.Globalization;
 using WPFByYourCommand.Behaviors;
 
@@ -26,13 +25,6 @@ namespace SizeOnDisk.ViewModel
                 GlobalizationBehavior.ChangeLanguage(value);
             }
         }
-
-
-        public static Dictionary<string, string> Languages => GlobalizationBehavior.Cultures;
-
-
-
-
 
     }
 }
