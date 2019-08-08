@@ -268,6 +268,7 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
             }
 
+            file.Root.Parent.SelectedRootFolder = file.Root;
             file.Parent.IsTreeSelected = true;
             file.Parent.SelectedItem = file;
         }
@@ -296,6 +297,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
+                vmfile.Root.Parent.SelectedRootFolder = vmfile.Root;
                 vmfile.Parent.IsTreeSelected = true;
                 vmfile.Parent.SelectedItem = vmfile;
             }
