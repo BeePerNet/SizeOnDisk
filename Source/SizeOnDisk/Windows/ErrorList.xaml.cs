@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Input;
+using WPFByYourCommand.Commands;
 using WPFByYourCommand.Exceptions;
 
 namespace SizeOnDisk.Windows
@@ -10,18 +11,34 @@ namespace SizeOnDisk.Windows
     /// </summary>
     public partial class ErrorList : Window
     {
-        public ErrorList(Window owner, VMRootFolder folder)
+        public ErrorList(VMRootFolder folder)
         {
             InitializeComponent();
-            Owner = owner;
             DataContext = folder;
         }
 
-        private void DataGridRow_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Path_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DataGridRow row = sender as DataGridRow;
-            VMLog log = row.DataContext as VMLog;
-            ExceptionBox.ShowException(log.ShortText, log.LongText, this);
+            if (e.ClickCount == 2)
+            {
+                e.Handled = true;
+                VMFile.SelectCommand.Execute(null, sender as IInputElement);
+            }
+        }
+
+        private void Exception_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                ExceptionButton_Click(sender, e);
+            }
+        }
+
+        private void ExceptionButton_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            VMLog log = CommandViewModel.GetViewModelObject<VMLog>(e.OriginalSource);
+            ExceptionBox.ShowException(log.ShortText, log.LongText, log.File.Path, this);
         }
     }
 }

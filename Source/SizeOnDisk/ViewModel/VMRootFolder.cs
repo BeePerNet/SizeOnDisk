@@ -204,17 +204,17 @@ namespace SizeOnDisk.ViewModel
             {
                 return base.FindVMFile(path);
             }
+            else if (path.StartsWith(this.Path, StringComparison.CurrentCultureIgnoreCase))
+            {
+                path = path.Remove(0, this.Path.Length);
+                if (!path.StartsWith("\\", StringComparison.Ordinal))
+                    path = "\\" + path;
+                return base.FindVMFile(path);
+            }
             else
             {
-                if (path.StartsWith(this.Path, StringComparison.Ordinal))
-                {
-                    path = path.Remove(0, this.Path.Length);
-                    if (!path.StartsWith("\\", StringComparison.Ordinal))
-                        path = "\\" + path;
-                    return base.FindVMFile(path);
-                }
+                return Parent.FindVMFile(path);
             }
-            throw new ArgumentOutOfRangeException(nameof(path), $"Path {path} is invalid");
         }
 
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPFByYourCommand;
 using WPFByYourCommand.Commands;
@@ -217,8 +218,7 @@ namespace SizeOnDisk.ViewModel
                                 command.Icon = new Image
                                 {
                                     Source = item.Icon,
-                                    Width = 16,
-                                    Height = 16
+                                    Stretch = Stretch.None
                                 };
                             }
                             commands.Add(command);
@@ -243,8 +243,7 @@ namespace SizeOnDisk.ViewModel
                                 parent.Icon = new Image
                                 {
                                     Source = soft.Icon,
-                                    Width = 16,
-                                    Height = 16
+                                    Stretch = Stretch.None
                                 };
                             }
 

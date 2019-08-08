@@ -406,6 +406,9 @@
   <ItemGroup>
     <Resource Include="Icons\Shortcut.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Select.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

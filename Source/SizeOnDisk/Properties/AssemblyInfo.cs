@@ -17,7 +17,7 @@ using System.Windows;
 [assembly: AssemblyCompany("SizeOnDisk")]
 [assembly: AssemblyProduct("SizeOnDisk")]
 [assembly: AssemblyCopyright("GNU General Public License v3.0")]
-[assembly: AssemblyTrademark("Sébastien Gariépy")]
+[assembly: AssemblyTrademark("Sébastien Gariépy (sebasgariepy@gmail.com)")]
 [assembly: AssemblyCulture("")]
 
 
@@ -58,5 +58,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.7.4.42")]
-[assembly: AssemblyFileVersion("2.7.4.42")]
+[assembly: AssemblyVersion("2.7.5.42")]
+[assembly: AssemblyFileVersion("2.7.5.42")]

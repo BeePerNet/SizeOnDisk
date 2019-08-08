@@ -102,6 +102,12 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        public VMFile FindVMFile(string path)
+        {
+            return Folders.FirstOrDefault(T => path.StartsWith(T.Path, StringComparison.CurrentCultureIgnoreCase))?.FindVMFile(path);
+        }
+
+
         #endregion function
 
         #region Commands

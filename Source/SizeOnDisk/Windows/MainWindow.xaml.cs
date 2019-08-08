@@ -79,7 +79,7 @@ namespace SizeOnDisk.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            new ErrorList(this, (DataContext as VMRootHierarchy).SelectedRootFolder).Show();
+            new ErrorList((DataContext as VMRootHierarchy).SelectedRootFolder).Show();
         }
     }
 }

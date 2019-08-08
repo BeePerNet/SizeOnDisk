@@ -277,7 +277,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     subpath = null;
                 }
-                VMFile vmfile = Childs.SingleOrDefault(T => T.Name == fileName);
+                VMFile vmfile = Childs.SingleOrDefault(T => T.Name.Equals(fileName, StringComparison.CurrentCultureIgnoreCase));
                 if (vmfile == null)
                     throw new FileNotFoundException(null, path);
                 if (subpath != null && vmfile is VMFolder folder)

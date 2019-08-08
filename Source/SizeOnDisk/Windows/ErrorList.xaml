@@ -4,26 +4,49 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SizeOnDisk.ViewModel"
+        xmlns:cmd="http://wpfbyyourcommand.codeplex.com"
         Style="{StaticResource WindowStyle}"
+        cmd:CommandBehavior.Context="{Binding}"
         mc:Ignorable="d" 
         MinWidth="200"
         MinHeight="150"
-        Height="450"
-        Width="800"
+        Height="400"
+        Width="900"
         Title="{Binding Path=Path, StringFormat=SizeOnDisk - Error List - \{0\}, FallbackValue=SizeOnDisk}"
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootFolder}, IsDesignTimeCreatable=True}">
     <Grid>
         <DataGrid ItemsSource="{Binding Logs}" AutoGenerateColumns="False" IsReadOnly="True">
-            <DataGrid.Resources>
-                <Style TargetType="DataGridRow">
-                    <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick" />
-                </Style>
-            </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding TimeStamp, StringFormat=o}" Header="DateTime" />
-                <DataGridTextColumn Binding="{Binding ShortText}" Header="Message" />
-                <DataGridTextColumn Binding="{Binding File.Path}" Header="Path" />
+                <DataGridTextColumn Binding="{Binding TimeStamp, StringFormat=HH:mm:ss.FFFFFF}" Header="DateTime" />
+                <DataGridTemplateColumn SortMemberPath="File.Path" Header="Path">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Padding="4,0" Text="{Binding File.Path}" ToolTip="{Binding File.Path}" MouseLeftButtonDown="Path_MouseLeftButtonDown" />
+                                <Button Grid.Column="1" HorizontalAlignment="Right" cmd:CommandBehavior.Command="{x:Static vm:VMFile.SelectCommand}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>                    
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn SortMemberPath="ShortText" Header="Message">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Padding="4,0" Text="{Binding ShortText}" ToolTip="{Binding ShortText}" MouseLeftButtonDown="Exception_MouseLeftButtonDown" />
+                                <Button Content="..." Grid.Column="1" HorizontalAlignment="Right" Click="ExceptionButton_Click" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"  />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

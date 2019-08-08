@@ -24,12 +24,13 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx EditCommand = new RoutedCommandEx("edit", "loc:Edit", typeof(VMFile), new KeyGesture(Key.E, ModifierKeys.Control, "loc:EditKey"));
         public static readonly RoutedCommandEx OpenAsCommand = new RoutedCommandEx("openas", "loc:OpenAs", typeof(VMFile), new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Alt, "loc:OpenAsKey"));
         public static readonly RoutedCommandEx PrintCommand = new RoutedCommandEx("print", "loc:PresentationCore:ExceptionStringTable:PrintText", "pack://application:,,,/SizeOnDisk;component/Icons/PrintHS.png", typeof(VMFile), new KeyGesture(Key.P, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:PrintKeyDisplayString"));
-        public static readonly RoutedCommandEx ShellSelectCommand = new RoutedCommandEx("select", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Explore.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
+        public static readonly RoutedCommandEx ShellSelectCommand = new RoutedCommandEx("shellselect", "loc:Explore", "pack://application:,,,/SizeOnDisk;component/Icons/Explore.png", typeof(VMFile), new KeyGesture(Key.N, ModifierKeys.Control, "ExploreKey"));
         public static readonly RoutedCommandEx FindCommand = new RoutedCommandEx("find", "loc:PresentationCore:ExceptionStringTable:FindText", "pack://application:,,,/SizeOnDisk;component/Icons/SearchFolderHS.png", typeof(VMFile), new KeyGesture(Key.F, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:FindKeyDisplayString"));
         public static readonly RoutedCommandEx DeleteCommand = new RoutedCommandEx("delete", "loc:PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
         public static readonly RoutedCommandEx PermanentDeleteCommand = new RoutedCommandEx("permanentdelete", "loc:PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "loc:PermanentDeleteKey"));
         public static readonly RoutedCommandEx PropertiesCommand = new RoutedCommandEx("properties", "loc:PresentationCore:ExceptionStringTable:PropertiesText", "pack://application:,,,/SizeOnDisk;component/Icons/Properties.png", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
         public static readonly RoutedCommandEx FollowLinkCommand = new RoutedCommandEx("followlink", "loc:FollowLink", "pack://application:,,,/SizeOnDisk;component/Icons/Shortcut.png", typeof(VMFile), new KeyGesture(Key.Enter, ModifierKeys.Alt));
+        public static readonly RoutedCommandEx SelectCommand = new RoutedCommandEx("select", "Select", "pack://application:,,,/SizeOnDisk;component/Icons/Select.png", typeof(VMFile));
 
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -49,6 +50,7 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand, CanCallCommand));
             bindingCollection.Add(new CommandBinding(FollowLinkCommand, CallFollowLinkCommand, CanCallFollowLinkCommand));
+            bindingCollection.Add(new CommandBinding(SelectCommand, CallSelectCommand));
         }
 
         public override void AddInputModels(InputBindingCollection bindingCollection)
@@ -282,6 +284,26 @@ namespace SizeOnDisk.ViewModel
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
+        private static void CallSelectCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            object viewModel = GetViewModelObject(e.OriginalSource);
+
+            VMFile file = viewModel as VMFile;
+            if (file == null && viewModel is VMLog vmLog)
+                file = vmLog.File;
+
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
+
+            file.Parent.IsTreeSelected = true;
+            file.Parent.SelectedItem = file;
+        }
+
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
         private static void CallFollowLinkCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
@@ -297,20 +319,16 @@ namespace SizeOnDisk.ViewModel
             {
                 throw new FileFormatException($"The file {file.Path} do not contains destination path.");
             }
-            if (path.StartsWith(file.Root.Path))
+
+            VMFile vmfile = file.Parent.FindVMFile(path);
+            if (vmfile == null)
             {
-                VMFile vmfile = file.Parent.FindVMFile(path);
-                if (vmfile == null)
-                {
-                    throw new FileNotFoundException($"The file {file.Path} do not contains destination path.");
-                }
-                file.IsSelected = false;
-                vmfile.Parent.IsTreeSelected = true;
-                vmfile.IsSelected = true;
+                ShellHelper.ShellExecuteSelect(path);
             }
             else
             {
-                ShellHelper.ShellExecuteSelect(file.Path);
+                vmfile.Parent.IsTreeSelected = true;
+                vmfile.Parent.SelectedItem = vmfile;
             }
         }
 
