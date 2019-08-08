@@ -67,6 +67,66 @@ namespace SizeOnDisk.Shell
         }
 
 
+        public static string GetShellLinkPath(string file)
+        {
+            try
+            {
+                if (System.IO.Path.GetExtension(file).ToLower() != ".lnk")
+                {
+                    throw new Exception("Supplied file must be a .LNK file");
+                }
+
+                FileStream fileStream = File.Open(file, FileMode.Open, FileAccess.Read);
+                using (System.IO.BinaryReader fileReader = new BinaryReader(fileStream))
+                {
+                    fileStream.Seek(0x14, SeekOrigin.Begin);     // Seek to flags
+                    uint flags = fileReader.ReadUInt32();        // Read flags
+                    if ((flags & 1) == 1)
+                    {                      // Bit 1 set means we have to
+                                           // skip the shell item ID list
+                        fileStream.Seek(0x4c, SeekOrigin.Begin); // Seek to the end of the header
+                        uint offset = fileReader.ReadUInt16();   // Read the length of the Shell item ID list
+                        fileStream.Seek(offset, SeekOrigin.Current); // Seek past it (to the file locator info)
+                    }
+
+                    long fileInfoStartsAt = fileStream.Position; // Store the offset where the file info
+                                                                 // structure begins
+                    uint totalStructLength = fileReader.ReadUInt32(); // read the length of the whole struct
+                    fileStream.Seek(0xc, SeekOrigin.Current); // seek to offset to base pathname
+                    uint fileOffset = fileReader.ReadUInt32(); // read offset to base pathname
+                                                               // the offset is from the beginning of the file info struct (fileInfoStartsAt)
+                    fileStream.Seek((fileInfoStartsAt + fileOffset), SeekOrigin.Begin); // Seek to beginning of
+                                                                                        // base pathname (target)
+                    long pathLength = (totalStructLength + fileInfoStartsAt) - fileStream.Position - 1; // read
+                                                                                                        // the base pathname. I don't need the 2 terminating nulls.
+                    char[] linkTarget = fileReader.ReadChars((int)pathLength); // should be unicode safe
+                    var link = new string(linkTarget);
+
+                    int begin = link.IndexOf("\0\0");
+                    if (begin > -1)
+                    {
+                        int end = link.IndexOf("\\\\", begin + 2) + 2;
+                        end = link.IndexOf('\0', end) + 1;
+
+                        string firstPart = link.Substring(0, begin);
+                        string secondPart = link.Substring(end);
+
+                        return firstPart + secondPart;
+                    }
+                    else
+                    {
+                        return link;
+                    }
+                }
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+
+
         public static IEnumerable<LittleFileInfo> GetFiles(string folderPath)
         {
             WIN32_FIND_DATA win_find_data = new WIN32_FIND_DATA();
@@ -694,6 +754,12 @@ namespace SizeOnDisk.Shell
 
         #region public functions
 
+        public static void ShellExecuteSelect(string path)
+        {
+            ShellHelper.ShellExecute("explorer.exe", $"/select,\"{path}\"");
+        }
+
+
         [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "<En attente>")]
         public static void ShellExecute(string fileName, string parameters = null, string verb = null, bool normal = false, ShellExecuteFlags? flags = null)
         {
@@ -955,7 +1021,7 @@ namespace SizeOnDisk.Shell
         /// <summary>
         /// Win32Api file attributes structure
         /// </summary>
-        [Serializable, StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto), BestFitMapping(false)]
+        [Serializable, StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode), BestFitMapping(false)]
         public class WIN32_FIND_DATA
         {
             internal int dwFileAttributes;
@@ -980,6 +1046,7 @@ namespace SizeOnDisk.Shell
 
         internal static class SafeNativeMethods
         {
+
             internal enum ActivateOptions
             {
                 None = 0x00000000,  // No flags set
@@ -1107,12 +1174,12 @@ namespace SizeOnDisk.Shell
                 [In][MarshalAs(UnmanagedType.LPStruct)] Guid riid,
                 [Out][MarshalAs(UnmanagedType.Interface, IidParameterIndex = 2)] out IShellItemImageFactory ppv);
 
-            [DllImport("shell32.dll", CharSet = CharSet.Unicode, EntryPoint = "SHCreateItemFromParsingName")]
-            public static extern int SHCreateItemFromParsingNameIShellLinkW(
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, EntryPoint = "SHCreateItemFromParsingName", PreserveSig = false)]
+            [return: MarshalAs(UnmanagedType.Interface, IidParameterIndex = 2)]
+            public static extern IShellLinkW SHCreateItemFromParsingNameIShellLinkW(
                 [In][MarshalAs(UnmanagedType.LPWStr)] string pszPath,
                 [In]IntPtr pbc,
-                [In][MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-                [Out][MarshalAs(UnmanagedType.Interface, IidParameterIndex = 2)] out IShellLinkW ppv);
+                [In][MarshalAs(UnmanagedType.LPStruct)] Guid riid);
 
 
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]

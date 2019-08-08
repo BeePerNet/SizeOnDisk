@@ -259,6 +259,15 @@ namespace SizeOnDisk.Languages {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Follow.
+        /// </summary>
+        public static string FollowLink {
+            get {
+                return ResourceManager.GetString("FollowLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Hard drive free space.
         /// </summary>
         public static string HardDriveFree {

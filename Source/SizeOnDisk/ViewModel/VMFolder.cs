@@ -261,6 +261,40 @@ namespace SizeOnDisk.ViewModel
 
         #region functions
 
+        public virtual VMFile FindVMFile(string path)
+        {
+            if (path.StartsWith("\\", StringComparison.Ordinal))
+            {
+                string subpath = path.Remove(0, 1);
+                string fileName = subpath;
+                if (fileName.Contains("\\"))
+                {
+                    int idx = fileName.IndexOf("\\");
+                    fileName = fileName.Remove(idx);
+                    subpath = subpath.Remove(0, idx);
+                }
+                else
+                {
+                    subpath = null;
+                }
+                VMFile vmfile = Childs.SingleOrDefault(T => T.Name == fileName);
+                if (vmfile == null)
+                    throw new FileNotFoundException(null, path);
+                if (subpath != null && vmfile is VMFolder folder)
+                {
+                    return folder.FindVMFile(subpath);
+                }
+                return vmfile;
+            }
+            else
+            {
+                return this.Root.FindVMFile(path);
+            }
+        }
+
+
+
+
         public void RefreshCount()
         {
             OnPropertyChanged(nameof(FileCount));

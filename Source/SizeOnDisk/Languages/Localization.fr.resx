@@ -399,4 +399,7 @@
   <data name="OpenAsText" xml:space="preserve">
     <value>Ouvrir en tant que texte</value>
   </data>
+  <data name="FollowLink" xml:space="preserve">
+    <value>Suivre</value>
+  </data>
 </root>

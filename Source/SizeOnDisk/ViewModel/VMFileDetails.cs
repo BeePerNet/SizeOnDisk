@@ -181,13 +181,12 @@ namespace SizeOnDisk.ViewModel
                     VMFile.OpenCommand,
                     VMFile.EditCommand,
                     VMFile.OpenAsCommand,
-                    VMFile.ExploreCommand,
+                    VMFile.ShellSelectCommand,
                     VMFile.PrintCommand,
+                    SeparatorDummyCommand.Instance
                 };
                 if (_vmFile.IsLink)
                     commands.Add(VMFile.FollowLinkCommand);
-
-                commands.Add(SeparatorDummyCommand.Instance);
 
                 TaskHelper.SafeExecute(() =>
                 {

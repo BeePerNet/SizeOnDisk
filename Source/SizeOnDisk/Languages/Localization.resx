@@ -401,4 +401,7 @@
   <data name="OpenAsText" xml:space="preserve">
     <value>Open as text</value>
   </data>
+  <data name="FollowLink" xml:space="preserve">
+    <value>Follow</value>
+  </data>
 </root>

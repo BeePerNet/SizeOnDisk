@@ -198,14 +198,23 @@ namespace SizeOnDisk.ViewModel
             Logs.DoAdd((logs) => log);
         }
 
-        public VMFile FindVMFile(string path)
+        public override VMFile FindVMFile(string path)
         {
-            throw new NotImplementedException();
-
-
-
-
-
+            if (path.StartsWith("\\", StringComparison.Ordinal))
+            {
+                return base.FindVMFile(path);
+            }
+            else
+            {
+                if (path.StartsWith(this.Path, StringComparison.Ordinal))
+                {
+                    path = path.Remove(0, this.Path.Length);
+                    if (!path.StartsWith("\\", StringComparison.Ordinal))
+                        path = "\\" + path;
+                    return base.FindVMFile(path);
+                }
+            }
+            throw new ArgumentOutOfRangeException(nameof(path), $"Path {path} is invalid");
         }
 
 

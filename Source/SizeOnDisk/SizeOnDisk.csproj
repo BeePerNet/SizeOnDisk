@@ -125,7 +125,7 @@
   <PropertyGroup />
   <PropertyGroup />
   <PropertyGroup>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>SizeOnDisk.App</StartupObject>
