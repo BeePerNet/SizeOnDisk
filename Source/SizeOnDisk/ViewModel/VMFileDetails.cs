@@ -18,49 +18,10 @@ namespace SizeOnDisk.ViewModel
     {
         private readonly VMFile _vmFile;
 
-        private static BitmapImage defaultFileBigIcon;
-        private static BitmapImage GetDefaultFileBigIcon()
-        {
-            if (defaultFileBigIcon == null)
-            {
-                defaultFileBigIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileBig.png");
-            }
-
-            return defaultFileBigIcon;
-        }
-
-        private static BitmapImage defaultFileIcon;
-        private static BitmapImage GetDefaultFileIcon()
-        {
-            if (defaultFileIcon == null)
-            {
-                defaultFileIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
-            }
-
-            return defaultFileIcon;
-        }
-
-        private static BitmapImage defaultFolderBigIcon;
-        private static BitmapImage GetDefaultFolderBigIcon()
-        {
-            if (defaultFolderBigIcon == null)
-            {
-                defaultFolderBigIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderBig.png");
-            }
-
-            return defaultFolderBigIcon;
-        }
-
-        private static BitmapImage defaultFolderIcon;
-        private static BitmapImage GetDefaultFolderIcon()
-        {
-            if (defaultFolderIcon == null)
-            {
-                defaultFolderIcon = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderSmall.png");
-            }
-
-            return defaultFolderIcon;
-        }
+        private static BitmapImage DefaultFileBigIcon { get; } = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileBig.png");
+        private static BitmapImage DefaultFileIcon { get; } = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFileSmall.png");
+        private static BitmapImage DefaultFolderBigIcon { get; } = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderBig.png");
+        private static BitmapImage DefaultFolderIcon { get; } = ImagingHelper.LoadImageResource("pack://application:,,,/SizeOnDisk;component/Icons/UnknownFolderSmall.png");
 
 
         public VMFileDetails(VMFile vmFile)
@@ -115,11 +76,11 @@ namespace SizeOnDisk.ViewModel
                     {
                         if (_vmFile.IsFile)
                         {
-                            icon = GetDefaultFileIcon();
+                            icon = DefaultFileIcon;
                         }
                         else
                         {
-                            icon = GetDefaultFolderIcon();
+                            icon = DefaultFolderIcon;
                         }
                     }
                 }
@@ -158,11 +119,11 @@ namespace SizeOnDisk.ViewModel
                                     {
                                         if (_vmFile.IsFile)
                                         {
-                                            thumbnail = GetDefaultFileBigIcon();
+                                            thumbnail = DefaultFileBigIcon;
                                         }
                                         else
                                         {
-                                            thumbnail = GetDefaultFolderBigIcon();
+                                            thumbnail = DefaultFolderBigIcon;
                                         }
                                     }
                                     if (!thumbnail.IsEqual(_Thumbnail))
@@ -183,11 +144,11 @@ namespace SizeOnDisk.ViewModel
                     {
                         if (_vmFile.IsFile)
                         {
-                            _Thumbnail = GetDefaultFileBigIcon();
+                            _Thumbnail = DefaultFileBigIcon;
                         }
                         else
                         {
-                            _Thumbnail = GetDefaultFolderBigIcon();
+                            _Thumbnail = DefaultFolderBigIcon;
                         }
                     }
                 }
