@@ -27,8 +27,8 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Padding="4,0" Text="{Binding File.Path}" ToolTip="{Binding File.Path}" MouseLeftButtonDown="Path_MouseLeftButtonDown" />
-                                <Button Grid.Column="1" HorizontalAlignment="Right" cmd:CommandBehavior.Command="{x:Static vm:VMFile.SelectCommand}" />
+                                <TextBlock Padding="4,0" Margin="0" Text="{Binding File.Path}" ToolTip="{Binding File.Path}" MouseLeftButtonDown="Path_MouseLeftButtonDown" />
+                                <Button Grid.Column="1" HorizontalAlignment="Right" cmd:CommandBehavior.Command="{x:Static vm:VMFile.SelectCommand}" VerticalAlignment="Center" />
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>                    
@@ -41,8 +41,11 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Padding="4,0" Text="{Binding ShortText}" ToolTip="{Binding ShortText}" MouseLeftButtonDown="Exception_MouseLeftButtonDown" />
-                                <Button Content="..." Grid.Column="1" HorizontalAlignment="Right" Click="ExceptionButton_Click" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"  />
+                                <TextBlock Padding="4,0" Margin="0" Text="{Binding ShortText}" ToolTip="{Binding ShortText}" MouseLeftButtonDown="Exception_MouseLeftButtonDown" />
+                                <Button Content="..." Grid.Column="1" HorizontalAlignment="Right" Click="ExceptionButton_Click"
+                                        Height="17"
+                                        Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}" 
+                                        VerticalAlignment="Center"  />
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

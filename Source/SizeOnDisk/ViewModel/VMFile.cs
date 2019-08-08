@@ -59,9 +59,6 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        private string _Name;
-
-
         #region constructor
 
 
@@ -79,7 +76,10 @@ namespace SizeOnDisk.ViewModel
             {
                 FileSize = fileSize;
                 DiskSize = Convert.ToUInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
-                _Details = new VMFileDetails(this);
+            }
+            if (parent != null)
+            {
+                Details = new VMFileDetails(this, DateTime.Now.AddHours(parent.Childs.Count));
             }
         }
 
@@ -90,82 +90,24 @@ namespace SizeOnDisk.ViewModel
 
         public VMFolder Parent { get; }
 
-        public virtual string Path
-        {
-            get
-            {
-                return System.IO.Path.Combine(Parent.Path, Name);
-            }
-        }
+        public virtual string Path { get => System.IO.Path.Combine(Parent.Path, Name); }
 
-        public string Name
-        {
-            get => _Name;
-            set => Rename(value);
-        }
+        private string _Name;
+        public string Name { get => _Name; set => Rename(value); }
 
         public virtual string Extension => System.IO.Path.GetExtension(Name).Replace(".", "");
 
         public virtual bool IsFile => true;
 
 
-        public virtual Task ExecuteTaskAsync(Action action, bool highpriority = false)
-        {
-            return Parent.ExecuteTaskAsync(action, highpriority);
-        }
-
-        public void Rename(string newName)
-        {
-            if (Name != newName)
-            {
-                ExecuteTaskAsync(() =>
-                {
-                    string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), newName);
-                    if (IsFile)
-                    {
-                        File.Move(Path, newPath);
-                    }
-                    else
-                    {
-                        Directory.Move(Path, newPath);
-                    }
-                    _Name = newName;
-                    OnPropertyChanged(nameof(Name));
-                    OnPropertyChanged(nameof(Path));
-                    OnPropertyChanged(nameof(Extension));
-                    RefreshOnView();
-                    Parent.RefreshAfterCommand();
-                });
-            }
-        }
 
         private ulong? _FileSize = null;
         private ulong? _DiskSize = null;
 
-        public virtual ulong? FileTotal
-        {
-            get => 1;
-            protected set { }
-        }
-
-        public virtual ulong? FolderTotal
-        {
-            get => null;
-            protected set { }
-        }
-
-        public ulong? DiskSize
-        {
-            get => _DiskSize;
-            protected set => SetProperty(ref _DiskSize, value);
-        }
-
-
-        public ulong? FileSize
-        {
-            get => _FileSize;
-            protected set => SetProperty(ref _FileSize, value);
-        }
+        public virtual ulong? FileTotal { get => 1; protected set { } }
+        public virtual ulong? FolderTotal { get => null; protected set { } }
+        public ulong? DiskSize { get => _DiskSize; protected set => SetProperty(ref _DiskSize, value); }
+        public ulong? FileSize { get => _FileSize; protected set => SetProperty(ref _FileSize, value); }
 
         public bool IsProtected
         {
@@ -219,12 +161,42 @@ namespace SizeOnDisk.ViewModel
 
         [SuppressMessage("Design", "CA2213")]
         private VMFileDetails _Details;
-        public VMFileDetails Details { get => _Details; set => SetProperty(ref _Details, value); }
+        public VMFileDetails Details { get => _Details; private set => SetProperty(ref _Details, value); }
 
 
         #endregion properties
 
         #region functions
+
+        public virtual Task ExecuteTaskAsync(Action action, bool highpriority = false)
+        {
+            return Parent.ExecuteTaskAsync(action, highpriority);
+        }
+
+        public void Rename(string newName)
+        {
+            if (Name != newName)
+            {
+                ExecuteTaskAsync(() =>
+                {
+                    string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), newName);
+                    if (IsFile)
+                    {
+                        File.Move(Path, newPath);
+                    }
+                    else
+                    {
+                        Directory.Move(Path, newPath);
+                    }
+                    _Name = newName;
+                    OnPropertyChanged(nameof(Name));
+                    OnPropertyChanged(nameof(Path));
+                    OnPropertyChanged(nameof(Extension));
+                    RefreshOnView();
+                    Parent.RefreshAfterCommand();
+                });
+            }
+        }
 
 
         protected virtual void SelectListItem(VMFile selected)

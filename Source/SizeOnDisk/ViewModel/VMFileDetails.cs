@@ -30,6 +30,14 @@ namespace SizeOnDisk.ViewModel
             _vmFile = vmFile;
         }
 
+        public VMFileDetails(VMFile vmFile, DateTime startdate)
+        {
+            _vmFile = vmFile;
+            CreationTime = startdate.AddDays(-27.32);
+            LastAccessTime = startdate.AddDays(-23.931111);
+            LastWriteTime = startdate;
+        }
+
         public LittleFileInfo Load()
         {
             LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
