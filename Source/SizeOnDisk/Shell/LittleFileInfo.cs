@@ -9,7 +9,7 @@ namespace SizeOnDisk.Shell
     /// </summary>
     public class LittleFileInfo
     {
-        private IOHelper.WIN32_FILE_ATTRIBUTE_DATA _data;
+        private ShellHelper.WIN32_FILE_ATTRIBUTE_DATA _data;
 
         internal LittleFileInfo(string path, string filename)
         {
@@ -26,17 +26,17 @@ namespace SizeOnDisk.Shell
             }
 
             string fullfilename = string.Concat("\\\\?\\", FullPath);
-            IOHelper.FillAttributeInfo(fullfilename, ref _data);
+            ShellHelper.FillAttributeInfo(fullfilename, ref _data);
             if ((Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)
             {
                 if ((Attributes & FileAttributes.Directory) == 0)
                 {
-                    CompressedSize = (ulong?)IOHelper.GetCompressedFileSize(fullfilename);
+                    CompressedSize = (ulong?)ShellHelper.GetCompressedFileSize(fullfilename);
                 }
             }
         }
 
-        internal LittleFileInfo(string path, string filename, IOHelper.WIN32_FILE_ATTRIBUTE_DATA data)
+        internal LittleFileInfo(string path, string filename, ShellHelper.WIN32_FILE_ATTRIBUTE_DATA data)
         {
             FileName = filename;
             Path = path;
@@ -46,7 +46,7 @@ namespace SizeOnDisk.Shell
             {
                 if ((Attributes & FileAttributes.Directory) == 0)
                 {
-                    CompressedSize = (ulong?)IOHelper.GetCompressedFileSize(string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename)));
+                    CompressedSize = (ulong?)ShellHelper.GetCompressedFileSize(string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename)));
                 }
             }
         }

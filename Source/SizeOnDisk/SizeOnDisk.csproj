@@ -202,7 +202,6 @@
     <Compile Include="Utilities\Settings.cs" />
     <Compile Include="Shell\ShellHelper.cs" />
     <Compile Include="Utilities\UserAccessControlHelper.cs" />
-    <Compile Include="Shell\IOHelper.cs" />
     <Compile Include="Utilities\WrapperIWin32Window.cs" />
     <Compile Include="ViewModel\DefaultEditorDefinitionType.cs" />
     <Compile Include="ViewModel\DefaultEditorItem.cs" />
@@ -403,6 +402,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Log.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Shortcut.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

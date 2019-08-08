@@ -20,7 +20,7 @@ namespace SizeOnDisk.ViewModel
                 VMFile[] files = Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
 
-                if (Shell.IOHelper.SafeNativeMethods.PermanentDelete(filenames))
+                if (ShellHelper.SafeNativeMethods.PermanentDelete(filenames))
                 {
                     List<VMFile> deletedfiles = new List<VMFile>();
                     foreach (VMFile file in files)
@@ -52,7 +52,7 @@ namespace SizeOnDisk.ViewModel
                 VMFile[] files = Childs.Where(T => T.IsSelected).ToArray();
                 string[] filenames = files.Select(T => T.Path).ToArray();
 
-                if (Shell.IOHelper.SafeNativeMethods.MoveToRecycleBin(filenames))
+                if (ShellHelper.SafeNativeMethods.MoveToRecycleBin(filenames))
                 {
                     List<VMFile> deletedfiles = new List<VMFile>();
                     foreach (VMFile file in files)
@@ -319,7 +319,7 @@ namespace SizeOnDisk.ViewModel
                     List<VMFile> tmpChilds = Childs.ToList();
                     List<VMFile> addChilds = new List<VMFile>();
                     VMFile found = null;
-                    IEnumerable<LittleFileInfo> files = IOHelper.GetFiles(Path);
+                    IEnumerable<LittleFileInfo> files = ShellHelper.GetFiles(Path);
                     foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
                     {
                         found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);

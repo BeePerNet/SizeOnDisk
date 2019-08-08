@@ -79,12 +79,20 @@ namespace SizeOnDisk.ViewModel
 
         #endregion fields
 
+        #region properties
+
+        public ObservableImmutableCollection<VMLog> Logs { get; } = new ObservableImmutableCollection<VMLog>();
+
+        public override VMRootFolder Root => this;
+
+
+        public uint ClusterSize { get; }
+
+        public bool IsDesign { get; } = false;
+
         public IEnumerable<VMRootFolder> DummyMe => new VMRootFolder[] { this };
 
         public new VMRootHierarchy Parent { get; }
-
-
-        #region properties
 
         private VMFolder _SelectedTreeItem;
 
@@ -172,7 +180,7 @@ namespace SizeOnDisk.ViewModel
         internal VMRootFolder(VMRootHierarchy parent, string name, string path)
             : base(null, name, path)
         {
-            ClusterSize = IOHelper.GetClusterSize(path);
+            ClusterSize = ShellHelper.GetClusterSize(path);
             Parent = parent;
             HardDrivePath = System.IO.Path.GetPathRoot(path);
             SetInternalIsTreeSelected();
@@ -181,14 +189,26 @@ namespace SizeOnDisk.ViewModel
             SelectedListItem = this;
         }
 
-        public uint ClusterSize { get; }
-
-        public bool IsDesign { get; } = false;
-
-
         #endregion creator
 
         #region functions
+
+        public void Log(VMLog log)
+        {
+            Logs.DoAdd((logs) => log);
+        }
+
+        public VMFile FindVMFile(string path)
+        {
+            throw new NotImplementedException();
+
+
+
+
+
+        }
+
+
 
         protected override void SelectTreeItem(VMFolder folder)
         {
@@ -384,8 +404,7 @@ namespace SizeOnDisk.ViewModel
 
         #endregion Task
 
-
-
+        #region IDisposable
 
         private bool _disposed = false;
         protected virtual void Dispose(bool disposing)
@@ -413,15 +432,7 @@ namespace SizeOnDisk.ViewModel
             GC.SuppressFinalize(this);
         }
 
-        public ObservableImmutableCollection<VMLog> Logs { get; } = new ObservableImmutableCollection<VMLog>();
-
-        public void Log(VMLog log)
-        {
-            Logs.DoAdd((logs) => log);
-        }
-
-        public override VMRootFolder Root => this;
-
+        #endregion IDisposable
 
 
     }

@@ -29,6 +29,7 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx DeleteCommand = new RoutedCommandEx("delete", "loc:PresentationCore:ExceptionStringTable:DeleteText", "pack://application:,,,/SizeOnDisk;component/Icons/Recycle_Bin.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:DeleteKeyDisplayString"));
         public static readonly RoutedCommandEx PermanentDeleteCommand = new RoutedCommandEx("permanentdelete", "loc:PermanentDelete", "pack://application:,,,/SizeOnDisk;component/Icons/DeleteHS.png", typeof(VMFile), new KeyGesture(Key.Delete, ModifierKeys.Shift, "loc:PermanentDeleteKey"));
         public static readonly RoutedCommandEx PropertiesCommand = new RoutedCommandEx("properties", "loc:PresentationCore:ExceptionStringTable:PropertiesText", "pack://application:,,,/SizeOnDisk;component/Icons/Properties.png", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
+        public static readonly RoutedCommandEx FollowLinkCommand = new RoutedCommandEx("followlink", "loc:FollowLink", "pack://application:,,,/SizeOnDisk;component/Icons/Shortcut.png", typeof(VMFile), new KeyGesture(Key.Enter, ModifierKeys.Alt));
 
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -47,6 +48,7 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(DeleteCommand, CallDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand, CanCallShellCommand));
+            bindingCollection.Add(new CommandBinding(FollowLinkCommand, CallFollowLinkCommand, CanCallFollowLinkCommand));
         }
 
         public override void AddInputModels(InputBindingCollection bindingCollection)
@@ -269,6 +271,57 @@ namespace SizeOnDisk.ViewModel
         #region Commands
 
 
+
+        private static void CanCallFollowLinkCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
+
+            e.CanExecute = !file.IsProtected && file.IsLink;
+        }
+
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
+        private static void CallFollowLinkCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+        private static void CanCallDeleteCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = false;
+
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
+            if (file == null)
+            {
+                return;
+            }
+
+            e.CanExecute = !file.IsProtected && !(file is VMRootFolder);
+        }
+
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
         private static void CallDeleteCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -288,7 +341,7 @@ namespace SizeOnDisk.ViewModel
             {
                 file.ExecuteTaskAsync(() =>
                 {
-                    if (IOHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
+                    if (ShellHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }
@@ -315,7 +368,7 @@ namespace SizeOnDisk.ViewModel
             {
                 TaskHelper.SafeExecute(() =>
                 {
-                    if (IOHelper.SafeNativeMethods.PermanentDelete(file.Path))
+                    if (ShellHelper.SafeNativeMethods.PermanentDelete(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }
@@ -323,19 +376,6 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        private static void CanCallDeleteCommand(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.Handled = true;
-            e.CanExecute = false;
-
-            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
-            if (file == null)
-            {
-                return;
-            }
-
-            e.CanExecute = !file.IsProtected && !(file is VMRootFolder);
-        }
 
         private static void CanCallShellCommand(object sender, CanExecuteRoutedEventArgs e)
         {
