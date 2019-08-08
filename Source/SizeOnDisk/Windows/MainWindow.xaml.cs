@@ -63,7 +63,7 @@ namespace SizeOnDisk.Windows
 
         private void ButtonOptions_Click(object sender, RoutedEventArgs e)
         {
-            new WindowOptions(this).ShowDialog();
+            new WindowOptions(this).Show();
         }
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
@@ -79,7 +79,7 @@ namespace SizeOnDisk.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            new ErrorList(this, (DataContext as VMRootHierarchy).SelectedRootFolder).ShowDialog();
+            new ErrorList(this, (DataContext as VMRootHierarchy).SelectedRootFolder).Show();
         }
     }
 }

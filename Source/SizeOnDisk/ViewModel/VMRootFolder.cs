@@ -156,6 +156,9 @@ namespace SizeOnDisk.ViewModel
             newFile = new VMFile(this, "42.zip", 4503599626321920);
             Childs.Add(newFile);
 
+            newFile = new VMFile(this, "64.lnk", 1339);
+            Childs.Add(newFile);
+
             LogException(new Exception("Flagada"));
 
             RefreshCount();
