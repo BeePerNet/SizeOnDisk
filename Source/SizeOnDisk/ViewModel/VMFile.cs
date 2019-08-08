@@ -214,6 +214,14 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        protected FileAttributesEx _Attributes = FileAttributesEx.Normal;
+        public FileAttributesEx Attributes => _Attributes;
+
+        [SuppressMessage("Design", "CA2213")]
+        private VMFileDetails _Details;
+        public VMFileDetails Details { get => _Details; set => SetProperty(ref _Details, value); }
+
+
         #endregion properties
 
         #region functions
@@ -240,28 +248,17 @@ namespace SizeOnDisk.ViewModel
 
         }
 
-        protected FileAttributesEx _Attributes = FileAttributesEx.Normal;
-        public FileAttributesEx Attributes => _Attributes;
-
-        [SuppressMessage("Design", "CA2213")]
-        private VMFileDetails _Details;
-        public VMFileDetails Details
-        {
-            get
-            {
-                if (_Details == null)
-                {
-                    _Details = new VMFileDetails(this);
-                }
-
-                return _Details;
-            }
-        }
-
         public void RefreshOnView()
         {
-            LittleFileInfo fileInfo = Details.Load();
+            VMFileDetails details = Details;
+            if (details == null)
+                details = new VMFileDetails(this);
+
+            LittleFileInfo fileInfo = details.Load();
             Refresh(fileInfo);
+
+            if (Details == null)
+                Details = details;
         }
 
         #endregion functions
