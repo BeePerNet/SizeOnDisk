@@ -15,7 +15,7 @@ namespace SizeOnDisk.Converters
             if (value is IConvertible)
             {
                 //Format by factor 1024 K
-                ulong size = System.Convert.ToUInt64(value, culture);
+                long size = System.Convert.ToInt64(value, culture);
                 switch (Properties.Settings.Default.UISizeFormat)
                 {
                     case UISizeFormatType.KBytes:
