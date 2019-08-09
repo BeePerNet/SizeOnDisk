@@ -75,6 +75,7 @@ namespace SizeOnDisk.ViewModel
         private readonly Stopwatch _Runwatch = new Stopwatch();
         private long _HardDriveUsage;
         private long _HardDriveFree;
+        private long _HardDriveSize;
         private TaskExecutionState _ExecutionState = TaskExecutionState.Ready;
 
         #endregion fields
@@ -126,6 +127,12 @@ namespace SizeOnDisk.ViewModel
             protected set => SetProperty(ref _HardDriveFree, value);
         }
 
+        public long HardDriveSize
+        {
+            get => _HardDriveSize;
+            protected set => SetProperty(ref _HardDriveSize, value);
+        }
+
         #endregion properties
 
         #region creator
@@ -145,9 +152,9 @@ namespace SizeOnDisk.ViewModel
             VMFolder newFolder = new VMFolder(this, "Blackbriar");
             Childs.Add(newFolder);
             Folders.Add(newFolder);
-            VMFile newFile = new VMFile(this, "SubFile.txt", (ulong)1.44 * 1000 * 1024);
+            VMFile newFile = new VMFile(this, "SubFile.txt", (long)1.44 * 1000 * 1024);
             newFolder.Childs.Add(newFile);
-            newFile = new VMFile(this, "SubFile.txt", (ulong)10 * 1024 * 1000 * 1000);
+            newFile = new VMFile(this, "SubFile.txt", (long)10 * 1024 * 1000 * 1000);
             newFolder.Childs.Add(newFile);
             newFolder.RefreshCount();
 
@@ -171,6 +178,11 @@ namespace SizeOnDisk.ViewModel
 
             RefreshCount();
             _ExecutionState = TaskExecutionState.Designing;
+
+
+            HardDriveUsage = DiskSize ?? 0;
+            HardDriveSize = 1000202039296;
+            HardDriveFree = HardDriveSize - HardDriveFree;
 
             SetInternalIsTreeSelected();
             SelectedTreeItem = this;
@@ -238,6 +250,7 @@ namespace SizeOnDisk.ViewModel
                 DriveInfo info = new DriveInfo(HardDrivePath);
                 HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
                 HardDriveFree = info.AvailableFreeSpace;
+                HardDriveSize = info.TotalSize;
 
                 base.Refresh(parallelOptions);
             }

@@ -103,10 +103,15 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <TextBox Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.HardDrivePath, Mode=OneWay}" />
-                <TextBlock Grid.Row="1" Text="{lex:Loc HardDriveUsage}" />
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveUsage,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
-                <TextBlock Grid.Row="2" Text="{lex:Loc HardDriveFree}" />
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveFree,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Text="Hard drive size" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveSize,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="2" Text="{lex:Loc HardDriveUsage}" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveUsage,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="3" Text="{lex:Loc HardDriveFree}" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveFree,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+
+                <TextBlock Grid.Row="5" Text="Threads" />
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding RunningThreads, Mode=OneWay}" />
 
                 <TextBox Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.Path, Mode=OneWay}" />
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="Total file size" />
@@ -188,12 +193,6 @@
             <Separator Grid.Column="1" />
             <StatusBarItem Grid.Column="2"
                            Content="{Binding SelectedRootFolder.RunTime}" />
-            <Separator Grid.Column="3" />
-            <StatusBarItem Grid.Column="4"
-                           Content="{Binding RunningThreads}" />
-
-
-
 
             <StatusBarItem Grid.Column="6"
                            Content="{Binding SelectedRootFolder.SelectedTreeItem.Folders.Count}"

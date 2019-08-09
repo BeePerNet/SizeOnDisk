@@ -31,7 +31,7 @@ namespace SizeOnDisk.Shell
             {
                 if ((Attributes & FileAttributes.Directory) == 0)
                 {
-                    CompressedSize = (ulong?)ShellHelper.GetCompressedFileSize(fullfilename);
+                    CompressedSize = ShellHelper.GetCompressedFileSize(fullfilename);
                 }
             }
         }
@@ -46,16 +46,16 @@ namespace SizeOnDisk.Shell
             {
                 if ((Attributes & FileAttributes.Directory) == 0)
                 {
-                    CompressedSize = (ulong?)ShellHelper.GetCompressedFileSize(string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename)));
+                    CompressedSize = ShellHelper.GetCompressedFileSize(string.Concat("\\\\?\\", System.IO.Path.Combine(path, filename)));
                 }
             }
         }
 
         public bool IsFolder => (_data.fileAttributes & (int)FileAttributes.Directory) > 0;
 
-        public ulong Size => ((ulong)_data.fileSizeHigh << 32) + _data.fileSizeLow;
+        public long Size => (_data.fileSizeHigh << 32) + _data.fileSizeLow;
 
-        public ulong? CompressedSize { get; } = null;
+        public long? CompressedSize { get; } = null;
 
         public FileAttributes Attributes => (FileAttributes)_data.fileAttributes;
 

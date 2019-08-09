@@ -120,18 +120,18 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        private ulong? _FileTotal = 1;
-        private ulong? _FolderTotal = null;
+        private long? _FileTotal = 1;
+        private long? _FolderTotal = null;
 
-        public ulong? FileCount => (ulong?)(Childs?.Count - Folders?.Count);
+        public long? FileCount => (long?)(Childs?.Count - Folders?.Count);
 
-        public override ulong? FileTotal
+        public override long? FileTotal
         {
             get => _FileTotal;
             protected set => SetProperty(ref _FileTotal, value);
         }
 
-        public override ulong? FolderTotal
+        public override long? FolderTotal
         {
             get => _FolderTotal;
             protected set => SetProperty(ref _FolderTotal, value);
@@ -308,18 +308,18 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 FileTotal = Sum(Childs.Select(T => T.FileTotal));
-                FolderTotal = Sum(Folders.Select(T => T.FolderTotal)) + (ulong)Folders.Count;
+                FolderTotal = Sum(Folders.Select(T => T.FolderTotal)) + (long)Folders.Count;
                 DiskSize = Sum(Childs.Select(T => T.DiskSize));
                 FileSize = Sum(Childs.Select(T => T.FileSize));
             }
         }
 
 
-        public static ulong Sum(IEnumerable<ulong?> source)
+        public static long Sum(IEnumerable<long?> source)
         {
-            ulong total = 0;
+            long total = 0;
 
-            foreach (ulong? item in source.Where(T => T.HasValue))
+            foreach (long? item in source.Where(T => T.HasValue))
             {
                 total = total + item ?? 0;
             }
