@@ -53,7 +53,7 @@ namespace SizeOnDisk.Shell
 
         public bool IsFolder => (_data.fileAttributes & (int)FileAttributes.Directory) > 0;
 
-        public long Size => (_data.fileSizeHigh << 32) + _data.fileSizeLow;
+        public long Size => ((long)_data.fileSizeHigh << 32) + _data.fileSizeLow;
 
         public long? CompressedSize { get; } = null;
 
