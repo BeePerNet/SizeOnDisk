@@ -103,7 +103,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Image Margin="10,0"
-                   Source="Icons/Hard_Drive_64x64.png"
+                   Source="/Icons/Hard_Drive_64x64.png"
                    Width="64"
                    Height="64" />
             <TextBlock Grid.Column="1"
@@ -120,7 +120,7 @@
             </StackPanel>
             <Label Content="{Binding Mode=OneTime, Path=Copyright}" />
             <Label Content="{Binding Mode=OneTime, Path=Company}" />
-            <Label Content="All Rights Reserved." />
+            <Label Content="{Binding Mode=OneTime, Path=Trademark}" />
             <TextBox Text="{Binding Mode=OneTime, Path=Description}"
                      Style="{StaticResource ReadOnlyDescStyle}" />
             <DockPanel>

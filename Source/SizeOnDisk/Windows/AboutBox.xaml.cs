@@ -57,6 +57,7 @@ namespace SizeOnDisk.Windows
         private const string propertyNameProduct = "Product";
         private const string propertyNameCopyright = "Copyright";
         private const string propertyNameCompany = "Company";
+        private const string propertyNameTrademark = "Trademark";
         private const string xPathRoot = "ApplicationInfo/";
         private const string xPathTitle = xPathRoot + propertyNameTitle;
         private const string xPathVersion = xPathRoot + "Version";
@@ -64,6 +65,7 @@ namespace SizeOnDisk.Windows
         private const string xPathProduct = xPathRoot + propertyNameProduct;
         private const string xPathCopyright = xPathRoot + propertyNameCopyright;
         private const string xPathCompany = xPathRoot + propertyNameCompany;
+        private const string xPathTrademark = xPathRoot + propertyNameTrademark;
         private const string xPathLink = xPathRoot + "Link";
         private const string xPathLinkUri = xPathRoot + "Link/@Uri";
         #endregion
@@ -126,6 +128,8 @@ namespace SizeOnDisk.Windows
         /// Gets the product's company name.
         /// </summary>
         public string Company => CalculatePropertyValue<AssemblyCompanyAttribute>(propertyNameCompany, xPathCompany);
+
+        public string Trademark => CalculatePropertyValue<AssemblyTrademarkAttribute>(propertyNameTrademark, xPathTrademark);
 
         /// <summary>
         /// Gets the link text to display in the About dialog.
