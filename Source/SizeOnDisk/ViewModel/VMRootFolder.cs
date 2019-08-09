@@ -182,7 +182,7 @@ namespace SizeOnDisk.ViewModel
 
             HardDriveUsage = DiskSize ?? 0;
             HardDriveSize = 1000202039296;
-            HardDriveFree = HardDriveSize - HardDriveFree;
+            HardDriveFree = HardDriveSize - HardDriveUsage;
 
             SetInternalIsTreeSelected();
             SelectedTreeItem = this;
