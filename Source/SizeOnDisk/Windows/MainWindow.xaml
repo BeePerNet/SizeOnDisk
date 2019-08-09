@@ -66,7 +66,81 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <TextBox Margin="1" Padding="1" DockPanel.Dock="Top" Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" IsReadOnlyCaretVisible="True" IsReadOnly="True" />
+        <Expander Margin="1" Padding="1" DockPanel.Dock="Top">
+            <Expander.Header>
+                <TextBox Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" 
+                             IsReadOnlyCaretVisible="True" IsReadOnly="True" />
+            </Expander.Header>
+            <Grid cmd:GlobalizationBehavior.UpdateChildsBindings=",UISize">
+                <Grid.Resources>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Margin" Value="1" />
+                        <Setter Property="IsReadOnly" Value="True" />
+                        <Setter Property="IsReadOnlyCaretVisible" Value="True" />
+                    </Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Right" />
+                        <Setter Property="Margin" Value="5,0" />
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBox Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.HardDrivePath, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Text="{lex:Loc HardDriveUsage}" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveUsage,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="2" Text="{lex:Loc HardDriveFree}" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveFree,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+
+                <TextBox Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.Path, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="Total file size" />
+                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding SelectedRootFolder.FileSize,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="Total disk size" />
+                <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding SelectedRootFolder.DiskSize,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="Total number of folders" />
+                <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding SelectedRootFolder.FolderTotal, Mode=OneWay}" />
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="Total number of files" />
+                <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding SelectedRootFolder.FileTotal, Mode=OneWay}" />
+                <TextBlock Grid.Row="5" Grid.Column="2" Text="Number of folders" />
+                <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding SelectedRootFolder.Folders.Count, Mode=OneWay}" />
+                <TextBlock Grid.Row="6" Grid.Column="2" Text="Number of files" />
+                <TextBox Grid.Row="6" Grid.Column="3" Text="{Binding SelectedRootFolder.FileCount, Mode=OneWay}" />
+                <TextBlock Grid.Row="7" Grid.Column="2" Text="Number of items" />
+                <TextBox Grid.Row="7" Grid.Column="3" Text="{Binding SelectedRootFolder.Childs.Count, Mode=OneWay}" />
+
+                <TextBox Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.SelectedTreeItem.Path, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Grid.Column="4" Text="Total file size" />
+                <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileSize,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="2" Grid.Column="4" Text="Total disk size" />
+                <TextBox Grid.Row="2" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.DiskSize,Converter={StaticResource SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.Row="3" Grid.Column="4" Text="Total number of folders" />
+                <TextBox Grid.Row="3" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FolderTotal, Mode=OneWay}" />
+                <TextBlock Grid.Row="4" Grid.Column="4" Text="Total number of files" />
+                <TextBox Grid.Row="4" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileTotal, Mode=OneWay}" />
+                <TextBlock Grid.Row="5" Grid.Column="4" Text="Number of folders" />
+                <TextBox Grid.Row="5" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.Folders.Count, Mode=OneWay}" />
+                <TextBlock Grid.Row="6" Grid.Column="4" Text="Number of files" />
+                <TextBox Grid.Row="6" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileCount, Mode=OneWay}" />
+                <TextBlock Grid.Row="7" Grid.Column="4" Text="Number of items" />
+                <TextBox Grid.Row="7" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.Childs.Count, Mode=OneWay}" />
+            </Grid>
+        </Expander>
         <StatusBar DockPanel.Dock="Bottom"
                    Grid.Row="3"
                    cmd:GlobalizationBehavior.UpdateItemsBindings=",UISize">
