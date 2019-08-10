@@ -1,6 +1,8 @@
-﻿using SizeOnDisk.Shell;
+﻿using SizeOnDisk.Languages;
+using SizeOnDisk.Shell;
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -88,21 +90,51 @@ namespace SizeOnDisk.ViewModel
 
         #region properties
 
-        public VMFolder Parent { get; }
-
+        [Display(Name = "Path")]
         public virtual string Path { get => System.IO.Path.Combine(Parent.Path, Name); }
 
         private string _Name;
+        [Display(ResourceType = typeof(Localization), Name = nameof(Localization.Name))]
+        [Required]
+        [CustomValidation(typeof(VMFile), nameof(ValidateName))]
+        [StringLength(260)]
+        [MinLength(1)]
         public string Name { get => _Name; set => Rename(value); }
+
+        public virtual VMRootFolder Root => Parent.Root;
+
+        public static void ValidateName(string name)
+        {
+            int i = name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars());
+            if (i != -1)
+            {
+                throw new ArgumentException("Invalid character: " + name[i], nameof(Name));
+            }
+        }
+
+
+
+        [Browsable(false)]
+        [Display(AutoGenerateField = false)]
+        public VMFolder Parent { get; }
+
+        [SuppressMessage("Design", "CA2213")]
+        private VMFileDetails _Details;
+        public VMFileDetails Details { get => _Details; private set => SetProperty(ref _Details, value); }
+
 
         public virtual string Extension => System.IO.Path.GetExtension(Name).Replace(".", "");
 
+        protected FileAttributesEx _Attributes = FileAttributesEx.Normal;
+        [Display(ResourceType = typeof(Localization), Name = nameof(Localization.Attributes))]
+        [EnumDataType(typeof(FileAttributesEx))]
+        public FileAttributesEx Attributes => _Attributes;
+
         public virtual bool IsFile => true;
-
-
 
         private long? _FileSize = null;
         private long? _DiskSize = null;
+
 
         public virtual long? FileTotal { get => 1; protected set { } }
         public virtual long? FolderTotal { get => null; protected set { } }
@@ -156,17 +188,16 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-        protected FileAttributesEx _Attributes = FileAttributesEx.Normal;
-        public FileAttributesEx Attributes => _Attributes;
-
-        [SuppressMessage("Design", "CA2213")]
-        private VMFileDetails _Details;
-        public VMFileDetails Details { get => _Details; private set => SetProperty(ref _Details, value); }
-
-
         #endregion properties
 
         #region functions
+
+        public void LogException(Exception ex)
+        {
+            TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
+            Root.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
+        }
+
 
         public virtual Task ExecuteTaskAsync(Action action, bool highpriority = false)
         {
@@ -175,10 +206,11 @@ namespace SizeOnDisk.ViewModel
 
         public void Rename(string newName)
         {
-            if (Name != newName)
+            if (System.IO.Path.GetFileName(Path) != newName)
             {
                 ExecuteTaskAsync(() =>
                 {
+                    ValidateName(newName);
                     string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), newName);
                     if (IsFile)
                     {
@@ -206,7 +238,6 @@ namespace SizeOnDisk.ViewModel
 
         public bool IsLink => ((Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint)
                     || (IsFile && Extension.ToUpperInvariant() == "LNK");
-
 
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
@@ -523,17 +554,6 @@ namespace SizeOnDisk.ViewModel
                 ShellHelper.ShellExecute(cmdParam.Item1, parameters);
             }
         }
-
-
-        public virtual VMRootFolder Root => Parent.Root;
-
-        public void LogException(Exception ex)
-        {
-            TextExceptionFormatter formatter = new TextExceptionFormatter(ex);
-            Root.Log(new VMLog(this, formatter.GetInnerException().Message, formatter.Format()));
-        }
-
-
 
     }
 }

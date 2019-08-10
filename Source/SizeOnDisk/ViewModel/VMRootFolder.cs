@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -273,6 +274,24 @@ namespace SizeOnDisk.ViewModel
 
         #region Task
 
+        [EnumDataType(typeof(TaskExecutionState))]
+        public TaskExecutionState ExecutionState
+        {
+            get => _ExecutionState;
+            private set
+            {
+                if (_ExecutionState != value)
+                {
+                    _ExecutionState = value;
+                    OnPropertyChanged(nameof(ExecutionState));
+                    Parent.RefreshIsRunning();
+                }
+            }
+        }
+
+        private VMViewMode viewMode = VMViewMode.Details;
+        public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
+
         private DispatcherTimer _Timer;
         private ParallelOptions _ParallelOptions;
         [SuppressMessage("Design", "CA2213")]
@@ -404,24 +423,6 @@ namespace SizeOnDisk.ViewModel
             }
             return null;
         }
-
-        public TaskExecutionState ExecutionState
-        {
-            get => _ExecutionState;
-            private set
-            {
-                if (_ExecutionState != value)
-                {
-                    _ExecutionState = value;
-                    OnPropertyChanged(nameof(ExecutionState));
-                    Parent.RefreshIsRunning();
-                }
-            }
-        }
-
-        private VMViewMode viewMode = VMViewMode.Details;
-        public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
-
 
 
         #endregion Task

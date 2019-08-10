@@ -320,7 +320,7 @@
                                         <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
                                             <Image Panel.ZIndex="42" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-big.png" 
                                                    Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                            <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Thumbnail, IsAsync=True}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Grid>
                                         <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                     </Grid>
@@ -373,13 +373,13 @@
                                             <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={StaticResource IsNotEqualConverter}, ConverterParameter=Hidden}">
                                                 <Image Stretch="None" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-small.png" 
                                                        Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                                <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Icon, IsAsync=True}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="{lex:Loc Name}"
-                                        Binding="{Binding Name}"
+                                        Binding="{Binding Name, NotifyOnValidationError=True}"
                                         ElementStyle="{StaticResource ColoredName}" />
                                 <DataGridTextColumn Header="Ext"
                                         IsReadOnly="True"
