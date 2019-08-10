@@ -4,11 +4,12 @@ using System.IO;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Markup;
+using WPFByYourCommand.Converters;
 
 namespace SizeOnDisk.Converters
 {
     [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<En attente>")]
-    public class FlowDocumentConverter : IValueConverter
+    public class FlowDocumentConverter : BaseConverter, IValueConverter
     {
         private const string FlowDocumentMessage = "TargetType must be of type FlowDocument";
 

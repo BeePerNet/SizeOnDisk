@@ -3,10 +3,11 @@ using SizeOnDisk.ViewModel;
 using System;
 using System.Windows.Data;
 using System.Windows.Shell;
+using WPFByYourCommand.Converters;
 
 namespace SizeOnDisk.Converters
 {
-    public class IsRunningConverter : IValueConverter
+    public class IsRunningConverter : BaseConverter, IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {

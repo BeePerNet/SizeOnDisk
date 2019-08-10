@@ -103,17 +103,6 @@ namespace SizeOnDisk.ViewModel
 
         public virtual VMRootFolder Root => Parent.Root;
 
-        public static void ValidateName(string name)
-        {
-            int i = name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars());
-            if (i != -1)
-            {
-                throw new ArgumentException("Invalid character: " + name[i], nameof(Name));
-            }
-        }
-
-
-
         [Browsable(false)]
         [Display(AutoGenerateField = false)]
         public VMFolder Parent { get; }
@@ -204,6 +193,15 @@ namespace SizeOnDisk.ViewModel
             return Parent.ExecuteTaskAsync(action, highpriority);
         }
 
+        public static void ValidateName(string name)
+        {
+            int i = name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars());
+            if (i != -1)
+            {
+                throw new ArgumentException("Invalid character: " + name[i], nameof(Name));
+            }
+        }
+
         public void Rename(string newName)
         {
             if (System.IO.Path.GetFileName(Path) != newName)
@@ -211,6 +209,7 @@ namespace SizeOnDisk.ViewModel
                 ExecuteTaskAsync(() =>
                 {
                     ValidateName(newName);
+
                     string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), newName);
                     if (IsFile)
                     {

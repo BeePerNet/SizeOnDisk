@@ -2,10 +2,11 @@
 using System;
 using System.Text;
 using System.Windows.Data;
+using WPFByYourCommand.Converters;
 
 namespace SizeOnDisk.Converters
 {
-    public class FileAttributesConverter : IValueConverter
+    public class FileAttributesConverter : BaseConverter, IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
