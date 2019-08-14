@@ -23,7 +23,7 @@
     </Window.DataContext>
     <Window.Resources>
         <ContextMenu x:Key="VMContextMenu" DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
-                     ItemsSource="{Binding Details.FileCommands, IsAsync=True}" />
+                     ItemsSource="{Binding Details.FileCommands}" />
     </Window.Resources>
     <DockPanel 
         cmd:CommandBehavior.Context="{Binding SelectedRootFolder}">

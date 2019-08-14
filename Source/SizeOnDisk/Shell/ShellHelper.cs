@@ -322,7 +322,7 @@ namespace SizeOnDisk.Shell
             }
             finally
             {
-                Marshal.FinalReleaseComObject(imageFactory);
+                Marshal.ReleaseComObject(imageFactory);
             }
             if (hBitmap == IntPtr.Zero)
             {
