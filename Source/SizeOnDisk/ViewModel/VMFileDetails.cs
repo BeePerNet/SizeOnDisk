@@ -251,7 +251,6 @@ namespace SizeOnDisk.ViewModel
                                 parent.Icon = new Image
                                 {
                                     Source = soft.Icon,
-                                    Stretch = Stretch.None
                                 };
                             }
 
