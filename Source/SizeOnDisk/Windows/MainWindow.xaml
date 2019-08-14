@@ -61,9 +61,9 @@
         <Expander Margin="1" Padding="1" DockPanel.Dock="Top">
             <Expander.Template>
                 <ControlTemplate TargetType="{x:Type Expander}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="3" SnapsToDevicePixels="True">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="3">
                         <DockPanel>
-                            <ToggleButton x:Name="HeaderSite" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}" FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" MinWidth="0" MinHeight="0" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <ToggleButton x:Name="HeaderSite" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}" FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="0" MinWidth="0" MinHeight="0" Padding="0" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
                                 <ToggleButton.FocusVisualStyle>
                                     <Style>
                                         <Setter Property="Control.Template">
@@ -85,12 +85,13 @@
                                                     <Border Padding="{TemplateBinding Padding}">
                                                         <Grid Background="Transparent">
                                                             <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="16"/>
                                                                 <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="16"/>
+                                                                <ColumnDefinition Width="2"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <Ellipse Opacity="0.6" x:Name="circle" Fill="White" HorizontalAlignment="Center" Height="16" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center" Width="16"/>
-                                                            <Path Opacity="0.6" x:Name="arrow" Data="M0,0L4,6L8,0" HorizontalAlignment="Center" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center"/>
-                                                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="1" ContentStringFormat="{TemplateBinding ContentStringFormat}" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
+                                                            <Ellipse Grid.Column="1" Opacity="0.6" x:Name="circle" Fill="White" HorizontalAlignment="Center" Height="16" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center" Width="16"/>
+                                                            <Path Grid.Column="1" Opacity="0.6" x:Name="arrow" Data="M0,0L4,6L8,0" HorizontalAlignment="Center" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center"/>
+                                                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Margin="0,0,4,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
                                                         </Grid>
                                                     </Border>
                                                     <ControlTemplate.Triggers>
@@ -134,7 +135,7 @@
                 </ControlTemplate>
             </Expander.Template>
             <Expander.Header>
-                <TextBox Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" 
+                <TextBox Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}"
                              IsReadOnlyCaretVisible="True" IsReadOnly="True" />
             </Expander.Header>
             <Grid cmd:GlobalizationBehavior.UpdateChildsBindings=",UISize">
