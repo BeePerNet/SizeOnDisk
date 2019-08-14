@@ -167,7 +167,22 @@ namespace SizeOnDisk.ViewModel
                             Parent.IsExpanded = true;
                         }
 
-                        SelectTreeItem(this);
+                        if (!this.Root.SelectedTreeItem.IsTreeSelected)
+                        {
+                            SelectTreeItem(this);
+
+                            if (value && !Root.IsDesign && Application.Current != null)
+                            {
+                                ExecuteTaskAsync(() =>
+                                {
+                                    FillChildList();
+
+                                    Parallel.ForEach(Childs.ToList(), (T) => T.RefreshOnView());
+
+                                    RefreshAfterCommand();
+                                }, true);
+                            }
+                        }
                     }
                     else
                     {
@@ -175,17 +190,6 @@ namespace SizeOnDisk.ViewModel
                     }
 
                     OnPropertyChanged(nameof(IsTreeSelected));
-                    if (value && !Root.IsDesign && Application.Current != null)
-                    {
-                        ExecuteTaskAsync(() =>
-                        {
-                            FillChildList();
-
-                            Parallel.ForEach(Childs.ToList(), (T) => T.RefreshOnView());
-
-                            RefreshAfterCommand();
-                        }, true);
-                    }
                 }
             }
         }
