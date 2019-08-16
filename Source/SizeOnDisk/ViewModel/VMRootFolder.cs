@@ -166,6 +166,7 @@ namespace SizeOnDisk.ViewModel
             newFolder = new VMFolder(this, "Threadstone");
             Childs.Add(newFolder);
             Folders.Add(newFolder);
+            newFolder.IsSelected = true;
             newFile = new VMFile(this, "Filezzz.txt", (uint)(1.44 * 1000 * 1024));
             newFolder.Childs.Add(newFile);
             newFolder.RefreshCount();
