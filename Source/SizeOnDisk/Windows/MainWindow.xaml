@@ -352,18 +352,16 @@
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
                         <ListView Grid.Column="2"
-                                SelectionMode="Extended"
                                 ItemsSource="{Binding SelectedTreeItem.Childs}"
                                 BorderThickness="1"
-                                SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
+                                SelectedItem="{Binding SelectedItem}"
                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                 ContextMenu="{StaticResource VMContextMenu}"
+                                cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                 Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
                             <ListView.Resources>
                                 <Style TargetType="ListViewItem">
-                                    <Setter Property="IsSelected" 
-                                             Value="{Binding IsSelected, Mode=TwoWay, 
-                                             UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                 </Style>
                             </ListView.Resources>
@@ -394,9 +392,10 @@
                                 Grid.Column="2"
                                 VirtualizingStackPanel.VirtualizationMode="Standard"
                                 cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
+                                cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                 BorderThickness="1"
                                 ItemsSource="{Binding SelectedTreeItem.Childs}"
-                                SelectedItem="{Binding SelectedTreeItem.SelectedItem}"
+                                SelectedItem="{Binding SelectedItem}"
                                 AutoGenerateColumns="False"
                                 Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                 HeadersVisibility="Column"
@@ -410,9 +409,7 @@
                                     <Setter Property="TextAlignment" Value="Right" />
                                 </Style>
                                 <Style TargetType="DataGridRow">
-                                    <Setter Property="IsSelected" 
-                                             Value="{Binding IsSelected, Mode=TwoWay, 
-                                             UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                 </Style>
                                 <Style TargetType="DataGridCell">

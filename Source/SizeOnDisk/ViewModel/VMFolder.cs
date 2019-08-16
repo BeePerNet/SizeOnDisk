@@ -167,7 +167,7 @@ namespace SizeOnDisk.ViewModel
                             Parent.IsExpanded = true;
                         }
 
-                        if (!this.Root.SelectedTreeItem.IsTreeSelected)
+                        if (this.Root.SelectedTreeItem == null || !this.Root.SelectedTreeItem.IsTreeSelected)
                         {
                             SelectTreeItem(this);
 
@@ -256,10 +256,6 @@ namespace SizeOnDisk.ViewModel
             });
         }
 
-
-
-        private VMFile selectedItem;
-        public VMFile SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
 
         #endregion properties
 
@@ -388,6 +384,13 @@ namespace SizeOnDisk.ViewModel
                         }
                         found.Refresh(fileInfo);
                     }
+                    if (tmpChilds.Contains(Root.SelectedTreeItem))
+                        Root.SelectedTreeItem = null;
+                    if (tmpChilds.Contains(Root.SelectedListItem))
+                        Root.SelectedListItem = null;
+                    if (tmpChilds.Contains(Root.SelectedItem))
+                        Root.SelectedItem = null;
+
                     Folders.DoOperation((l) => l.RemoveRange(tmpChilds.OfType<VMFolder>(), EqualityComparer<VMFolder>.Default));
                     Childs.DoOperation((l) => l.RemoveRange(tmpChilds, EqualityComparer<VMFile>.Default));
 

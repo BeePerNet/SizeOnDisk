@@ -299,8 +299,9 @@ namespace SizeOnDisk.ViewModel
             }
 
             file.Root.Parent.SelectedRootFolder = file.Root;
+            file.Root.SelectedTreeItem = null;
+            file.Root.SelectedItem = file;
             file.Parent.IsTreeSelected = true;
-            file.Parent.SelectedItem = file;
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
@@ -328,8 +329,9 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 vmfile.Root.Parent.SelectedRootFolder = vmfile.Root;
+                vmfile.Root.SelectedTreeItem = null;
+                vmfile.Root.SelectedItem = vmfile;
                 vmfile.Parent.IsTreeSelected = true;
-                vmfile.Parent.SelectedItem = vmfile;
             }
         }
 

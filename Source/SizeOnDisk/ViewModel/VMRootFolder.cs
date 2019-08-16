@@ -96,6 +96,10 @@ namespace SizeOnDisk.ViewModel
 
         public new VMRootHierarchy Parent { get; }
 
+        private VMFile selectedItem;
+        public VMFile SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
+
+
         private VMFolder _SelectedTreeItem;
 
         public VMFolder SelectedTreeItem
