@@ -48,10 +48,7 @@ namespace SizeOnDisk.ViewModel
             {
                 VMRootFolder newFolder = new VMRootFolder(this);
                 Folders.Add(newFolder);
-                _SelectedRootFolder = newFolder;
-
-                newFolder.IsExpanded = true;
-                newFolder.IsTreeSelected = true;
+                SelectedRootFolder = newFolder;
             }
             else
             {
@@ -76,21 +73,18 @@ namespace SizeOnDisk.ViewModel
 
             VMRootFolder newFolder = new VMRootFolder(this, name, path);
             Folders.Add(newFolder);
-
-            newFolder.IsExpanded = true;
             SelectedRootFolder = newFolder;
-
             newFolder.RefreshAsync();
         }
 
         public void RemoveRootFolder(VMRootFolder folder)
         {
-            if (SelectedRootFolder == folder)
-            {
-                SelectedRootFolder = null;
-            }
-
+            folder.Stop().Wait();
             Folders.Remove(folder);
+            if (SelectedRootFolder == null || SelectedRootFolder == folder)
+            {
+                SelectedRootFolder = Folders.FirstOrDefault();
+            }
         }
 
         public void StopAllAsync()

@@ -310,7 +310,7 @@
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="-6,-1">
-                        <TextBlock Name="Textbox" Margin="3,4,3,0" Panel.ZIndex="42" Text="{Binding Name}" ToolTip="{Binding Path}" MinWidth="60" TextAlignment="Center" />
+                        <TextBlock Name="Textbox" Margin="6,4,6,0" Panel.ZIndex="42" Text="{Binding Name}" ToolTip="{Binding Path}" MinWidth="50" TextAlignment="Center" />
                         <ProgressBar VerticalAlignment="Top" Height="4" Background="Transparent" IsIndeterminate="{Binding ExecutionState, Converter={conv:IsRunningConverter}}" BorderThickness="0" />
                     </Grid>
                 </DataTemplate>

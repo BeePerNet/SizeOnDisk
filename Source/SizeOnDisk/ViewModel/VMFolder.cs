@@ -17,29 +17,10 @@ namespace SizeOnDisk.ViewModel
         {
             ExecuteTaskAsync(() =>
             {
-                VMFile[] files = Childs.Where(T => T.IsSelected).ToArray();
-                string[] filenames = files.Select(T => T.Path).ToArray();
+                string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
 
                 if (ShellHelper.SafeNativeMethods.PermanentDelete(filenames))
                 {
-                    List<VMFile> deletedfiles = new List<VMFile>();
-                    foreach (VMFile file in files)
-                    {
-                        bool exists = false;
-                        if (file.IsFile)
-                        {
-                            exists = File.Exists(file.Path);
-                        }
-                        else
-                        {
-                            exists = Directory.Exists(file.Path);
-                        }
-
-                        if (!exists)
-                        {
-                            deletedfiles.Add(file);
-                        }
-                    }
                     RefreshAfterCommand();
                 }
             }, true);
@@ -49,29 +30,10 @@ namespace SizeOnDisk.ViewModel
         {
             ExecuteTaskAsync(() =>
             {
-                VMFile[] files = Childs.Where(T => T.IsSelected).ToArray();
-                string[] filenames = files.Select(T => T.Path).ToArray();
+                string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
 
                 if (ShellHelper.SafeNativeMethods.MoveToRecycleBin(filenames))
                 {
-                    List<VMFile> deletedfiles = new List<VMFile>();
-                    foreach (VMFile file in files)
-                    {
-                        bool exists = false;
-                        if (file.IsFile)
-                        {
-                            exists = File.Exists(file.Path);
-                        }
-                        else
-                        {
-                            exists = Directory.Exists(file.Path);
-                        }
-
-                        if (!exists)
-                        {
-                            deletedfiles.Add(file);
-                        }
-                    }
                     RefreshAfterCommand();
                 }
             }, true);
@@ -138,19 +100,6 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-
-        protected virtual void SelectTreeItem(VMFolder folder)
-        {
-            Parent.SelectTreeItem(folder);
-        }
-
-
-
-        protected void SetInternalIsTreeSelected()
-        {
-            _Attributes |= FileAttributesEx.TreeSelected;
-        }
-
         public bool IsTreeSelected
         {
             get => (_Attributes & FileAttributesEx.TreeSelected) == FileAttributesEx.TreeSelected;
@@ -161,32 +110,38 @@ namespace SizeOnDisk.ViewModel
                     if (value)
                     {
                         _Attributes |= FileAttributesEx.TreeSelected;
-                        //this.IsExpanded = true;    Maybe
+
                         if (value && Parent != null)
                         {
                             Parent.IsExpanded = true;
                         }
 
-                        if (this.Root.SelectedTreeItem == null || !this.Root.SelectedTreeItem.IsTreeSelected)
+                        Root.SelectedTreeItem = this;
+                        Root.SelectedListItem = this;
+
+                        if (value && !Root.IsDesign && Application.Current != null)
                         {
-                            SelectTreeItem(this);
+                            this.RefreshOnView();
 
-                            if (value && !Root.IsDesign && Application.Current != null)
+                            ExecuteTaskAsync(() =>
                             {
-                                ExecuteTaskAsync(() =>
-                                {
-                                    FillChildList();
+                                FillChildList();
 
-                                    Parallel.ForEach(Childs.ToList(), (T) => T.RefreshOnView());
+                                Parallel.ForEach(Childs.ToList(), Root.GetParallelOptions(), (T) => T.RefreshOnView());
 
-                                    RefreshAfterCommand();
-                                }, true);
-                            }
+                                RefreshAfterCommand();
+                            }, true);
                         }
                     }
                     else
                     {
                         _Attributes &= ~FileAttributesEx.TreeSelected;
+                        this.GetOutOfView();
+
+                        ExecuteTaskAsync(() =>
+                        {
+                            Parallel.ForEach(Childs.ToList(), Root.GetParallelOptions(), (T) => T.GetOutOfView());
+                        });
                     }
 
                     OnPropertyChanged(nameof(IsTreeSelected));

@@ -154,6 +154,9 @@ namespace SizeOnDisk.ViewModel
             Parent = parent;
             HardDrivePath = "Drive 1";
 
+            IsExpanded = true;
+            IsTreeSelected = true;
+
             VMFolder newFolder = new VMFolder(this, "Blackbriar");
             Childs.Add(newFolder);
             Folders.Add(newFolder);
@@ -189,10 +192,6 @@ namespace SizeOnDisk.ViewModel
             HardDriveUsage = DiskSize ?? 0;
             HardDriveSize = 1000202039296;
             HardDriveFree = HardDriveSize - HardDriveUsage;
-
-            SetInternalIsTreeSelected();
-            SelectedTreeItem = this;
-            SelectedListItem = this;
         }
 
         internal VMRootFolder(VMRootHierarchy parent, string name, string path)
@@ -201,10 +200,8 @@ namespace SizeOnDisk.ViewModel
             ClusterSize = ShellHelper.GetClusterSize(path);
             Parent = parent;
             HardDrivePath = System.IO.Path.GetPathRoot(path);
-            SetInternalIsTreeSelected();
-
-            SelectedTreeItem = this;
-            SelectedListItem = this;
+            IsExpanded = true;
+            IsTreeSelected = true;
         }
 
         #endregion creator
@@ -233,18 +230,6 @@ namespace SizeOnDisk.ViewModel
             {
                 return Parent.FindVMFile(path);
             }
-        }
-
-
-
-        protected override void SelectTreeItem(VMFolder folder)
-        {
-            SelectedTreeItem = folder;
-            SelectedListItem = folder;
-        }
-        protected override void SelectListItem(VMFile selected)
-        {
-            SelectedListItem = selected;
         }
 
         public override void Refresh(ParallelOptions parallelOptions)
@@ -303,7 +288,7 @@ namespace SizeOnDisk.ViewModel
         private CancellationTokenSource _CancellationTokenSource;
         private readonly object _lock = new object();
 
-        private ParallelOptions GetParallelOptions()
+        public ParallelOptions GetParallelOptions()
         {
             if (_CancellationTokenSource != null && _CancellationTokenSource.Token != null && !_CancellationTokenSource.Token.CanBeCanceled)
             {

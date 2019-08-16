@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.Shell;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -30,6 +31,7 @@ namespace SizeOnDisk.ViewModel
             _vmFile = vmFile;
         }
 
+        [DesignOnly(true)]
         public VMFileDetails(VMFile vmFile, DateTime startdate)
         {
             _vmFile = vmFile;
@@ -40,7 +42,7 @@ namespace SizeOnDisk.ViewModel
 
         public LittleFileInfo Load()
         {
-            LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent.Path, _vmFile.Name);
+            LittleFileInfo fileInfo = new LittleFileInfo(_vmFile.Parent?.Path, _vmFile.Name);
             CreationTime = fileInfo.CreationTime;
             LastAccessTime = fileInfo.LastAccessTime;
             LastWriteTime = fileInfo.LastWriteTime;

@@ -33,9 +33,8 @@ namespace SizeOnDisk.Windows
             VMFolder folder = CommandViewModel.GetViewModelObject<VMFolder>(sender);
             if (folder != null && !folder.IsProtected)
             {
-                folder.Root.SelectedTreeItem.IsTreeSelected = false;
-                folder.IsTreeSelected = true;
                 e.Handled = true;
+                folder.IsTreeSelected = true;
             }
         }
 

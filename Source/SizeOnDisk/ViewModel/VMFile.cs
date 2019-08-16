@@ -171,8 +171,14 @@ namespace SizeOnDisk.ViewModel
                     OnPropertyChanged(nameof(IsSelected));
                     if (value)
                     {
-                        SelectListItem(this);
+                        Parent.IsTreeSelected = true;
+                        Root.SelectedListItem = this;
                     }
+                    else if (Root.SelectedListItem == this)
+                    {
+                        Root.SelectedListItem = this.Parent.Childs.FirstOrDefault(T => T.IsSelected);
+                    }
+
                 }
             }
         }
@@ -230,10 +236,6 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        protected virtual void SelectListItem(VMFile selected)
-        {
-            Parent.SelectListItem(selected);
-        }
 
         public bool IsLink => ((Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint)
                     || (IsFile && Extension.ToUpperInvariant() == "LNK");
@@ -261,6 +263,12 @@ namespace SizeOnDisk.ViewModel
 
             if (Details == null)
                 Details = details;
+        }
+
+        public void GetOutOfView()
+        {
+            Details = null;
+            IsSelected = false;
         }
 
         #endregion functions
@@ -299,9 +307,8 @@ namespace SizeOnDisk.ViewModel
             }
 
             file.Root.Parent.SelectedRootFolder = file.Root;
-            file.Root.SelectedTreeItem = null;
-            file.Root.SelectedItem = file;
-            file.Parent.IsTreeSelected = true;
+            file.Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
+            file.IsSelected = true;
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
@@ -329,9 +336,8 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 vmfile.Root.Parent.SelectedRootFolder = vmfile.Root;
-                vmfile.Root.SelectedTreeItem = null;
-                vmfile.Root.SelectedItem = vmfile;
-                vmfile.Parent.IsTreeSelected = true;
+                vmfile.Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
+                vmfile.IsSelected = true;
             }
         }
 
