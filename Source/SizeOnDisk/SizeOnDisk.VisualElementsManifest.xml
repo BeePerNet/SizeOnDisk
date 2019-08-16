@@ -1,0 +1,13 @@
+﻿<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+  <VisualElements
+   DisplayName = "SizeOnDisk"
+ Logo="WinAssets\LockScreenLogo.png" 
+        SmallLogo="WinAssets\LockScreenLogo.png" 
+        Description="Some text here" 
+      ShowNameOnSquare150x150Logo='on'
+      Square70x70Logo='WinAssets\Square71x71Logo.png'
+      Square150x150Logo='WinAssets\Square150x150Logo.png'
+      Square310x310Logo='WinAssets\Square310x310Logo.png'
+      ForegroundText='light'
+      BackgroundColor='teal'/>
+</Application>

@@ -411,6 +411,14 @@
   <ItemGroup>
     <Resource Include="Icons\Select.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="SizeOnDisk.VisualElementsManifest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Medias\Folder.svg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

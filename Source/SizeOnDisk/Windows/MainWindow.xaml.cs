@@ -3,7 +3,6 @@ using SizeOnDisk.Utilities;
 using SizeOnDisk.ViewModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
 
@@ -34,6 +33,7 @@ namespace SizeOnDisk.Windows
             VMFolder folder = CommandViewModel.GetViewModelObject<VMFolder>(sender);
             if (folder != null && !folder.IsProtected)
             {
+                folder.Root.SelectedTreeItem.IsTreeSelected = false;
                 folder.IsTreeSelected = true;
                 e.Handled = true;
             }

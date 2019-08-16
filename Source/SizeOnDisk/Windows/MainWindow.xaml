@@ -85,13 +85,13 @@
                                                     <Border Padding="{TemplateBinding Padding}">
                                                         <Grid Background="Transparent">
                                                             <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="16"/>
                                                                 <ColumnDefinition Width="2"/>
+                                                                <ColumnDefinition Width="16"/>
+                                                                <ColumnDefinition Width="*"/>
                                                             </Grid.ColumnDefinitions>
                                                             <Ellipse Grid.Column="1" Opacity="0.6" x:Name="circle" Fill="White" HorizontalAlignment="Center" Height="16" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center" Width="16"/>
                                                             <Path Grid.Column="1" Opacity="0.6" x:Name="arrow" Data="M0,0L4,6L8,0" HorizontalAlignment="Center" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center"/>
-                                                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Margin="0,0,4,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
+                                                            <ContentPresenter Grid.Column="2" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
                                                         </Grid>
                                                     </Border>
                                                     <ControlTemplate.Triggers>
