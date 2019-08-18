@@ -181,8 +181,6 @@ namespace SizeOnDisk.ViewModel
 
                     if (value)
                     {
-                        Parent.IsTreeSelected = true;
-                        Root.SelectedItem = this;
                         Root.SelectedListItem = this;
                     }
                     else if (Root.SelectedListItem == this)
@@ -290,10 +288,15 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
             }
 
-            file.Root.Parent.SelectedRootFolder = file.Root;
-            file.Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
-            file.IsSelected = true;
-            file.Root.SelectedItem = file;
+            file.Select();
+        }
+
+        private void Select()
+        {
+            Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
+            Root.Parent.SelectedRootFolder = Root;
+            Parent.IsTreeSelected = true;
+            Root.SelectedItem = this;
         }
 
         private static void CanCallFollowLinkCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -306,7 +309,7 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
             }
 
-            e.CanExecute = !file.IsProtected /*&& file.IsFile*/ && file.IsLink;
+            e.CanExecute = !file.IsProtected && file.IsLink;
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
@@ -334,10 +337,7 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                vmfile.Root.Parent.SelectedRootFolder = vmfile.Root;
-                //vmfile.Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
-                vmfile.Root.IsTreeSelected = true;
-                vmfile.IsSelected = true;
+                vmfile.Select();
             }
         }
 
