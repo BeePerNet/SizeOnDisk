@@ -29,11 +29,10 @@
   </Class>
   <Class Name="SizeOnDisk.ViewModel.VMFile">
     <Position X="11.25" Y="3" Width="2.25" />
-    <AssociationLine Name="Details" Type="SizeOnDisk.ViewModel.VMFileDetails" FixedFromPoint="true">
+    <AssociationLine Name="Details" Type="SizeOnDisk.ViewModel.VMFileDetails" FixedToPoint="true">
       <Path>
-        <Point X="13.5" Y="10.552" />
-        <Point X="15.5" Y="10.552" />
-        <Point X="15.5" Y="8.021" />
+        <Point X="13.5" Y="4.688" />
+        <Point X="14.75" Y="4.688" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -72,7 +71,7 @@
         <Point X="7.75" Y="4.117" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.15" Y="0.299" />
+        <Position X="-0.119" Y="1.205" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -88,21 +87,25 @@
     <Position X="4" Y="3" Width="2.25" />
     <InheritanceLine Type="SizeOnDisk.ViewModel.VMFolder" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="7.75" Y="5.796" />
-        <Point X="6.625" Y="5.796" />
-        <Point X="6.625" Y="7.625" />
-        <Point X="6.25" Y="7.625" />
+        <Point X="7.75" Y="6.75" />
+        <Point X="7" Y="6.75" />
+        <Point X="7" Y="6.75" />
+        <Point X="6.25" Y="6.75" />
       </Path>
     </InheritanceLine>
     <AssociationLine Name="Logs" Type="SizeOnDisk.ViewModel.VMLog" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="5.312" Y="3" />
-        <Point X="5.312" Y="2.041" />
-        <Point X="6.313" Y="2.041" />
-        <Point X="6.313" Y="1.062" />
+        <Point X="5.312" Y="1.874" />
+        <Point X="6.812" Y="1.874" />
+        <Point X="6.812" Y="1.062" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="SelectedTreeItem" Type="SizeOnDisk.ViewModel.VMFolder">
+    <AssociationLine Name="SelectedTreeItem" Type="SizeOnDisk.ViewModel.VMFolder" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="4.812" />
+        <Point X="7.75" Y="4.812" />
+      </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.12" Y="-0.273" />
       </MemberNameLabel>
@@ -121,17 +124,17 @@
     <AssociationLine Name="ExecutionState" Type="SizeOnDisk.ViewModel.TaskExecutionState" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="5.312" Y="3" />
-        <Point X="5.312" Y="2.042" />
-        <Point X="3.188" Y="2.042" />
-        <Point X="3.188" Y="1.062" />
+        <Point X="5.312" Y="1.855" />
+        <Point X="3" Y="1.855" />
+        <Point X="3" Y="1.062" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="ViewMode" Type="SizeOnDisk.ViewModel.VMViewMode" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="5.312" Y="3" />
-        <Point X="5.312" Y="2.02" />
-        <Point X="4.812" Y="2.02" />
-        <Point X="4.812" Y="1.062" />
+        <Point X="5.312" Y="1.864" />
+        <Point X="4.938" Y="1.864" />
+        <Point X="4.938" Y="1.062" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -150,7 +153,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="SizeOnDisk.ViewModel.VMFileDetails">
-    <Position X="14.5" Y="3" Width="2" />
+    <Position X="14.75" Y="3" Width="2" />
     <TypeIdentifier>
       <HashCode>AAggigAAIAkAAAAAEAEACAAAACAAAAAAAAABgAEAAGA=</HashCode>
       <FileName>ViewModel\VMFileDetails.cs</FileName>
