@@ -139,7 +139,7 @@ namespace SizeOnDisk.ViewModel
 
                         Root.ExecuteTaskAsync(() =>
                         {
-                            foreach(VMFile f in Childs)
+                            foreach (VMFile f in Childs)
                             {
                                 f.GetOutOfView();
                             }
@@ -337,7 +337,7 @@ namespace SizeOnDisk.ViewModel
                                     found = new VMFolder(this, fileInfo.FileName, fileInfo.FullPath);
                                     if (refreshOnNew)
                                     {
-                                        (found as VMFolder).Refresh(new ParallelOptions());
+                                        (found as VMFolder).Refresh(Root.GetParallelOptions());
                                     }
                                 }
                                 else
