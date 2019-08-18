@@ -56,7 +56,7 @@
                        Key="Software\SizeOnDisk"
                        Name="MenuShortcut"
                        Type="string"
-                       Value="[ProgramMenuFolder]\SizeOnDisk.lnk"
+                       Value="[ProgramMenuFolder]SizeOnDisk.lnk"
                        KeyPath="yes" />
       </Component>
     </DirectoryRef>
@@ -75,7 +75,7 @@
                        Key="Software\SizeOnDisk"
                        Name="DesktopShortcut"
                        Type="string"
-                       Value="[DesktopFolder]\SizeOnDisk.lnk"
+                       Value="[DesktopFolder]SizeOnDisk.lnk"
                        KeyPath="yes" />
       </Component>
     </DirectoryRef>

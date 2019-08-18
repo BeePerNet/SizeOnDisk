@@ -41,8 +41,40 @@ namespace SizeOnDisk.Properties
 
             if (string.IsNullOrWhiteSpace(configVersion) || Version.Parse(configVersion) < appVersion)
             {
+                Settings.Default.Upgrade();
                 Settings.Default.ApplicationVersion = appVersion.ToString();
                 Settings.Default.Save();
+
+                //Clean the old files
+                string fullFilePath = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+                string parentPath = Path.GetFullPath(Path.Combine(fullFilePath, @"..\..\.."));
+                DeleteFiles(parentPath);
+                foreach (string dir in Directory.GetDirectories(parentPath))
+                {
+                    if (fullFilePath.StartsWith(dir))
+                    {
+                        DeleteFiles(dir);
+                        foreach (string versiondir in Directory.GetDirectories(dir))
+                        {
+                            if (!fullFilePath.StartsWith(versiondir))
+                            {
+                                Directory.Delete(versiondir, true);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Directory.Delete(dir, true);
+                    }
+                }
+            }
+        }
+
+        public static void DeleteFiles(string path)
+        {
+            foreach (string file in Directory.GetFiles(path))
+            {
+                File.Delete(file);
             }
         }
     }
