@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
 using WPFByYourCommand.Exceptions;
@@ -47,7 +46,7 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(EditCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(PrintCommand, CallShellCommand, CanCallShellCommand));
             bindingCollection.Add(new CommandBinding(ShellSelectCommand, CallShellSelectCommand, CanCallCommand));
-            //bindingCollection.Add(new CommandBinding(FindCommand, CallShellCommand, CanCallCommand));
+            //TODO: bindingCollection.Add(new CommandBinding(FindCommand, CallShellCommand, CanCallCommand));
             bindingCollection.Add(new CommandBinding(DeleteCommand, CallDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallDeleteCommand));
             bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand, CanCallCommand));

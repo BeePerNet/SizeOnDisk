@@ -1,11 +1,10 @@
-﻿//TODO:User later with Reparse Point Folder
-using Microsoft.Win32.SafeHandles;
+﻿using Microsoft.Win32.SafeHandles;
 using SizeOnDisk.ViewModel;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace SizeOnDisk.Shell
 {
@@ -388,9 +387,9 @@ namespace SizeOnDisk.Shell
             GenericAll = 0x10000000,
         }
 
-        private string normalisedTarget;
-        private string actualTarget;
-        private TagType tag;
+        private readonly string normalisedTarget;
+        private readonly string actualTarget;
+        private readonly TagType tag;
 
         /// <summary>
         /// Takes a full path to a reparse point and finds the target.
@@ -426,116 +425,106 @@ namespace SizeOnDisk.Shell
             //if (success)
             {
                 // Open the file and get its handle
-                SafeFileHandle handle = CreateFile(path, EFileAccess.GenericRead, FileShare.ReadWrite | FileShare.Delete, IntPtr.Zero, FileMode.Open, FileAttributesEx.OpenReparsePoint | FileAttributesEx.BackupSemantics, IntPtr.Zero);
-                lastError = Marshal.GetLastWin32Error();
-                if (!handle.IsInvalid)
+                using (SafeFileHandle handle = CreateFile(path, EFileAccess.GenericRead, FileShare.ReadWrite | FileShare.Delete, IntPtr.Zero, FileMode.Open, FileAttributesEx.OpenReparsePoint | FileAttributesEx.BackupSemantics, IntPtr.Zero))
                 {
-                    int outBufferSize = Marshal.SizeOf(typeof(REPARSE_DATA_BUFFER));
-                    IntPtr outBuffer = Marshal.AllocHGlobal(outBufferSize);
-
-                    //REPARSE_DATA_BUFFER buffer = new REPARSE_DATA_BUFFER();
-                    // Make up the control code - see CTL_CODE on ntddk.h
-                    //uint controlCode = (FILE_DEVICE_FILE_SYSTEM << 16) | (FILE_ANY_ACCESS << 14) | (FSCTL_GET_REPARSE_POINT << 2) | METHOD_BUFFERED;
-                    int bytesReturned = 0;
-                    success = DeviceIoControl(handle.DangerousGetHandle(), EIOControlCode.FsctlGetReparsePoint, IntPtr.Zero, 0, outBuffer, outBufferSize, out bytesReturned, IntPtr.Zero);
                     lastError = Marshal.GetLastWin32Error();
-                    if (success)
+                    if (!handle.IsInvalid)
                     {
-                        REPARSE_DATA_BUFFER buffer = (REPARSE_DATA_BUFFER)
-                            Marshal.PtrToStructure(outBuffer, typeof(REPARSE_DATA_BUFFER));
+                        int outBufferSize = Marshal.SizeOf(typeof(REPARSE_DATA_BUFFER));
+                        IntPtr outBuffer = Marshal.AllocHGlobal(outBufferSize);
 
-
-                        /*if (reparseDataBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT)
-                            return null;
-
-                        string targetDir = Encoding.Unicode.GetString(reparseDataBuffer.PathBuffer,
-                            reparseDataBuffer.SubstituteNameOffset, reparseDataBuffer.SubstituteNameLength);
-
-                        if (targetDir.StartsWith(NonInterpretedPathPrefix))
-                            targetDir = targetDir.Substring(NonInterpretedPathPrefix.Length);*/
-
-                        string subsString = string.Empty;
-                        string printString = string.Empty;
-                        // Note that according to http://wesnerm.blogs.com/net_undocumented/2006/10/symbolic_links_.html
-                        // Symbolic links store relative paths, while junctions use absolute paths
-                        // however, they can in fact be either, and may or may not have a leading \.
-                        /*Debug.Assert(buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK || buffer.ReparseTag == IO_REPARSE_TAG_MOUNT_POINT,
-                            "Unrecognised reparse tag");						// We only recognise these two
-                            */
-                        if (buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK)
+                        //REPARSE_DATA_BUFFER buffer = new REPARSE_DATA_BUFFER();
+                        // Make up the control code - see CTL_CODE on ntddk.h
+                        //uint controlCode = (FILE_DEVICE_FILE_SYSTEM << 16) | (FILE_ANY_ACCESS << 14) | (FSCTL_GET_REPARSE_POINT << 2) | METHOD_BUFFERED;
+                        success = DeviceIoControl(handle.DangerousGetHandle(), EIOControlCode.FsctlGetReparsePoint, IntPtr.Zero, 0, outBuffer, outBufferSize, out _, IntPtr.Zero);
+                        //lastError = Marshal.GetLastWin32Error();
+                        if (success)
                         {
-                            // for some reason symlinks seem to have an extra two characters on the front
-                            subsString = new string(buffer.ReparseTarget, (buffer.SubsNameOffset / 2 + 2), buffer.SubsNameLength / 2);
-                            printString = new string(buffer.ReparseTarget, (buffer.PrintNameOffset / 2 + 2), buffer.PrintNameLength / 2);
-                            tag = TagType.SymbolicLink;
-                        }
-                        else if (buffer.ReparseTag == IO_REPARSE_TAG_MOUNT_POINT)
-                        {
-                            // This could be a junction or a mounted drive - a mounted drive starts with "\\??\\Volume"
-                            subsString = new string(buffer.ReparseTarget, buffer.SubsNameOffset / 2, buffer.SubsNameLength / 2);
-                            printString = new string(buffer.ReparseTarget, buffer.PrintNameOffset / 2, buffer.PrintNameLength / 2);
-                            tag = subsString.StartsWith(@"\??\Volume") ? TagType.MountPoint : TagType.JunctionPoint;
-                        }
-                        //Debug.Assert(!(string.IsNullOrEmpty(subsString) && string.IsNullOrEmpty(printString)), "Failed to retrieve parse point");
-                        // the printstring should give us what we want
-                        if (!string.IsNullOrEmpty(printString))
-                        {
-                            normalisedTarget = printString;
-                        }
-                        else
-                        {
-                            // if not we can use the substring with a bit of tweaking
-                            normalisedTarget = subsString;
-                            /*Debug.Assert(normalisedTarget.Length > 2, "Target string too short");
-                            Debug.Assert(
-                                (normalisedTarget.StartsWith(@"\??\") && (normalisedTarget[5] == ':' || normalisedTarget.StartsWith(@"\??\Volume")) ||
-                                (!normalisedTarget.StartsWith(@"\??\") && normalisedTarget[1] != ':')),
-                                "Malformed subsString");
-                            // Junction points must be absolute
-                            Debug.Assert(
-                                    buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK ||
-                                    normalisedTarget.StartsWith(@"\??\Volume") ||
-                                    normalisedTarget[1] == ':',
-                                "Relative junction point");*/
-                            if (normalisedTarget.StartsWith(@"\??\"))
+                            REPARSE_DATA_BUFFER buffer = (REPARSE_DATA_BUFFER)
+                                Marshal.PtrToStructure(outBuffer, typeof(REPARSE_DATA_BUFFER));
+
+                            string subsString = string.Empty;
+                            string printString = string.Empty;
+                            // Note that according to http://wesnerm.blogs.com/net_undocumented/2006/10/symbolic_links_.html
+                            // Symbolic links store relative paths, while junctions use absolute paths
+                            // however, they can in fact be either, and may or may not have a leading \.
+                            /*Debug.Assert(buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK || buffer.ReparseTag == IO_REPARSE_TAG_MOUNT_POINT,
+                                "Unrecognised reparse tag");						// We only recognise these two
+                                */
+                            if (buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK)
                             {
-                                normalisedTarget = normalisedTarget.Substring(4);
+                                // for some reason symlinks seem to have an extra two characters on the front
+                                subsString = new string(buffer.ReparseTarget, (buffer.SubsNameOffset / 2 + 2), buffer.SubsNameLength / 2);
+                                printString = new string(buffer.ReparseTarget, (buffer.PrintNameOffset / 2 + 2), buffer.PrintNameLength / 2);
+                                tag = TagType.SymbolicLink;
+                            }
+                            else if (buffer.ReparseTag == IO_REPARSE_TAG_MOUNT_POINT)
+                            {
+                                // This could be a junction or a mounted drive - a mounted drive starts with "\\??\\Volume"
+                                subsString = new string(buffer.ReparseTarget, buffer.SubsNameOffset / 2, buffer.SubsNameLength / 2);
+                                printString = new string(buffer.ReparseTarget, buffer.PrintNameOffset / 2, buffer.PrintNameLength / 2);
+                                tag = subsString.StartsWith(@"\??\Volume") ? TagType.MountPoint : TagType.JunctionPoint;
+                            }
+                            //Debug.Assert(!(string.IsNullOrEmpty(subsString) && string.IsNullOrEmpty(printString)), "Failed to retrieve parse point");
+                            // the printstring should give us what we want
+                            if (!string.IsNullOrEmpty(printString))
+                            {
+                                normalisedTarget = printString;
+                            }
+                            else
+                            {
+                                // if not we can use the substring with a bit of tweaking
+                                normalisedTarget = subsString;
+                                /*Debug.Assert(normalisedTarget.Length > 2, "Target string too short");
+                                Debug.Assert(
+                                    (normalisedTarget.StartsWith(@"\??\") && (normalisedTarget[5] == ':' || normalisedTarget.StartsWith(@"\??\Volume")) ||
+                                    (!normalisedTarget.StartsWith(@"\??\") && normalisedTarget[1] != ':')),
+                                    "Malformed subsString");
+                                // Junction points must be absolute
+                                Debug.Assert(
+                                        buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK ||
+                                        normalisedTarget.StartsWith(@"\??\Volume") ||
+                                        normalisedTarget[1] == ':',
+                                    "Relative junction point");*/
+                                if (normalisedTarget.StartsWith(@"\??\"))
+                                {
+                                    normalisedTarget = normalisedTarget.Substring(4);
+                                }
+                            }
+                            actualTarget = normalisedTarget;
+                            // Symlinks can be relative.
+                            if (buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK && (normalisedTarget.Length < 2 || normalisedTarget[1] != ':'))
+                            {
+                                // it's relative, we need to tack it onto the path
+                                if (normalisedTarget[0] == '\\')
+                                {
+                                    normalisedTarget = normalisedTarget.Substring(1);
+                                }
+                                if (path.EndsWith(@"\"))
+                                {
+                                    path = path.Substring(0, path.Length - 1);
+                                }
+                                // Need to take the symlink name off the path
+                                normalisedTarget = path.Substring(0, path.LastIndexOf('\\')) + @"\" + normalisedTarget;
+                                // Note that if the symlink target path contains any ..s these are not normalised but returned as is.
+                            }
+                            // Remove any final slash for consistency
+                            if (normalisedTarget.EndsWith("\\"))
+                            {
+                                normalisedTarget = normalisedTarget.Substring(0, normalisedTarget.Length - 1);
                             }
                         }
-                        actualTarget = normalisedTarget;
-                        // Symlinks can be relative.
-                        if (buffer.ReparseTag == IO_REPARSE_TAG_SYMLINK && (normalisedTarget.Length < 2 || normalisedTarget[1] != ':'))
-                        {
-                            // it's relative, we need to tack it onto the path
-                            if (normalisedTarget[0] == '\\')
-                            {
-                                normalisedTarget = normalisedTarget.Substring(1);
-                            }
-                            if (path.EndsWith(@"\"))
-                            {
-                                path = path.Substring(0, path.Length - 1);
-                            }
-                            // Need to take the symlink name off the path
-                            normalisedTarget = path.Substring(0, path.LastIndexOf('\\')) + @"\" + normalisedTarget;
-                            // Note that if the symlink target path contains any ..s these are not normalised but returned as is.
-                        }
-                        // Remove any final slash for consistency
-                        if (normalisedTarget.EndsWith("\\"))
-                        {
-                            normalisedTarget = normalisedTarget.Substring(0, normalisedTarget.Length - 1);
-                        }
+                        Marshal.FreeHGlobal(outBuffer);
+                        handle.Close();
                     }
-                    Marshal.FreeHGlobal(outBuffer);
-                    handle.Close();
-                }
-                else if (lastError == 5)
-                {
-                    success = false;
-                }
-                else
-                {
-                    throw new Win32Exception(lastError);
-
+                    /*else if (lastError == 5)
+                    {
+                        success = false;
+                    }*/
+                    else
+                    {
+                        throw new Win32Exception(lastError);
+                    }
                 }
             }
         }

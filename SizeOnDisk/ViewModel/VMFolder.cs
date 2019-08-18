@@ -118,15 +118,17 @@ namespace SizeOnDisk.ViewModel
 
                         if (value && !Root.IsDesign && Application.Current != null)
                         {
-                            this.RefreshOnView();
-
                             Root.ExecuteTaskAsync(() =>
                             {
+                                RefreshOnView();
+
                                 FillChildList();
 
                                 Parallel.ForEach(Childs.ToList(), Root.GetParallelOptions(), (T) => T.RefreshOnView());
 
-                                RefreshAfterCommand(false);
+                                RefreshCount();
+                                RefreshParents();
+
                             }, false, true);
                         }
                     }
@@ -212,12 +214,11 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        public void RefreshAfterCommand(bool getChilds = true)
+        public void RefreshAfterCommand()
         {
             Root.ExecuteTaskAsync(() =>
             {
-                if (getChilds)
-                    FillChildList(true);
+                FillChildList(true);
                 RefreshCount();
                 RefreshParents();
             }, false, false);
