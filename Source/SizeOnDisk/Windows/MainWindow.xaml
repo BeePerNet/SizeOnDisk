@@ -378,7 +378,7 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={cmd:IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                            <Image Panel.ZIndex="42" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-big.png" 
+                                            <cmd:AutoDisablingImage Panel.ZIndex="42" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-big.png" 
                                                    Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
                                             <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Grid>
@@ -391,8 +391,8 @@
                                 cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
                                 Grid.Column="2"
                                 VirtualizingStackPanel.VirtualizationMode="Standard"
-                                cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                                 cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
+                                cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                                 BorderThickness="1"
                                 ItemsSource="{Binding SelectedTreeItem.Childs}"
                                 SelectedItem="{Binding SelectedItem}"
@@ -430,7 +430,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={cmd:IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                                <Image Stretch="None" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-small.png" 
+                                                <cmd:AutoDisablingImage Stretch="None" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-small.png" 
                                                        Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
                                                 <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>

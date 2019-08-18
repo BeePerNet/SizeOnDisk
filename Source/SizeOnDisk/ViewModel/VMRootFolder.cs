@@ -51,7 +51,7 @@ namespace SizeOnDisk.ViewModel
 
         private void CallCloseCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            ExecuteTaskAsync(() =>
+            Root.ExecuteTask(() =>
             {
                 Stop()?.Wait();
                 (Parent as VMRootHierarchy).RemoveRootFolder(this);
@@ -315,13 +315,22 @@ namespace SizeOnDisk.ViewModel
             return _ParallelOptions;
         }
 
+        public Exception ExecuteTask(Action action, bool showException)
+        {
+            Exception ex = TaskHelper.SafeExecute(action, showException);
+            if (ex != null)
+            {
+                LogException(ex);
+            }
+            return ex;
+        }
 
-        public override Task ExecuteTaskAsync(Action action, bool highpriority = false)
+        public Task ExecuteTaskAsync(Action action, bool showException, bool highpriority)
         {
             ParallelOptions parallelOptions = GetParallelOptions();
             return Task.Factory.StartNew(new Action(() =>
                 {
-                    Exception ex = TaskHelper.SafeExecute(action);
+                    Exception ex = TaskHelper.SafeExecute(action, showException);
                     if (ex != null)
                     {
                         LogException(ex);
@@ -344,7 +353,7 @@ namespace SizeOnDisk.ViewModel
                 _Timer.Tick += new EventHandler(TimerTick);
             }
 
-            ExecuteTaskAsync(() =>
+            Root.ExecuteTaskAsync(() =>
             {
                 try
                 {
@@ -356,7 +365,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     _Timer.Stop();
                 }
-            }, true);
+            }, false, true);
         }
 
         private void TimerTick(object sender, EventArgs e)
@@ -403,7 +412,7 @@ namespace SizeOnDisk.ViewModel
                         {
                             ExecutionState = TaskExecutionState.Canceled;
                         }
-                    }, true);
+                    }, true, true);
                 }
             }
             catch (Exception ex)

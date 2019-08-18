@@ -5,7 +5,7 @@ namespace SizeOnDisk.ViewModel
 {
     public static class TaskHelper
     {
-        public static Exception SafeExecute(Action action)
+        public static Exception SafeExecute(Action action, bool showException)
         {
             try
             {
@@ -21,7 +21,10 @@ namespace SizeOnDisk.ViewModel
             }
             catch (Exception ex)
             {
-                ExceptionBox.ShowException(ex);
+                if (showException)
+                {
+                    ExceptionBox.ShowException(ex);
+                }
                 return ex;
             }
             return null;

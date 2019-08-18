@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:ns1="http://sozi.baierouge.fr" id="svg2" sodipodi:docname="Drive.svg" viewBox="0 0 331.09 426.4" sodipodi:version="0.32" version="1.0" inkscape:output_extension="org.inkscape.output.svg.inkscape" inkscape:version="0.46">
+  <defs id="defs4">
+    <radialGradient id="radialGradient3209" gradientUnits="userSpaceOnUse" cy="579.85" cx="392.72" gradientTransform="matrix(.11310 0 1.4187e-8 3.0131 368.51 -1157.2)" r="124.15" inkscape:collect="always">
+      <stop id="stop3205" style="stop-color:#ececec" offset="0"/>
+      <stop id="stop3207" style="stop-color:#ececec;stop-opacity:0" offset="1"/>
+    </radialGradient>
+    <linearGradient id="linearGradient3228" y2="437.84" gradientUnits="userSpaceOnUse" x2="416.43" gradientTransform="translate(20.203 10.102)" y1="380.22" x1="415.62" inkscape:collect="always">
+      <stop id="stop3224" style="stop-color:#666666" offset="0"/>
+      <stop id="stop3226" style="stop-color:#666666;stop-opacity:0" offset="1"/>
+    </linearGradient>
+    <filter id="filter3286" height="1.4555" width="1.122" y="-.22775" x="-0.061" inkscape:collect="always">
+      <feGaussianBlur id="feGaussianBlur3288" stdDeviation="6.9373835" inkscape:collect="always"/>
+    </filter>
+    <linearGradient id="linearGradient3290" y2="479.15" gradientUnits="userSpaceOnUse" x2="566.9" gradientTransform="translate(20.203 10.102)" y1="646.29" x1="287.86" inkscape:collect="always">
+      <stop id="stop3166" style="stop-color:#4d4d4d" offset="0"/>
+      <stop id="stop3168" style="stop-color:#4d4d4d;stop-opacity:0" offset="1"/>
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview id="base" bordercolor="#666666" inkscape:pageshadow="2" guidetolerance="10" pagecolor="#ffffff" gridtolerance="10000" inkscape:window-height="840" inkscape:zoom="0.49497475" objecttolerance="10" inkscape:window-y="6" showgrid="false" borderopacity="1.0" inkscape:current-layer="layer1" inkscape:cx="529.16181" inkscape:cy="422.76443" showguides="true" inkscape:guide-bbox="true" inkscape:window-x="0" inkscape:window-width="1438" inkscape:pageopacity="0.0" inkscape:document-units="px"/>
+  <g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer" transform="translate(-238.88 -380.22)">
+    <path id="path3230" sodipodi:nodetypes="ccccc" style="filter:url(#filter3286);fill:#000000" d="m414.18 792.7c67.88 8.82 135-42.15 135-42.15l-193.58-45-96.51 11.61 155.09 75.54z"/>
+    <path id="path2390" sodipodi:nodetypes="ccccc" style="fill:#b3b3b3" d="m411.63 432.46c67.88 8.82 117.86-20 117.86-20s-141.43-22.14-141.43-22.14l-96.52 11.61 120.09 30.53z"/>
+    <path id="rect2383" sodipodi:nodetypes="ccccc" style="fill:#666666" d="m411.63 432.46c69.4 7.81 117.86-20 117.86-20 18.57 215.17-2.86 337.15-2.86 337.15s-41 35.97-117.86 27.14c0 0 16.67-128.98 2.86-344.29z"/>
+    <path id="path2388" sodipodi:nodetypes="ccccc" style="fill:#b3b3b3" d="m411.63 432.46l-120-30.71c18.57 215.17-2.86 315.71-2.86 315.71l120 59.29s16.67-128.98 2.86-344.29z"/>
+    <path id="path2392" sodipodi:nodetypes="ccccc" style="fill:url(#linearGradient3290)" d="m411.63 432.46l-120-30.71c18.57 215.17-2.86 315.71-2.86 315.71l120 59.29s16.67-128.98 2.86-344.29z"/>
+    <path id="path3190" style="fill:url(#radialGradient3209)" d="m291.65 401.75c18.57 215.17-2.88 315.72-2.88 315.72l120 59.28c76.86 8.83 117.88-27.16 117.88-27.16s21.41-121.96 2.84-337.12c0 0-48.44 27.81-117.84 20l-120-30.72z"/>
+    <path id="path3211" sodipodi:nodetypes="cssss" style="fill:#5fbcd3" d="m510.77 598.14c-2.51-21.4-9.87-34.16-25.21-32.74-15.33 1.42-23.39 22.88-22.27 44.29s11.01 34.71 26.35 33.29c15.33-1.43 23.62-23.68 21.13-44.84z"/>
+    <path id="path3218" style="fill:#000000" sodipodi:type="inkscape:offset" d="m465.75 559.44c-5.83 0.54-10.52 4.84-13.94 12.25s-5.12 17.57-4.59 27.69c0.53 10.11 3.2 17.98 7 22.87s8.44 7.09 14.84 6.5c5.76-0.53 10.51-5.01 13.82-12.56 3.3-7.55 4.72-17.8 3.56-27.69-1.22-10.33-3.65-18.24-7.03-22.97-3.39-4.73-7.19-6.69-13.66-6.09z" inkscape:original="M 465.375 555.3125 C 450.04099 556.73527 441.97013 578.18237 443.09375 599.59375 C 444.21735 621.00511 454.10349 634.29778 469.4375 632.875 C 484.77153 631.45225 493.04724 609.19513 490.5625 588.03125 C 488.04961 566.62758 480.70901 553.88973 465.375 555.3125 z " transform="matrix(1.0103 0 0 1.0103 16.68 4.1754)" inkscape:radius="-4.1418004"/>
+    <path id="path3216" style="fill:#999999" sodipodi:type="inkscape:offset" d="m465.75 559.44c-5.83 0.54-10.52 4.84-13.94 12.25s-5.12 17.57-4.59 27.69c0.53 10.11 3.2 17.98 7 22.87s8.44 7.09 14.84 6.5c5.76-0.53 10.51-5.01 13.82-12.56 3.3-7.55 4.72-17.8 3.56-27.69-1.22-10.33-3.65-18.24-7.03-22.97-3.39-4.73-7.19-6.69-13.66-6.09z" inkscape:original="M 465.375 555.3125 C 450.04099 556.73527 441.97013 578.18237 443.09375 599.59375 C 444.21735 621.00511 454.10349 634.29778 469.4375 632.875 C 484.77153 631.45225 493.04724 609.19513 490.5625 588.03125 C 488.04961 566.62758 480.70901 553.88973 465.375 555.3125 z " transform="translate(22.346 9.7444)" inkscape:radius="-4.1418004"/>
+    <path id="path3220" sodipodi:nodetypes="ccccc" style="fill:url(#linearGradient3228)" d="m411.63 432.46c67.88 8.82 117.86-20 117.86-20s-141.43-22.14-141.43-22.14l-96.52 11.61 120.09 30.53z"/>
+  </g>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+        <dc:publisher>
+          <cc:Agent rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Hard Drive External</dc:title>
+        <dc:date>2012-07-03T05:23:22</dc:date>
+        <dc:description/>
+        <dc:source>https://openclipart.org/detail/171019/hard-drine-externel-by-lnasto-171019</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>lnasto</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>Hard Drive External</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

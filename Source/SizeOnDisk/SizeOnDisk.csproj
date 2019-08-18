@@ -417,6 +417,12 @@
   <ItemGroup>
     <None Include="Medias\Folder.svg" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Medias\hard-drive-external.svg" />
+    <None Include="Medias\harddisk-drive-cyan.svg" />
+    <None Include="Medias\Oxygen480-devices-drive-harddisk.svg" />
+    <None Include="Medias\tango-drive-hard-disk.svg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

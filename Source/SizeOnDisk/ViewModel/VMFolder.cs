@@ -15,7 +15,7 @@ namespace SizeOnDisk.ViewModel
     {
         public void PermanentDeleteAllSelectedFiles()
         {
-            ExecuteTaskAsync(() =>
+            Root.ExecuteTask(() =>
             {
                 string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
 
@@ -28,7 +28,7 @@ namespace SizeOnDisk.ViewModel
 
         public void DeleteAllSelectedFiles()
         {
-            ExecuteTaskAsync(() =>
+            Root.ExecuteTask(() =>
             {
                 string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
 
@@ -74,6 +74,9 @@ namespace SizeOnDisk.ViewModel
         #region properties
 
         public override bool IsFile => false;
+
+        public override bool IsLink => (Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint;
+
 
 
 
@@ -123,14 +126,14 @@ namespace SizeOnDisk.ViewModel
                         {
                             this.RefreshOnView();
 
-                            ExecuteTaskAsync(() =>
+                            Root.ExecuteTaskAsync(() =>
                             {
                                 FillChildList();
 
                                 Parallel.ForEach(Childs.ToList(), Root.GetParallelOptions(), (T) => T.RefreshOnView());
 
-                                RefreshAfterCommand();
-                            }, true);
+                                RefreshAfterCommand(false);
+                            }, false, true);
                         }
                     }
                     else
@@ -138,10 +141,10 @@ namespace SizeOnDisk.ViewModel
                         _Attributes &= ~FileAttributesEx.TreeSelected;
                         this.GetOutOfView();
 
-                        ExecuteTaskAsync(() =>
+                        Root.ExecuteTaskAsync(() =>
                         {
                             Parallel.ForEach(Childs.ToList(), Root.GetParallelOptions(), (T) => T.GetOutOfView());
-                        });
+                        }, false, false);
                     }
 
                     OnPropertyChanged(nameof(IsTreeSelected));
@@ -151,7 +154,21 @@ namespace SizeOnDisk.ViewModel
 
 
 
-
+        public override string LinkPath
+        {
+            get
+            {
+                string result = string.Empty;
+                if (this.IsLink)
+                {
+                    Root.ExecuteTask(() =>
+                    {
+                        result = new ReparsePoint(Path).Target;
+                    }, false);
+                }
+                return result;
+            }
+        }
 
 
 
@@ -201,14 +218,15 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        public void RefreshAfterCommand()
+        public void RefreshAfterCommand(bool getChilds = true)
         {
-            ExecuteTaskAsync(() =>
+            Root.ExecuteTaskAsync(() =>
             {
-                FillChildList(true);
+                if (getChilds)
+                    FillChildList(true);
                 RefreshCount();
                 RefreshParents();
-            });
+            }, false, false);
         }
 
 
@@ -301,65 +319,68 @@ namespace SizeOnDisk.ViewModel
 
         public void FillChildList(bool refreshOnNew = false)
         {
-            lock (_lock)
+            if (!this.IsLink)
             {
-                try
+                lock (_lock)
                 {
-                    List<VMFile> tmpChilds = Childs.ToList();
-                    List<VMFile> addChilds = new List<VMFile>();
-                    VMFile found = null;
-                    IEnumerable<LittleFileInfo> files = ShellHelper.GetFiles(Path);
-                    foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
+                    try
                     {
-                        found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);
-                        if (found == null)
+                        List<VMFile> tmpChilds = Childs.ToList();
+                        List<VMFile> addChilds = new List<VMFile>();
+                        VMFile found = null;
+                        IEnumerable<LittleFileInfo> files = ShellHelper.GetFiles(Path);
+                        foreach (LittleFileInfo fileInfo in files.OrderByDescending(T => T.IsFolder).ThenBy(T => T.FileName))
                         {
-                            if (fileInfo.IsFolder)
+                            found = tmpChilds.FirstOrDefault(T => T.Name == fileInfo.FileName);
+                            if (found == null)
                             {
-                                found = new VMFolder(this, fileInfo.FileName, fileInfo.FullPath);
-                                if (refreshOnNew)
+                                if (fileInfo.IsFolder)
                                 {
-                                    (found as VMFolder).Refresh(new ParallelOptions());
+                                    found = new VMFolder(this, fileInfo.FileName, fileInfo.FullPath);
+                                    if (refreshOnNew)
+                                    {
+                                        (found as VMFolder).Refresh(new ParallelOptions());
+                                    }
+                                }
+                                else
+                                {
+                                    found = new VMFile(this, fileInfo.FileName);
+                                }
+
+                                addChilds.Add(found);
+                                if (refreshOnNew && Parent.IsTreeSelected)
+                                {
+                                    RefreshOnView();
                                 }
                             }
                             else
                             {
-                                found = new VMFile(this, fileInfo.FileName);
+                                tmpChilds.Remove(found);
                             }
+                            found.Refresh(fileInfo);
+                        }
+                        if (tmpChilds.Contains(Root.SelectedTreeItem))
+                            Root.SelectedTreeItem = null;
+                        if (tmpChilds.Contains(Root.SelectedListItem))
+                            Root.SelectedListItem = null;
+                        if (tmpChilds.Contains(Root.SelectedItem))
+                            Root.SelectedItem = null;
 
-                            addChilds.Add(found);
-                            if (refreshOnNew && Parent.IsTreeSelected)
-                            {
-                                RefreshOnView();
-                            }
-                        }
-                        else
-                        {
-                            tmpChilds.Remove(found);
-                        }
-                        found.Refresh(fileInfo);
+                        Folders.DoOperation((l) => l.RemoveRange(tmpChilds.OfType<VMFolder>(), EqualityComparer<VMFolder>.Default));
+                        Childs.DoOperation((l) => l.RemoveRange(tmpChilds, EqualityComparer<VMFile>.Default));
+
+                        Folders.DoAddRange((l) => addChilds.OfType<VMFolder>());
+                        Childs.DoAddRange((l) => addChilds);
                     }
-                    if (tmpChilds.Contains(Root.SelectedTreeItem))
-                        Root.SelectedTreeItem = null;
-                    if (tmpChilds.Contains(Root.SelectedListItem))
-                        Root.SelectedListItem = null;
-                    if (tmpChilds.Contains(Root.SelectedItem))
-                        Root.SelectedItem = null;
-
-                    Folders.DoOperation((l) => l.RemoveRange(tmpChilds.OfType<VMFolder>(), EqualityComparer<VMFolder>.Default));
-                    Childs.DoOperation((l) => l.RemoveRange(tmpChilds, EqualityComparer<VMFile>.Default));
-
-                    Folders.DoAddRange((l) => addChilds.OfType<VMFolder>());
-                    Childs.DoAddRange((l) => addChilds);
-                }
-                catch (DirectoryNotFoundException ex)
-                {
-                    LogException(ex);
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    LogException(ex);
-                    IsProtected = true;
+                    catch (DirectoryNotFoundException ex)
+                    {
+                        LogException(ex);
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        LogException(ex);
+                        IsProtected = true;
+                    }
                 }
             }
         }
@@ -378,10 +399,10 @@ namespace SizeOnDisk.ViewModel
                 {
                     if (IsTreeSelected)
                     {
-                        ExecuteTaskAsync(() =>
+                        Root.ExecuteTaskAsync(() =>
                         {
                             Parallel.ForEach(Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
-                        }, true);
+                        }, false, true);
                     }
                     Parallel.ForEach(Folders.ToList(), parallelOptions, (T) => T.Refresh(parallelOptions));
                 }

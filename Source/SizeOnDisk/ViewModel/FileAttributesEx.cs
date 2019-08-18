@@ -38,11 +38,23 @@ namespace SizeOnDisk.ViewModel
         NotContentIndexed = 0x2000, // 0x00002000
                                     /// <summary>Le fichier ou le répertoire est chiffré. Cela signifie pour un fichier, que toutes ses données sont chiffrées. Pour un répertoire, cela signifie que tous les fichiers et répertoires créés sont chiffrés par défaut.</summary>
         Encrypted = 0x4000, // 0x00004000
-                            /// <summary>Le fichier ou le répertoire inclut la prise en charge de l’intégrité des données. Quand cette valeur est appliquée à un fichier, tous les flux de données du fichier bénéficient de la prise en charge de l’intégrité des données. Quand cette valeur est appliquée à un répertoire, tous les nouveaux fichiers et sous-répertoires de ce répertoire incluent par défaut la prise en charge de l’intégrité.</summary>
+
+        Write_Through = 0x80000000,
+        Overlapped = 0x40000000,
+        NoBuffering = 0x20000000,
+        RandomAccess = 0x10000000,
+        SequentialScan = 0x08000000,
+        DeleteOnClose = 0x04000000,
+        BackupSemantics = 0x02000000,
+        PosixSemantics = 0x01000000,
+        OpenReparsePoint = 0x00200000,
+        OpenNoRecall = 0x00100000,
+        FirstPipeInstance = 0x00080000,
+
+        /// <summary>Le fichier ou le répertoire inclut la prise en charge de l’intégrité des données. Quand cette valeur est appliquée à un fichier, tous les flux de données du fichier bénéficient de la prise en charge de l’intégrité des données. Quand cette valeur est appliquée à un répertoire, tous les nouveaux fichiers et sous-répertoires de ce répertoire incluent par défaut la prise en charge de l’intégrité.</summary>
         [ComVisible(false)] IntegrityStream = 0x8000, // 0x00008000
                                                       /// <summary>Le fichier ou le répertoire est exclu de l’analyse d’intégrité des données. Quand cette valeur est appliquée à un répertoire, tous les nouveaux fichiers et sous-répertoires de ce répertoire sont exclus par défaut de l’analyse d’intégrité des données.</summary>
         [ComVisible(false)] NoScrubData = 0x00020000, // 0x00020000
-
 
         //Custom ones
         Protected = 0x10000000,

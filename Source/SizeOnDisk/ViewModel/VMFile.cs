@@ -109,7 +109,18 @@ namespace SizeOnDisk.ViewModel
 
         [SuppressMessage("Design", "CA2213")]
         private VMFileDetails _Details;
-        public VMFileDetails Details { get => _Details; private set => SetProperty(ref _Details, value); }
+        public VMFileDetails Details
+        {
+            get
+            {
+                if (_Details == null)
+                {
+                    _Details = new VMFileDetails(this);
+                }
+                return _Details;
+            }
+            private set => SetProperty(ref _Details, value);
+        }
 
 
         public virtual string Extension => System.IO.Path.GetExtension(Name).Replace(".", "");
@@ -168,17 +179,17 @@ namespace SizeOnDisk.ViewModel
                         _Attributes &= ~FileAttributesEx.Selected;
                     }
 
-                    OnPropertyChanged(nameof(IsSelected));
                     if (value)
                     {
                         Parent.IsTreeSelected = true;
+                        Root.SelectedItem = this;
                         Root.SelectedListItem = this;
                     }
                     else if (Root.SelectedListItem == this)
                     {
                         Root.SelectedListItem = this.Parent.Childs.FirstOrDefault(T => T.IsSelected);
                     }
-
+                    OnPropertyChanged(nameof(IsSelected));
                 }
             }
         }
@@ -194,11 +205,6 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        public virtual Task ExecuteTaskAsync(Action action, bool highpriority = false)
-        {
-            return Parent.ExecuteTaskAsync(action, highpriority);
-        }
-
         public static void ValidateName(string name)
         {
             int i = name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars());
@@ -212,7 +218,7 @@ namespace SizeOnDisk.ViewModel
         {
             if (System.IO.Path.GetFileName(Path) != newName)
             {
-                ExecuteTaskAsync(() =>
+                Root.ExecuteTaskAsync(() =>
                 {
                     ValidateName(newName);
 
@@ -231,14 +237,13 @@ namespace SizeOnDisk.ViewModel
                     OnPropertyChanged(nameof(Extension));
                     RefreshOnView();
                     Parent.RefreshAfterCommand();
-                });
+                }, true, true);
             }
         }
 
 
 
-        public bool IsLink => ((Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint)
-                    || (IsFile && Extension.ToUpperInvariant() == "LNK");
+        public virtual bool IsLink => Extension.ToUpperInvariant() == "LNK";
 
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
@@ -254,15 +259,8 @@ namespace SizeOnDisk.ViewModel
 
         public void RefreshOnView()
         {
-            VMFileDetails details = Details;
-            if (details == null)
-                details = new VMFileDetails(this);
-
-            LittleFileInfo fileInfo = details.Load();
+            LittleFileInfo fileInfo = Details.Load();
             Refresh(fileInfo);
-
-            if (Details == null)
-                Details = details;
         }
 
         public void GetOutOfView()
@@ -275,20 +273,6 @@ namespace SizeOnDisk.ViewModel
 
         #region Commands
 
-
-
-        private static void CanCallFollowLinkCommand(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.Handled = true;
-
-            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
-            }
-
-            e.CanExecute = !file.IsProtected && file.IsLink;
-        }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
         private static void CallSelectCommand(object sender, ExecutedRoutedEventArgs e)
@@ -309,6 +293,20 @@ namespace SizeOnDisk.ViewModel
             file.Root.Parent.SelectedRootFolder = file.Root;
             file.Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
             file.IsSelected = true;
+            file.Root.SelectedItem = file;
+        }
+
+        private static void CanCallFollowLinkCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
+
+            e.CanExecute = !file.IsProtected /*&& file.IsFile*/ && file.IsLink;
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
@@ -322,7 +320,8 @@ namespace SizeOnDisk.ViewModel
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
             }
 
-            string path = ShellHelper.GetShellLinkPath(file.Path);
+            string path = file.LinkPath;
+
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new FileFormatException($"The file {file.Path} do not contains destination path.");
@@ -336,12 +335,27 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 vmfile.Root.Parent.SelectedRootFolder = vmfile.Root;
-                vmfile.Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
+                //vmfile.Parent.Childs.AsParallel().ForAll(T => T.IsSelected = false);
+                vmfile.Root.IsTreeSelected = true;
                 vmfile.IsSelected = true;
             }
         }
 
-
+        public virtual string LinkPath
+        {
+            get
+            {
+                string result = string.Empty;
+                if (this.IsLink)
+                {
+                    Root.ExecuteTask(() =>
+                    {
+                        result = ShellHelper.GetShellLinkPath(Path);
+                    }, false);
+                }
+                return result;
+            }
+        }
 
 
 
@@ -376,13 +390,13 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                file.ExecuteTaskAsync(() =>
+                file.Root.ExecuteTask(() =>
                 {
                     if (ShellHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }
-                });
+                }, true);
             }
         }
 
@@ -403,13 +417,13 @@ namespace SizeOnDisk.ViewModel
             }
             else
             {
-                TaskHelper.SafeExecute(() =>
+                file.Root.ExecuteTask(() =>
                 {
                     if (ShellHelper.SafeNativeMethods.PermanentDelete(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }
-                });
+                }, true);
             }
         }
 

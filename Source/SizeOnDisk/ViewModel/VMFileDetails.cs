@@ -197,9 +197,13 @@ namespace SizeOnDisk.ViewModel
                     SeparatorDummyCommand.Instance
                 };
                 if (_vmFile.IsLink)
-                    commands.Add(VMFile.FollowLinkCommand);
+                {
+                    RoutedCommandEx linkCommand = VMFile.FollowLinkCommand;
+                    linkCommand.Text = _vmFile.LinkPath;
+                    commands.Add(linkCommand);
+                }
 
-                TaskHelper.SafeExecute(() =>
+                _vmFile.Root.ExecuteTask(() =>
                 {
                     bool added = false;
                     foreach (ShellCommandSoftware item in DefaultEditors.Editors)
@@ -287,7 +291,7 @@ namespace SizeOnDisk.ViewModel
                     commands.Add(VMFile.PermanentDeleteCommand);
                     commands.Add(SeparatorDummyCommand.Instance);
                     commands.Add(VMFile.PropertiesCommand);
-                });
+                }, false);
                 return commands;
             }
         }
