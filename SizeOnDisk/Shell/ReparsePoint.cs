@@ -306,19 +306,19 @@ namespace SizeOnDisk.Shell
             public Int32 HighPart;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        /*[StructLayout(LayoutKind.Sequential)]
         private struct LUID_AND_ATTRIBUTES
         {
             public LUID Luid;
             public UInt32 Attributes;
-        }
+        }*/
 
-        private struct TOKEN_PRIVILEGES
+        /*private struct TOKEN_PRIVILEGES
         {
             public UInt32 PrivilegeCount;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]		// !! think we only need one
             public LUID_AND_ATTRIBUTES[] Privileges;
-        }
+        }*/
 
         /*[DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -365,11 +365,11 @@ namespace SizeOnDisk.Shell
             //ref TOKEN_PRIVILEGES PreviousState,					!! for some reason this won't accept null
             IntPtr PreviousState,
             IntPtr ReturnLength);
-        */    
-        [DllImport("kernel32.dll", SetLastError = true)]
+        */
+        /*[DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CloseHandle(IntPtr hObject);
-
+        */
 
         public enum TagType
         {
@@ -444,7 +444,6 @@ namespace SizeOnDisk.Shell
                         REPARSE_DATA_BUFFER buffer = (REPARSE_DATA_BUFFER)
                             Marshal.PtrToStructure(outBuffer, typeof(REPARSE_DATA_BUFFER));
 
-                        Marshal.FreeHGlobal(outBuffer);
 
                         /*if (reparseDataBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT)
                             return null;
@@ -526,6 +525,7 @@ namespace SizeOnDisk.Shell
                             normalisedTarget = normalisedTarget.Substring(0, normalisedTarget.Length - 1);
                         }
                     }
+                    Marshal.FreeHGlobal(outBuffer);
                     handle.Close();
                 }
                 else if (lastError == 5)

@@ -11,7 +11,7 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SizeOnDiskSetup", "SizeOnDi
 		{AAAE62D9-0BD4-4005-B723-219A5DD4E60A} = {AAAE62D9-0BD4-4005-B723-219A5DD4E60A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFByYourCommand", "..\..\WPFByYourCommand\Source\WPFByYourCommand\WPFByYourCommand.csproj", "{89CC2D45-35B2-4C73-8C4C-AD12BB67CF7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFByYourCommand", "..\WPFByYourCommand\WPFByYourCommand\WPFByYourCommand.csproj", "{89CC2D45-35B2-4C73-8C4C-AD12BB67CF7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixTools", "WixTools\WixTools.csproj", "{AAAE62D9-0BD4-4005-B723-219A5DD4E60A}"
 EndProject
