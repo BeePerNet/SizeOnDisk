@@ -41,118 +41,6 @@
       <Directory Id="ProgramMenuFolder" />
       <Directory Id="DesktopFolder" />
     </Directory>
-    <DirectoryRef Id="APPLICATIONFOLDER">
-      <Component Id="CleanupMainApplicationFolder"
-                 Guid="*">
-        <RegistryValue Root="HKMU"
-                       Key="Software\SizeOnDisk"
-                       Name="SizeOnDiskInstalled"
-                       Type="string"
-                       Value="[APPLICATIONFOLDER]"
-                       KeyPath="yes" />
-        <util:RemoveFolderEx On="both"
-                             Property="APPLICATIONFOLDER" />
-      </Component>
-      <Component Id="ApplicationComponent"
-                 Guid="*">
-        <util:RemoveFolderEx Property="APPLICATIONFOLDER"
-                             On="both" />
-        <CreateFolder />
-        <File Id="ApplicationFile"
-              Name="$(var.SizeOnDisk.TargetFileName)"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/$(var.SizeOnDisk.TargetFileName)"
-              Checksum="yes"
-              KeyPath="yes"
-              Vital="yes" />
-      </Component>
-      <Component Id="XAMLMarkupExtensionsComponent"
-                 Guid="*">
-        <File Id="XAMLMarkupExtensionsFile"
-              Name="XAMLMarkupExtensions.dll"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/XAMLMarkupExtensions.dll"
-              KeyPath="yes"
-              Checksum="yes"
-              Vital="yes" />
-      </Component>
-      <Component Id="WPFLocalizeExtensionComponent"
-                 Guid="*">
-        <File Id="WPFLocalizeExtensionFile"
-              Name="WPFLocalizeExtension.dll"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/WPFLocalizeExtension.dll"
-              KeyPath="yes"
-              Checksum="yes"
-              Vital="yes" />
-      </Component>
-      <Component Id="WPFByYourCommandComponent"
-                 Guid="*">
-        <File Name="WPFByYourCommand.dll"
-              Id="WPFByYourCommandFile"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/WPFByYourCommand.dll"
-              Vital="yes"
-              Checksum="yes"
-              KeyPath="yes" />
-      </Component>
-      <Component Id="SystemCollectionsImmutableComponent"
-                 Guid="*">
-        <File Name="System.Collections.Immutable.dll"
-              Id="SystemCollectionsImmutableFile"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/System.Collections.Immutable.dll"
-              Vital="yes"
-              Checksum="yes"
-              KeyPath="yes" />
-      </Component>
-      <Component Id="ConfigurationFileComponent"
-                 Guid="*">
-        <File Id="ConfigurationFile"
-              Name="SizeOnDisk.exe.config"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/SizeOnDisk.exe.config"
-              KeyPath="yes"
-              Checksum="yes"
-              Vital="no" />
-      </Component>
-      <Component Id="ApplicationDebugComponent"
-                 Guid="*">
-        <File Id="ApplicationDebugFile"
-              Name="SizeOnDisk.pdb"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/SizeOnDisk.pdb"
-              Checksum="yes"
-              KeyPath="yes" />
-      </Component>
-      <Component Id="XAMLMarkupExtensionsDebugComponent"
-                 Guid="*">
-        <File Id="XAMLMarkupExtensionsDebugFile"
-              Name="XAMLMarkupExtensions.pdb"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/XAMLMarkupExtensions.pdb"
-              KeyPath="yes"
-              Checksum="yes" />
-      </Component>
-      <Component Id="WPFLocalizeExtensionDebugComponent"
-                 Guid="*">
-        <File Id="WPFLocalizeExtensionDebugFile"
-              Name="WPFLocalizeExtension.pdb"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/WPFLocalizeExtension.pdb"
-              KeyPath="yes"
-              Checksum="yes" />
-      </Component>
-      <Component Id="WPFByYourCommandDebugComponent"
-                 Guid="*">
-        <File Name="WPFByYourCommand.pdb"
-              Id="WPFByYourCommandDebugFile"
-              DiskId="1"
-              Source="$(var.SizeOnDisk.TargetDir)/WPFByYourCommand.pdb"
-              Checksum="yes"
-              KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationFileMenuShortcutComponent"
                  Guid="*">
@@ -166,9 +54,9 @@
                     On="uninstall" />
         <RegistryValue Root="HKMU"
                        Key="Software\SizeOnDisk"
-                       Name="SizeOnDiskMenuShortcut"
-                       Type="integer"
-                       Value="1"
+                       Name="MenuShortcut"
+                       Type="string"
+                       Value="[ProgramMenuFolder]\SizeOnDisk.lnk"
                        KeyPath="yes" />
       </Component>
     </DirectoryRef>
@@ -185,10 +73,122 @@
                     On="uninstall" />
         <RegistryValue Root="HKMU"
                        Key="Software\SizeOnDisk"
-                       Name="SizeOnDiskDesktopShortcut"
-                       Type="integer"
-                       Value="1"
+                       Name="DesktopShortcut"
+                       Type="string"
+                       Value="[DesktopFolder]\SizeOnDisk.lnk"
                        KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="APPLICATIONFOLDER">
+      <Component Id="CleanupMainApplicationFolder"
+                 Guid="*">
+        <RegistryValue Root="HKMU"
+                       Key="Software\SizeOnDisk"
+                       Name="ApplicationFolder"
+                       Type="string"
+                       Value="[APPLICATIONFOLDER]"
+                       KeyPath="yes" />
+        <util:RemoveFolderEx On="both"
+                             Property="APPLICATIONFOLDER" />
+      </Component>
+      <Component Id="ApplicationComponent"
+                 Guid="*">
+        <util:RemoveFolderEx Property="APPLICATIONFOLDER"
+                             On="both" />
+        <CreateFolder />
+        <File Id="ApplicationFile"
+              Name="$(var.SizeOnDisk.TargetFileName)"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)$(var.SizeOnDisk.TargetFileName)"
+              Checksum="yes"
+              KeyPath="yes"
+              Vital="yes" />
+      </Component>
+      <Component Id="XAMLMarkupExtensionsComponent"
+                 Guid="*">
+        <File Id="XAMLMarkupExtensionsFile"
+              Name="XAMLMarkupExtensions.dll"
+              DiskId="1"
+              Source="$(var.SolutionDir)References\XAMLMarkupExtensions\XAMLMarkupExtensions.dll"
+              KeyPath="yes"
+              Checksum="yes"
+              Vital="yes" />
+      </Component>
+      <Component Id="WPFLocalizeExtensionComponent"
+                 Guid="*">
+        <File Id="WPFLocalizeExtensionFile"
+              Name="WPFLocalizeExtension.dll"
+              DiskId="1"
+              Source="$(var.SolutionDir)References\WPFLocalizeExtension\WPFLocalizeExtension.dll"
+              KeyPath="yes"
+              Checksum="yes"
+              Vital="yes" />
+      </Component>
+      <Component Id="WPFByYourCommandComponent"
+                 Guid="*">
+        <File Name="WPFByYourCommand.dll"
+              Id="WPFByYourCommandFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)WPFByYourCommand.dll"
+              Vital="yes"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="SystemCollectionsImmutableComponent"
+                 Guid="*">
+        <File Name="System.Collections.Immutable.dll"
+              Id="SystemCollectionsImmutableFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)System.Collections.Immutable.dll"
+              Vital="yes"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="ConfigurationFileComponent"
+                 Guid="*">
+        <File Id="ConfigurationFile"
+              Name="SizeOnDisk.exe.config"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)SizeOnDisk.exe.config"
+              KeyPath="yes"
+              Checksum="yes"
+              Vital="no" />
+      </Component>
+      <Component Id="ApplicationDebugComponent"
+                 Guid="*">
+        <File Id="ApplicationDebugFile"
+              Name="SizeOnDisk.pdb"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)SizeOnDisk.pdb"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="XAMLMarkupExtensionsDebugComponent"
+                 Guid="*">
+        <File Id="XAMLMarkupExtensionsDebugFile"
+              Name="XAMLMarkupExtensions.pdb"
+              DiskId="1"
+              Source="$(var.SolutionDir)References\XAMLMarkupExtensions\XAMLMarkupExtensions.pdb"
+              KeyPath="yes"
+              Checksum="yes" />
+      </Component>
+      <Component Id="WPFLocalizeExtensionDebugComponent"
+                 Guid="*">
+        <File Id="WPFLocalizeExtensionDebugFile"
+              Name="WPFLocalizeExtension.pdb"
+              DiskId="1"
+              Source="$(var.SolutionDir)References\WPFLocalizeExtension\WPFLocalizeExtension.pdb"
+              KeyPath="yes"
+              Checksum="yes" />
+      </Component>
+      <Component Id="WPFByYourCommandDebugComponent"
+                 Guid="*">
+        <File Name="WPFByYourCommand.pdb"
+              Id="WPFByYourCommandDebugFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)WPFByYourCommand.pdb"
+              Checksum="yes"
+              KeyPath="yes" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="APPLICATIONFOLDER">
@@ -203,7 +203,7 @@
           <File Id="LanguageDEFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/de/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)de\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />
@@ -220,7 +220,7 @@
           <File Id="LanguageESFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/es/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)es\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />
@@ -237,7 +237,7 @@
           <File Id="LanguageFAFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/fa/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)fa\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />
@@ -254,7 +254,7 @@
           <File Id="LanguageFRFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/fr/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)fr\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />
@@ -271,7 +271,7 @@
           <File Id="LanguageITFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/it/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)it\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />
@@ -288,7 +288,7 @@
           <File Id="LanguagePTFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/pt/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)pt\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />
@@ -305,7 +305,7 @@
           <File Id="LanguageRUFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/ru/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)ru\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />
@@ -322,7 +322,7 @@
           <File Id="LanguageSVFile"
                 Name="SizeOnDisk.resources.dll"
                 DiskId="1"
-                Source="$(var.SizeOnDisk.TargetDir)/sv/SizeOnDisk.resources.dll"
+                Source="$(var.SizeOnDisk.TargetDir)sv\SizeOnDisk.resources.dll"
                 KeyPath="yes"
                 Checksum="yes"
                 Vital="no" />

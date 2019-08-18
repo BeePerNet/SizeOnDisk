@@ -12,6 +12,7 @@ namespace SizeOnDisk.ViewModel
             set
             {
                 Properties.Settings.Default.UISizeFormat = value;
+                Properties.Settings.Default.Save();
                 GlobalizationBehavior.CallUpdate("UISize");
             }
         }
@@ -22,6 +23,7 @@ namespace SizeOnDisk.ViewModel
             set
             {
                 Properties.Settings.Default.Language = value;
+                Properties.Settings.Default.Save();
                 GlobalizationBehavior.ChangeLanguage(value);
             }
         }
