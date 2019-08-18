@@ -124,7 +124,7 @@ namespace SizeOnDisk.ViewModel
 
                                 FillChildList();
 
-                                Parallel.ForEach(Childs.ToList(), Root.GetParallelOptions(), (T) => T.RefreshOnView());
+                                Parallel.ForEach(Childs, Root.GetParallelOptions(), (T) => T.RefreshOnView());
 
                                 RefreshCount();
                                 RefreshParents();
@@ -139,7 +139,10 @@ namespace SizeOnDisk.ViewModel
 
                         Root.ExecuteTaskAsync(() =>
                         {
-                            Parallel.ForEach(Childs.ToList(), Root.GetParallelOptions(), (T) => T.GetOutOfView());
+                            foreach(VMFile f in Childs)
+                            {
+                                f.GetOutOfView();
+                            }
                         }, false, false);
                     }
 
@@ -396,10 +399,10 @@ namespace SizeOnDisk.ViewModel
                     {
                         Root.ExecuteTaskAsync(() =>
                         {
-                            Parallel.ForEach(Childs.ToList(), parallelOptions, (T) => T.RefreshOnView());
+                            Parallel.ForEach(Childs, parallelOptions, (T) => T.RefreshOnView());
                         }, false, true);
                     }
-                    Parallel.ForEach(Folders.ToList(), parallelOptions, (T) => T.Refresh(parallelOptions));
+                    Parallel.ForEach(Folders, parallelOptions, (T) => T.Refresh(parallelOptions));
                 }
             }
             catch (OperationCanceledException)

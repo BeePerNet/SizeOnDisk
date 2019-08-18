@@ -245,6 +245,7 @@ namespace SizeOnDisk.ViewModel
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
             _Attributes = ((FileAttributesEx)fileInfo.Attributes) | (_Attributes & FileAttributesEx.ExMask);
+            OnPropertyChanged(nameof(Attributes));
             OnPropertyChanged(nameof(IsLink));
             if (IsFile)
             {
