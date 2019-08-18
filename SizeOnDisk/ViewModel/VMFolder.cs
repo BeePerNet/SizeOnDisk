@@ -77,26 +77,20 @@ namespace SizeOnDisk.ViewModel
 
         public override bool IsLink => (Attributes & FileAttributesEx.ReparsePoint) == FileAttributesEx.ReparsePoint;
 
-
-
-
-
         public override string Extension => string.Empty;
 
+        private ulong? _FileTotal = 1;
+        private ulong? _FolderTotal = null;
 
+        public ulong? FileCount => (ulong?)(Childs?.Count - Folders?.Count);
 
-        private long? _FileTotal = 1;
-        private long? _FolderTotal = null;
-
-        public long? FileCount => (long?)(Childs?.Count - Folders?.Count);
-
-        public override long? FileTotal
+        public override ulong? FileTotal
         {
             get => _FileTotal;
             protected set => SetProperty(ref _FileTotal, value);
         }
 
-        public override long? FolderTotal
+        public override ulong? FolderTotal
         {
             get => _FolderTotal;
             protected set => SetProperty(ref _FolderTotal, value);
@@ -281,20 +275,20 @@ namespace SizeOnDisk.ViewModel
             else
             {
                 FileTotal = Sum(Childs.Select(T => T.FileTotal));
-                FolderTotal = Sum(Folders.Select(T => T.FolderTotal)) + (long)Folders.Count;
+                FolderTotal = Sum(Folders.Select(T => T.FolderTotal)) + (ulong)Folders.Count;
                 DiskSize = Sum(Childs.Select(T => T.DiskSize));
                 FileSize = Sum(Childs.Select(T => T.FileSize));
             }
         }
 
 
-        public static long Sum(IEnumerable<long?> source)
+        public static ulong Sum(IEnumerable<ulong?> source)
         {
-            long total = 0;
+            ulong total = 0;
 
-            foreach (long? item in source.Where(T => T.HasValue))
+            foreach (ulong item in source.Where(T => T.HasValue))
             {
-                total = total + item ?? 0;
+                total += item;
             }
 
             return total;
@@ -422,27 +416,6 @@ namespace SizeOnDisk.ViewModel
 
             RefreshCount();
         }
-
-        //TODO: This code was used before to detect if it was a reparse point
-        //First idea was to create a new type of folder when found
-        /*protected static VMFolder CreateVMFolder(VMFolder parent, string name, string path)
-        {
-            /*LittleFileInfo fileInfo = new Utilities.LittleFileInfo(path);
-            FileAttributes attributes = fileInfo.Attributes;
-
-            if ((attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
-            {
-                //Parse the reparse point: new VMReparseFolder class to create
-                ReparsePoint reparsePoint = new ReparsePoint(path);
-                VMFolder folder = new VMFolderLink(parent, name, reparsePoint.Target, attributes);
-                if (reparsePoint.Tag == ReparsePoint.TagType.None)
-                {
-                    folder.IsProtected = true;
-                }
-                return folder;
-            }*/
-        //return new VMFolder(parent, name, path);
-        //}
 
         #endregion functions
     }

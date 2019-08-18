@@ -74,9 +74,9 @@ namespace SizeOnDisk.ViewModel
         #region fields
 
         private readonly Stopwatch _Runwatch = new Stopwatch();
-        private long _HardDriveUsage;
-        private long _HardDriveFree;
-        private long _HardDriveSize;
+        private ulong _HardDriveUsage;
+        private ulong _HardDriveFree;
+        private ulong _HardDriveSize;
         private TaskExecutionState _ExecutionState = TaskExecutionState.Ready;
 
         #endregion fields
@@ -120,19 +120,19 @@ namespace SizeOnDisk.ViewModel
 
         public TimeSpan RunTime => _Runwatch.Elapsed;
 
-        public long HardDriveUsage
+        public ulong HardDriveUsage
         {
             get => _HardDriveUsage;
             protected set => SetProperty(ref _HardDriveUsage, value);
         }
 
-        public long HardDriveFree
+        public ulong HardDriveFree
         {
             get => _HardDriveFree;
             protected set => SetProperty(ref _HardDriveFree, value);
         }
 
-        public long HardDriveSize
+        public ulong HardDriveSize
         {
             get => _HardDriveSize;
             protected set => SetProperty(ref _HardDriveSize, value);
@@ -190,7 +190,7 @@ namespace SizeOnDisk.ViewModel
 
 
             HardDriveUsage = DiskSize ?? 0;
-            HardDriveSize = 1000202039296;
+            HardDriveSize = 1000202039296000000;
             HardDriveFree = HardDriveSize - HardDriveUsage;
         }
 
@@ -239,9 +239,9 @@ namespace SizeOnDisk.ViewModel
                 _Runwatch.Restart();
 
                 DriveInfo info = new DriveInfo(HardDrivePath);
-                HardDriveUsage = info.TotalSize - info.TotalFreeSpace;
-                HardDriveFree = info.AvailableFreeSpace;
-                HardDriveSize = info.TotalSize;
+                HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;
+                HardDriveFree = (ulong)info.AvailableFreeSpace;
+                HardDriveSize = (ulong)info.TotalSize;
 
                 base.Refresh(parallelOptions);
             }

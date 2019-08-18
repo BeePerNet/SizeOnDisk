@@ -231,7 +231,7 @@ namespace SizeOnDisk.Shell
         /// </summary>
         /// <param name="filename">File name</param>
         /// <param name="data">The file attribute structure to fill</param>
-        public static long? GetCompressedFileSize(string filename)
+        public static ulong? GetCompressedFileSize(string filename)
         {
             uint losize = SafeNativeMethods.GetCompressedFileSize(filename, out uint hosize);
             int error = Marshal.GetLastWin32Error();
@@ -240,7 +240,7 @@ namespace SizeOnDisk.Shell
                 return null;
             }
 
-            return ((long)hosize << 32) + losize;
+            return ((ulong)hosize << 32) + losize;
         }
 
         public static uint GetClusterSize(string path)

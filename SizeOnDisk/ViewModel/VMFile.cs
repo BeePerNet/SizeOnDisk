@@ -72,12 +72,12 @@ namespace SizeOnDisk.ViewModel
 
 
         [DesignOnly(true)]
-        internal VMFile(VMFolder parent, string name, long? fileSize) : this(parent, name)
+        internal VMFile(VMFolder parent, string name, ulong? fileSize) : this(parent, name)
         {
             if (fileSize.HasValue)
             {
                 FileSize = fileSize;
-                DiskSize = Convert.ToInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
+                DiskSize = Convert.ToUInt64(Math.Ceiling((double)fileSize / 4096) * 4096);
             }
             if (parent != null)
             {
@@ -132,14 +132,14 @@ namespace SizeOnDisk.ViewModel
 
         public virtual bool IsFile => true;
 
-        private long? _FileSize = null;
-        private long? _DiskSize = null;
+        private ulong? _FileSize = null;
+        private ulong? _DiskSize = null;
 
 
-        public virtual long? FileTotal { get => 1; protected set { } }
-        public virtual long? FolderTotal { get => null; protected set { } }
-        public long? DiskSize { get => _DiskSize; protected set => SetProperty(ref _DiskSize, value); }
-        public long? FileSize { get => _FileSize; protected set => SetProperty(ref _FileSize, value); }
+        public virtual ulong? FileTotal { get => 1; protected set { } }
+        public virtual ulong? FolderTotal { get => null; protected set { } }
+        public ulong? DiskSize { get => _DiskSize; protected set => SetProperty(ref _DiskSize, value); }
+        public ulong? FileSize { get => _FileSize; protected set => SetProperty(ref _FileSize, value); }
 
         public bool IsProtected
         {
