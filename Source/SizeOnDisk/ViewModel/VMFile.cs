@@ -185,7 +185,7 @@ namespace SizeOnDisk.ViewModel
                     }
                     else if (Root.SelectedListItem == this)
                     {
-                        Root.SelectedListItem = this.Parent.Childs.FirstOrDefault(T => T.IsSelected);
+                        Root.SelectedListItem = this.Parent.Childs.FirstOrDefault(T => T.IsSelected) ?? this;
                     }
                     OnPropertyChanged(nameof(IsSelected));
                 }
