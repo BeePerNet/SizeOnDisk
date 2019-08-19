@@ -37,7 +37,7 @@ namespace SizeOnDisk.Shell
 
         private bool ShowVistaDialog(IWin32Window owner)
         {
-            string Folder = ShellHelper.ShowVistaDialog(owner, InitialFolder, DefaultFolder);
+            Folder = ShellHelper.ShowVistaDialog(owner, InitialFolder, DefaultFolder);
             return !string.IsNullOrEmpty(Folder);
         }
 

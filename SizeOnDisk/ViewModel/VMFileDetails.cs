@@ -1,5 +1,6 @@
 ﻿using SizeOnDisk.Shell;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WinProps;
 using WPFByYourCommand;
 using WPFByYourCommand.Commands;
 using WPFByYourCommand.Extensions;
@@ -173,13 +175,6 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-
-
-
-
-
-
-
         private IEnumerable<string> _Verbs;
         public IEnumerable<string> Verbs { get => _Verbs; set => SetProperty(ref _Verbs, value); }
 
@@ -295,6 +290,70 @@ namespace SizeOnDisk.ViewModel
                 return commands;
             }
         }
+
+
+
+
+        IEnumerable<VMFileProperty> _Properties;
+        public IEnumerable<VMFileProperty> Properties
+        {
+            get
+            {
+                if (_Properties == null && !_vmFile.Root.IsDesign)
+                {
+                    FillProperties();
+                }
+                return _Properties;
+            }
+        }
+
+
+        private void FillProperties()
+        {
+            PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort);
+            List<VMFileProperty> result = new List<VMFileProperty>();
+            foreach (PropertyKey key in store)
+            {
+                string name;
+                try
+                {
+                    name = key.CanonicalName;
+                    if (name.StartsWith("System."))
+                        name = name.Remove(0, 7);
+
+                    PropVariant variant = store.GetValue(key);
+
+                    if (variant != null)
+                    {
+                        if (variant.Value != null)
+                        {
+                            if (variant.Value is string str)
+                            {
+                                result.Add(new VMFileProperty(name, str));
+                            }
+                            else if (variant.Value is IEnumerable list)
+                            {
+                                result.Add(new VMFileProperty(name, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
+                            }
+                            else
+                            {
+                                result.Add(new VMFileProperty(name, variant.Value.ToString()));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            _Properties = result.OrderBy(T => T.Name);
+        }
+
+
+
+
+
+
 
 
     }

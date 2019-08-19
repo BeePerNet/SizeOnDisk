@@ -134,6 +134,16 @@
               Checksum="yes"
               KeyPath="yes" />
       </Component>
+      <Component Id="WinPropsComponent"
+                 Guid="*">
+        <File Name="WinProps.dll"
+              Id="WinPropsFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)WinProps.dll"
+              Vital="yes"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
       <Component Id="SystemCollectionsImmutableComponent"
                  Guid="*">
         <File Name="System.Collections.Immutable.dll"
@@ -187,6 +197,15 @@
               Id="WPFByYourCommandDebugFile"
               DiskId="1"
               Source="$(var.SizeOnDisk.TargetDir)WPFByYourCommand.pdb"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="WinPropsDebugComponent"
+                 Guid="*">
+        <File Name="WinProps.pdb"
+              Id="WinPropsDebugFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)WinProps.pdb"
               Checksum="yes"
               KeyPath="yes" />
       </Component>
@@ -341,6 +360,7 @@
         <ComponentRef Id="XAMLMarkupExtensionsComponent" />
         <ComponentRef Id="WPFLocalizeExtensionComponent" />
         <ComponentRef Id="WPFByYourCommandComponent" />
+        <ComponentRef Id="WinPropsComponent" />
         <ComponentRef Id="SystemCollectionsImmutableComponent" />
       </Feature>
       <Feature Id="MenuShortcutFeature"
@@ -431,6 +451,7 @@
         <ComponentRef Id="XAMLMarkupExtensionsDebugComponent" />
         <ComponentRef Id="WPFLocalizeExtensionDebugComponent" />
         <ComponentRef Id="WPFByYourCommandDebugComponent" />
+        <ComponentRef Id="WinPropsDebugComponent" />
       </Feature>
     </Feature>
 

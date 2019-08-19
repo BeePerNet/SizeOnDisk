@@ -282,6 +282,11 @@ namespace SizeOnDisk.ViewModel
         private VMViewMode viewMode = VMViewMode.Details;
         public VMViewMode ViewMode { get => viewMode; set => SetProperty(ref viewMode, value); }
 
+
+        private bool _IsPropertiesVisible;
+        public bool IsPropertiesVisible { get => _IsPropertiesVisible; set => SetProperty(ref _IsPropertiesVisible, value); }
+
+
         private DispatcherTimer _Timer;
         private ParallelOptions _ParallelOptions;
         [SuppressMessage("Design", "CA2213")]

@@ -511,18 +511,21 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
 
-            if (command == OpenAsCommand)
+            file.Root.ExecuteTaskAsync(() =>
             {
-                ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL {file.Path}");
-                return;
-            }
-            string path = file.Path;
-            if (e.Command == FindCommand && (file.IsFile || file.IsProtected))
-            {
-                path = file.Parent.Path;
-            }
+                if (command == OpenAsCommand)
+                {
+                    ShellHelper.ShellExecute("Rundll32.exe", $"Shell32.dll,OpenAs_RunDLL {file.Path}");
+                    return;
+                }
+                string path = file.Path;
+                if (e.Command == FindCommand && (file.IsFile || file.IsProtected))
+                {
+                    path = file.Parent.Path;
+                }
 
-            ShellHelper.ShellExecute(path, null, command.Name.ToLowerInvariant());
+                ShellHelper.ShellExecute(path, null, command.Name.ToLowerInvariant());
+            }, true, false);
         }
 
         #endregion Commands
@@ -534,46 +537,50 @@ namespace SizeOnDisk.ViewModel
 
         internal void ExecuteCommand(IMenuCommand command, object _)
         {
-            string cmd = command.Tag;
-            if (cmd.StartsWith("Id:", StringComparison.Ordinal))
+            Root.ExecuteTaskAsync(() =>
             {
-                cmd = cmd.Substring(3);
-                ShellHelper.Activate(cmd, Path, command.Name);
-            }
-            else if (cmd.StartsWith("cmd:", StringComparison.OrdinalIgnoreCase))
-            {
-                cmd = cmd.Substring(4);
-                ShellHelper.ShellExecute(cmd, $"\"{Path}\"");
-            }
-            else if (cmd.StartsWith("dll:", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new NotImplementedException($"Name:{command.Name}, Text:{command.Text}, Command{command.Tag}");
-            }
-            else
-            {
-                Tuple<string, string> cmdParam = ShellHelper.SplitCommandAndParameters(cmd);
-                string parameters = cmdParam.Item2;
 
-                string workingDirectory = Path;
-                if (IsFile)
+                string cmd = command.Tag;
+                if (cmd.StartsWith("Id:", StringComparison.Ordinal))
                 {
-                    workingDirectory = Parent.Path;
+                    cmd = cmd.Substring(3);
+                    ShellHelper.Activate(cmd, Path, command.Name);
                 }
-
-                if (parameters.Contains('%'))
+                else if (cmd.StartsWith("cmd:", StringComparison.OrdinalIgnoreCase))
                 {
-                    parameters = Regex.Replace(parameters, "%1", Path, RegexOptions.IgnoreCase);
-                    parameters = Regex.Replace(parameters, "%l", Path, RegexOptions.IgnoreCase);
-                    parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
-                    parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
+                    cmd = cmd.Substring(4);
+                    ShellHelper.ShellExecute(cmd, $"\"{Path}\"");
+                }
+                else if (cmd.StartsWith("dll:", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new NotImplementedException($"Name:{command.Name}, Text:{command.Text}, Command{command.Tag}");
                 }
                 else
                 {
-                    parameters = string.Concat(parameters, "\"", Path, "\"");
-                }
+                    Tuple<string, string> cmdParam = ShellHelper.SplitCommandAndParameters(cmd);
+                    string parameters = cmdParam.Item2;
 
-                ShellHelper.ShellExecute(cmdParam.Item1, parameters);
-            }
+                    string workingDirectory = Path;
+                    if (IsFile)
+                    {
+                        workingDirectory = Parent.Path;
+                    }
+
+                    if (parameters.Contains('%'))
+                    {
+                        parameters = Regex.Replace(parameters, "%1", Path, RegexOptions.IgnoreCase);
+                        parameters = Regex.Replace(parameters, "%l", Path, RegexOptions.IgnoreCase);
+                        parameters = Regex.Replace(parameters, "%v", workingDirectory, RegexOptions.IgnoreCase);
+                        parameters = Regex.Replace(parameters, "%w", workingDirectory, RegexOptions.IgnoreCase);
+                    }
+                    else
+                    {
+                        parameters = string.Concat(parameters, "\"", Path, "\"");
+                    }
+
+                    ShellHelper.ShellExecute(cmdParam.Item1, parameters);
+                }
+            }, true, false);
         }
 
     }

@@ -37,11 +37,20 @@
                     <cmd:AutoDisablingImage Source="../Icons/Log.png" />
                 </Button>
                 <Separator />
-                <ToggleButton ToolTip="Details view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}" Padding="3">
-                    <Image Source="../Icons/Detail.png" />
+                <ToggleButton ToolTip="Details view"
+                              IsEnabled="{Binding SelectedRootFolder, Converter={cmd:IsNotEqualConverter}, ConverterParameter={x:Null}}"
+                              IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Details}}" Padding="3">
+                    <cmd:AutoDisablingImage Source="../Icons/Detail.png" />
                 </ToggleButton>
-                <ToggleButton ToolTip="List view" IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Tile}}" Padding="3">
-                    <Image Source="../Icons/List.png" />
+                <ToggleButton ToolTip="List view" 
+                              IsEnabled="{Binding SelectedRootFolder, Converter={cmd:IsNotEqualConverter}, ConverterParameter={x:Null}}"
+                              IsChecked="{Binding SelectedRootFolder.ViewMode, Mode=TwoWay, Converter={StaticResource IsEqualConverter},ConverterParameter={x:Static vm:VMViewMode.Tile}}" Padding="3">
+                    <cmd:AutoDisablingImage Source="../Icons/List.png" />
+                </ToggleButton>
+                <ToggleButton ToolTip="Properties view" Padding="3" 
+                              IsEnabled="{Binding SelectedRootFolder, Converter={cmd:IsNotEqualConverter}, ConverterParameter={x:Null}}"
+                              IsChecked="{Binding SelectedRootFolder.IsPropertiesVisible, Mode=TwoWay}">
+                    <cmd:AutoDisablingImage Source="../Icons/PropertiesList.png" />
                 </ToggleButton>
                 <Separator />
                 <Button ToolTip="{lex:Loc Legend}" Click="ButtonLegend_Click" Padding="3">
@@ -319,9 +328,10 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="275" />
+                            <ColumnDefinition Width="275" MinWidth="50" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MinWidth="100" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TreeView BorderThickness="1"
                               ItemsSource="{Binding DummyMe}"
@@ -351,7 +361,7 @@
                           Width="6"
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
-                        <ListView Grid.Column="2"
+                        <ListView Grid.Column="2" MinWidth="25"
                                 ItemsSource="{Binding SelectedTreeItem.Childs}"
                                 BorderThickness="1"
                                 SelectedItem="{Binding SelectedItem}"
@@ -371,7 +381,7 @@
                                     <cmd:VirtualizingWrapPanel ItemHeight="152" ItemWidth="120" />
                                 </ItemsPanelTemplate>
                             </ListView.ItemsPanel>
-                            <ListBox.ItemTemplate>
+                            <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Height="150" HorizontalAlignment="Stretch" Width="110">
                                         <Grid.RowDefinitions>
@@ -386,7 +396,7 @@
                                         <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>
+                            </ListView.ItemTemplate>
                         </ListView>
                         <DataGrid 
                                 cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
@@ -395,11 +405,11 @@
                                 cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                 cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                                 BorderThickness="1"
+                                HeadersVisibility="Column"
                                 ItemsSource="{Binding SelectedTreeItem.Childs}"
                                 SelectedItem="{Binding SelectedItem}"
                                 AutoGenerateColumns="False"
                                 Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                HeadersVisibility="Column"
                                 ContextMenu="{StaticResource VMContextMenu}"
                                 HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                 VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
@@ -476,6 +486,35 @@
                                         IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
+                        <Grid Grid.Column="3"
+                              MinWidth="50"
+                              Visibility="{Binding IsPropertiesVisible, Converter={cmd:IsEqualConverter}, ConverterParameter=True}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="370" />
+                            </Grid.ColumnDefinitions>
+                            <GridSplitter
+                                  ResizeBehavior="CurrentAndNext"
+                                  ResizeDirection="Columns"
+                                  Width="6"
+                                  Background="Transparent"
+                                  VerticalAlignment="Stretch" 
+                                   />
+                            <DataGrid Grid.Column="1"
+                                ColumnWidth="175"
+                                ItemsSource="{Binding SelectedItem.Details.Properties, IsAsync=True}"
+                                AutoGenerateColumns="False"
+                                BorderThickness="1"
+                                HeadersVisibility="Column"
+                                HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                                VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                                IsReadOnly="True" EnableRowVirtualization="False" SelectionUnit="Cell">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Width="175" Header="Name" Binding="{Binding Name}" />
+                                    <DataGridTextColumn Width="175" Header="Value" Binding="{Binding Value}" />
+                                </DataGrid.Columns>                                
+                            </DataGrid>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
