@@ -167,6 +167,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Shell\ShellHelper_SafeNativeEnums.cs" />
+    <Compile Include="Shell\ShellHelper_SafeNativeMethods.cs" />
+    <Compile Include="Shell\ShellHelper_SafeNativeObjects.cs" />
     <Compile Include="ViewModel\FileAttributesEx.cs" />
     <Compile Include="ViewModel\FileNameValidationRule.cs" />
     <Compile Include="Windows\AboutBox.xaml.cs">

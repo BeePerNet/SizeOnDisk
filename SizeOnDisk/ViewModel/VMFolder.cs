@@ -19,7 +19,7 @@ namespace SizeOnDisk.ViewModel
             {
                 string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
 
-                if (ShellHelper.SafeNativeMethods.PermanentDelete(filenames))
+                if (ShellHelper.PermanentDelete(filenames))
                 {
                     RefreshAfterCommand();
                 }
@@ -32,7 +32,7 @@ namespace SizeOnDisk.ViewModel
             {
                 string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
 
-                if (ShellHelper.SafeNativeMethods.MoveToRecycleBin(filenames))
+                if (ShellHelper.MoveToRecycleBin(filenames))
                 {
                     RefreshAfterCommand();
                 }

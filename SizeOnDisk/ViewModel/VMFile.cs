@@ -392,7 +392,7 @@ namespace SizeOnDisk.ViewModel
             {
                 file.Root.ExecuteTask(() =>
                 {
-                    if (ShellHelper.SafeNativeMethods.MoveToRecycleBin(file.Path))
+                    if (ShellHelper.MoveToRecycleBin(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }
@@ -419,7 +419,7 @@ namespace SizeOnDisk.ViewModel
             {
                 file.Root.ExecuteTask(() =>
                 {
-                    if (ShellHelper.SafeNativeMethods.PermanentDelete(file.Path))
+                    if (ShellHelper.PermanentDelete(file.Path))
                     {
                         file.Parent.RefreshAfterCommand();
                     }

@@ -138,7 +138,7 @@ namespace SizeOnDisk.ViewModel
             e.Handled = true;
 
             OpenFolderDialog dialog = new OpenFolderDialog();
-            if (dialog.ShowDialog(new WrapperIWin32Window(System.Windows.Application.Current.MainWindow)))
+            if (dialog.ShowDialog(new WrapperIWin32Window(Application.Current.MainWindow)))
             {
                 AddRootFolder(dialog.Folder);
             }

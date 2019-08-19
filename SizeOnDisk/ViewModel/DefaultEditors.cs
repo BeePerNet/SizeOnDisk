@@ -46,7 +46,7 @@ namespace SizeOnDisk.ViewModel
                                             string key = Registry.GetValue($@"HKEY_CLASSES_ROOT\Applications\{item.Parameter1}\shell\open\command", string.Empty, string.Empty)?.ToString();
                                             if (!string.IsNullOrEmpty(key))
                                             {
-                                                command.Icon = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(ShellHelper.SplitCommandAndParameters(key).Item1, 0);
+                                                command.Icon = ShellHelper.ExtractIconFromDLL(ShellHelper.SplitCommandAndParameters(key).Item1, 0);
                                                 command.Name = key;
                                                 found = true;
                                             }
@@ -56,7 +56,7 @@ namespace SizeOnDisk.ViewModel
                                             if (!string.IsNullOrEmpty(value))
                                             {
                                                 string path = string.Concat(value, "\\", item.Parameter2);
-                                                command.Icon = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(path, 0);
+                                                command.Icon = ShellHelper.ExtractIconFromDLL(path, 0);
                                                 command.Name = path;
                                                 found = true;
                                             }
@@ -64,7 +64,7 @@ namespace SizeOnDisk.ViewModel
                                         case DefaultEditorDefinitionType.File:
                                             if (File.Exists(item.Parameter1))
                                             {
-                                                command.Icon = ShellHelper.SafeNativeMethods.ExtractIconFromDLL(item.Parameter1, 0);
+                                                command.Icon = ShellHelper.ExtractIconFromDLL(item.Parameter1, 0);
                                                 command.Name = item.Parameter1;
                                                 found = true;
                                             }

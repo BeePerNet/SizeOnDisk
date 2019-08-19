@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using WPFLocalizeExtension.Extensions;
 
@@ -38,51 +37,8 @@ namespace SizeOnDisk.Shell
 
         private bool ShowVistaDialog(IWin32Window owner)
         {
-            Guid riid = typeof(ShellHelper.SafeNativeMethods.IShellItem).GUID;
-            ShellHelper.SafeNativeMethods.IFileDialog frm = (ShellHelper.SafeNativeMethods.IFileDialog)(new ShellHelper.SafeNativeMethods.FileOpenDialogRCW());
-            frm.GetOptions(out ShellHelper.SafeNativeMethods.FileOpenOptions options);
-            options |= ShellHelper.SafeNativeMethods.FileOpenOptions.PickFolders | ShellHelper.SafeNativeMethods.FileOpenOptions.ForceFilesystem | ShellHelper.SafeNativeMethods.FileOpenOptions.NoValidate | ShellHelper.SafeNativeMethods.FileOpenOptions.NoTestFileCreate | ShellHelper.SafeNativeMethods.FileOpenOptions.DontAddToRecent;
-            frm.SetOptions(options);
-            if (InitialFolder != null)
-            {
-                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(InitialFolder, IntPtr.Zero, riid);
-                if (shellItem != null)
-                {
-                    frm.SetFolder(shellItem);
-                }
-            }
-            if (DefaultFolder != null)
-            {
-                ShellHelper.SafeNativeMethods.IShellItem shellItem = ShellHelper.SafeNativeMethods.SHCreateItemFromParsingNameIShellItem(DefaultFolder, IntPtr.Zero, riid);
-                if (shellItem != null)
-                {
-                    frm.SetDefaultFolder(shellItem);
-                }
-            }
-
-            if (frm.Show(owner.Handle) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
-            {
-                if (frm.GetResult(out ShellHelper.SafeNativeMethods.IShellItem shellItem) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
-                {
-                    if (shellItem.GetDisplayName(ShellHelper.SafeNativeMethods.SIGDN.FILESYSPATH, out IntPtr pszString) == (int)ShellHelper.SafeNativeMethods.HResult.Ok)
-                    {
-                        if (pszString != IntPtr.Zero)
-                        {
-                            try
-                            {
-                                Folder = Marshal.PtrToStringAuto(pszString);
-                                return true;
-                            }
-                            finally
-                            {
-                                Marshal.FreeCoTaskMem(pszString);
-                            }
-                        }
-                    }
-
-                }
-            }
-            return false;
+            string Folder = ShellHelper.ShowVistaDialog(owner, InitialFolder, DefaultFolder);
+            return !string.IsNullOrEmpty(Folder);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "<En attente>")]
