@@ -16,7 +16,14 @@
         ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance {x:Type vm:VMRootFolder}, IsDesignTimeCreatable=True}">
     <Grid>
-        <DataGrid ItemsSource="{Binding Logs}" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid 
+            BorderThickness="1"
+            HeadersVisibility="Column"
+            HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+            VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+            SelectionUnit="Cell"
+            ContextMenu="{StaticResource DefaultCopyMenu}"
+            ItemsSource="{Binding Logs}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding TimeStamp, StringFormat=HH:mm:ss.FFFFFF}" Header="DateTime" />
                 <DataGridTemplateColumn SortMemberPath="File.Path" Header="Path">

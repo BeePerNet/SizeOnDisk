@@ -23,6 +23,7 @@
     </Window.DataContext>
     <Window.Resources>
         <ContextMenu x:Key="VMContextMenu"
+                     Style="{StaticResource CommandContextMenu}"
                      DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
                      ItemsSource="{Binding Details.FileCommands}" />
     </Window.Resources>
