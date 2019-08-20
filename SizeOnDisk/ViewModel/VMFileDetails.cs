@@ -348,7 +348,6 @@ namespace SizeOnDisk.ViewModel
                     {
                     }
                 }
-                _Properties = result.OrderBy(T => T.Name);
             }
             else
             {
@@ -359,6 +358,7 @@ namespace SizeOnDisk.ViewModel
                     result.Add(new VMFileProperty("Link.TargetParsingPath", _vmFile.LinkPath));
                 }
             }
+            _Properties = result.OrderBy(T => T.Name);
         }
 
 
