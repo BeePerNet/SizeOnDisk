@@ -33,4 +33,10 @@
             <Setter Property="ToolTip" Value="{Binding Name}" />
         </Style.Setters>
     </Style>
+    <ContextMenu x:Key="DefaultCopyMenu">
+        <MenuItem Command="Copy" />
+    </ContextMenu>
+    <Style TargetType="TextBox">
+        <Setter Property="ContextMenu" Value="{StaticResource DefaultCopyMenu}" />
+    </Style>
 </ResourceDictionary>

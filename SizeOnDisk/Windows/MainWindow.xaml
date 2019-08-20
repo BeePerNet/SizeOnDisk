@@ -144,7 +144,8 @@
             </Expander.Template>
             <Expander.Header>
                 <TextBox Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" 
-                         IsReadOnlyCaretVisible="True" IsReadOnly="True" />
+                         IsReadOnlyCaretVisible="True" 
+                         IsReadOnly="True" />
             </Expander.Header>
             <Grid cmd:GlobalizationBehavior.UpdateChildsBindings=",UISize">
                 <Grid.Resources>
@@ -272,7 +273,7 @@
             <Separator Grid.Column="1" />
             <StatusBarItem Grid.Column="2"
                            Content="{Binding SelectedRootFolder.RunTime}" />
-            
+
             <StatusBarItem Grid.Column="6"
                            Content="{Binding SelectedRootFolder.SelectedTreeItem.Folders.Count}"
                            ContentStringFormat="N0"
@@ -313,7 +314,6 @@
                            Content="{Binding SelectedRootFolder.HardDriveFree,Converter={conv:SizeConverter}}"
                            ToolTip="{lex:Loc HardDriveFree}" />
         </StatusBar>
-
         <TabControl ItemsSource="{Binding Folders}" SelectedItem="{Binding SelectedRootFolder}" Margin="1">
             <TabControl.ItemTemplate>
                 <DataTemplate>
@@ -507,7 +507,8 @@
                                       VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                       IsReadOnly="True"
                                       EnableRowVirtualization="False"
-                                      SelectionUnit="Cell">
+                                      SelectionUnit="Cell"
+                                      ContextMenu="{StaticResource DefaultCopyMenu}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Width="175" Header="Name" Binding="{Binding Name}" />
                                     <DataGridTextColumn Width="175" Header="Value" Binding="{Binding Value}" />
