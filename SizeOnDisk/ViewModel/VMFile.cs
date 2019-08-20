@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
+using System.Windows.Threading;
 using WPFByYourCommand.Commands;
 using WPFByYourCommand.Exceptions;
 
@@ -511,7 +512,7 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
 
-            file.Root.ExecuteTaskAsync(() =>
+            file.Root.ExecuteTaskAsyncByDispatcher(() =>
             {
                 if (command == OpenAsCommand)
                 {
@@ -525,7 +526,7 @@ namespace SizeOnDisk.ViewModel
                 }
 
                 ShellHelper.ShellExecute(path, null, command.Name.ToLowerInvariant());
-            }, true, false);
+            }, true, Dispatcher.CurrentDispatcher);
         }
 
         #endregion Commands
@@ -537,9 +538,8 @@ namespace SizeOnDisk.ViewModel
 
         internal void ExecuteCommand(IMenuCommand command, object _)
         {
-            Root.ExecuteTaskAsync(() =>
+            this.Root.ExecuteTaskAsyncByDispatcher(() =>
             {
-
                 string cmd = command.Tag;
                 if (cmd.StartsWith("Id:", StringComparison.Ordinal))
                 {
@@ -580,7 +580,7 @@ namespace SizeOnDisk.ViewModel
 
                     ShellHelper.ShellExecute(cmdParam.Item1, parameters);
                 }
-            }, true, false);
+            }, true, Dispatcher.CurrentDispatcher);
         }
 
     }

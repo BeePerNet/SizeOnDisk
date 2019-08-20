@@ -330,6 +330,18 @@ namespace SizeOnDisk.ViewModel
             return ex;
         }
 
+        public void ExecuteTaskAsyncByDispatcher(Action action, bool showException, Dispatcher dispatcher)
+        {
+            dispatcher.BeginInvoke(new Action(() =>
+            {
+                Exception ex = TaskHelper.SafeExecute(action, showException);
+                if (ex != null)
+                {
+                    LogException(ex);
+                }
+            }));
+        }
+
         public Task ExecuteTaskAsync(Action action, bool showException, bool highpriority)
         {
             ParallelOptions parallelOptions = GetParallelOptions();
