@@ -1,0 +1,13 @@
+﻿<ResourceDictionary x:Class="SizeOnDisk.Themes.TextBlock"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ContextMenu x:Key="TextBlockContextMenu">
+        <ContextMenu.CommandBindings>
+            <CommandBinding Command="Copy" Executed="CallCopyCommand" />
+        </ContextMenu.CommandBindings>
+        <MenuItem Command="Copy" />
+    </ContextMenu>
+    <Style x:Key="CopyTextBlock" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+        <Setter Property="ContextMenu" Value="{StaticResource TextBlockContextMenu}" />
+    </Style>
+</ResourceDictionary>

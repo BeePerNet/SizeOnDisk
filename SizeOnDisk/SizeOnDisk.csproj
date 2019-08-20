@@ -170,6 +170,9 @@
     <Compile Include="Shell\ShellHelper_SafeNativeEnums.cs" />
     <Compile Include="Shell\ShellHelper_SafeNativeMethods.cs" />
     <Compile Include="Shell\ShellHelper_SafeNativeObjects.cs" />
+    <Compile Include="Themes\TextBlock.xaml.cs">
+      <DependentUpon>TextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\FileAttributesEx.cs" />
     <Compile Include="ViewModel\FileNameValidationRule.cs" />
     <Compile Include="ViewModel\VMFileProperty.cs" />
@@ -225,6 +228,10 @@
     <Compile Include="Windows\WindowOptions.xaml.cs">
       <DependentUpon>WindowOptions.xaml</DependentUpon>
     </Compile>
+    <Page Include="Themes\TextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\AboutBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -249,10 +256,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Resource Include="Themes\Generic.xaml">
+    <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Resource>
+    </Page>
     <Page Include="Windows\WindowOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

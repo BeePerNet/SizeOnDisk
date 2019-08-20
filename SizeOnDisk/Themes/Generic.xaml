@@ -3,18 +3,20 @@
                     xmlns:provider="clr-namespace:WPFLocalizeExtension.Providers;assembly=WPFLocalizeExtension"
                     xmlns:engine="clr-namespace:WPFLocalizeExtension.Engine;assembly=WPFLocalizeExtension"
                     xmlns:beh="clr-namespace:WPFByYourCommand.Behaviors;assembly=WPFByYourCommand"
-                    xmlns:cmd="http://wpfbyyourcommand.codeplex.com"
-                    >
+                    xmlns:cmd="http://wpfbyyourcommand.codeplex.com">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/SizeOnDisk;component/Themes/TextBlock.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     <cmd:IsEqualConverter x:Key="IsEqualConverter" />
-    <Style x:Key="WindowStyle" TargetType="Window">
+    <Style x:Key="WindowStyle" TargetType="{x:Type Window}" BasedOn="{StaticResource {x:Type Window}}">
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="provider:ResxLocalizationProvider.DefaultAssembly" Value="SizeOnDisk" />
         <Setter Property="provider:ResxLocalizationProvider.DefaultDictionary" Value="Languages.Localization" />
         <Setter Property="engine:LocalizeDictionary.DesignCulture" Value="fr" />
-        <Setter Property="beh:GlobalizationBehavior.UpdateWindow" Value="" />
+        <Setter Property="beh:GlobalizationBehavior.UpdateWindow" Value=",UISize" />
         <Setter Property="Icon" Value="../Icons/Hard_Drive.ico" />
     </Style>
-    <Style x:Key="ColoredName" TargetType="TextBlock">
+    <Style x:Key="ColoredName" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Compressed}" Value="True">
                 <Setter Property="Foreground" Value="#3299CA" />
@@ -36,7 +38,7 @@
     <ContextMenu x:Key="DefaultCopyMenu">
         <MenuItem Command="Copy" />
     </ContextMenu>
-    <Style TargetType="TextBox">
+    <Style x:Key="CopyTextBox" BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type TextBox}">
         <Setter Property="ContextMenu" Value="{StaticResource DefaultCopyMenu}" />
     </Style>
 </ResourceDictionary>
