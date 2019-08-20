@@ -310,43 +310,55 @@ namespace SizeOnDisk.ViewModel
 
         private void FillProperties()
         {
-            PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort);
             List<VMFileProperty> result = new List<VMFileProperty>();
-            foreach (PropertyKey key in store)
+            if (_vmFile.IsFile)
             {
-                string name;
-                try
+                PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort);
+                foreach (PropertyKey key in store)
                 {
-                    name = key.CanonicalName;
-                    if (name.StartsWith("System."))
-                        name = name.Remove(0, 7);
-
-                    PropVariant variant = store.GetValue(key);
-
-                    if (variant != null)
+                    string name;
+                    try
                     {
-                        if (variant.Value != null)
+                        name = key.CanonicalName;
+                        if (name.StartsWith("System."))
+                            name = name.Remove(0, 7);
+
+                        PropVariant variant = store.GetValue(key);
+
+                        if (variant != null)
                         {
-                            if (variant.Value is string str)
+                            if (variant.Value != null)
                             {
-                                result.Add(new VMFileProperty(name, str));
-                            }
-                            else if (variant.Value is IEnumerable list)
-                            {
-                                result.Add(new VMFileProperty(name, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
-                            }
-                            else
-                            {
-                                result.Add(new VMFileProperty(name, variant.Value.ToString()));
+                                if (variant.Value is string str)
+                                {
+                                    result.Add(new VMFileProperty(name, str));
+                                }
+                                else if (variant.Value is IEnumerable list)
+                                {
+                                    result.Add(new VMFileProperty(name, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
+                                }
+                                else
+                                {
+                                    result.Add(new VMFileProperty(name, variant.Value.ToString()));
+                                }
                             }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                    }
                 }
-                catch (Exception ex)
+                _Properties = result.OrderBy(T => T.Name);
+            }
+            else
+            {
+                //TODO: Add others or find if contains PropertyStore
+                result.Add(new VMFileProperty(Languages.Localization.Name, _vmFile.Name));
+                if (_vmFile.IsLink)
                 {
+                    result.Add(new VMFileProperty("Link.TargetParsingPath", _vmFile.LinkPath));
                 }
             }
-            _Properties = result.OrderBy(T => T.Name);
         }
 
 
