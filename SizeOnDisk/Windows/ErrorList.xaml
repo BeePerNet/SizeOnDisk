@@ -31,11 +31,11 @@
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Padding="4,0" Margin="0" Text="{Binding File.Path}" ToolTip="{Binding File.Path}" MouseLeftButtonDown="Path_MouseLeftButtonDown" />
-                                <Button Grid.Column="1" HorizontalAlignment="Right" cmd:CommandBehavior.Command="{x:Static vm:VMFile.SelectCommand}" VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center" Padding="4,0" Margin="0" Text="{Binding File.Path}" ToolTip="{Binding File.Path}" MouseLeftButtonDown="Path_MouseLeftButtonDown" />
+                                <Button Grid.Column="1" cmd:CommandBehavior.Command="{x:Static vm:VMFile.SelectCommand}" VerticalAlignment="Center" />
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>                    
@@ -45,11 +45,11 @@
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Padding="4,0" Margin="0" Text="{Binding ShortText}" ToolTip="{Binding ShortText}" MouseLeftButtonDown="Exception_MouseLeftButtonDown" />
-                                <Button Content="..." Grid.Column="1" HorizontalAlignment="Right" Click="ExceptionButton_Click"
+                                <TextBlock VerticalAlignment="Center" Padding="4,0" Margin="0" Text="{Binding ShortText}" ToolTip="{Binding ShortText}" MouseLeftButtonDown="Exception_MouseLeftButtonDown" />
+                                <Button Content="..." Grid.Column="1" Click="ExceptionButton_Click"
                                         Height="19"
                                         Width="19" 
                                         VerticalAlignment="Center"  />
