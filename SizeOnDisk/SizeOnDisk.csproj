@@ -358,13 +358,13 @@
     <Resource Include="Icons\PrintHS.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\WinProps\WinProps.csproj">
-      <Project>{a9ed9069-f924-4c67-a203-331a41039d04}</Project>
-      <Name>WinProps</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\WPFByYourCommand\WPFByYourCommand\WPFByYourCommand.csproj">
       <Project>{89CC2D45-35B2-4C73-8C4C-AD12BB67CF7A}</Project>
       <Name>WPFByYourCommand</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinProps\WinProps.csproj">
+      <Project>{a9ed9069-f924-4c67-a203-331a41039d04}</Project>
+      <Name>WinProps</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFByYourCommand", "..\WPFB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixTools", "WixTools\WixTools.csproj", "{AAAE62D9-0BD4-4005-B723-219A5DD4E60A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinProps", "..\WinProps\WinProps.csproj", "{A9ED9069-F924-4C67-A203-331A41039D04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinProps", "WinProps\WinProps.csproj", "{A9ED9069-F924-4C67-A203-331A41039D04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -311,7 +311,7 @@ namespace SizeOnDisk.ViewModel
         private void FillProperties()
         {
             List<VMFileProperty> result = new List<VMFileProperty>();
-            if (_vmFile.IsFile)
+            //if (_vmFile.IsFile)
             {
                 PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort);
                 foreach (PropertyKey key in store)
@@ -349,7 +349,7 @@ namespace SizeOnDisk.ViewModel
                     }
                 }
             }
-            else
+            /*else
             {
                 //TODO: Add others or find if contains PropertyStore
                 result.Add(new VMFileProperty(Languages.Localization.Name, _vmFile.Name));
@@ -357,7 +357,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     result.Add(new VMFileProperty("Link.TargetParsingPath", _vmFile.LinkPath));
                 }
-            }
+            }*/
             _Properties = result.OrderBy(T => T.Name);
         }
 
