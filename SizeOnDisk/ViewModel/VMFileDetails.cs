@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -301,7 +302,7 @@ namespace SizeOnDisk.ViewModel
             {
                 if (_Properties == null && !_vmFile.Root.IsDesign)
                 {
-                    FillProperties();
+                    _vmFile.Root.ExecuteTaskAsync(() => FillProperties(), false, true);
                 }
                 return _Properties;
             }
@@ -311,54 +312,44 @@ namespace SizeOnDisk.ViewModel
         private void FillProperties()
         {
             List<VMFileProperty> result = new List<VMFileProperty>();
-            //if (_vmFile.IsFile)
+            PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort);
+            foreach (PropertyKey key in store)
             {
-                PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort);
-                foreach (PropertyKey key in store)
+                try
                 {
-                    string name;
-                    try
+                    string pkey = key.CanonicalName;
+                    /*if (name.StartsWith("System."))
+                        name = name.Remove(0, 7);*/
+                    PropertyDescription desc = new PropertyDescription(key);
+                    PropVariant variant = store.GetValue(key);
+
+                    if (variant != null)
                     {
-                        name = key.CanonicalName;
-                        if (name.StartsWith("System."))
-                            name = name.Remove(0, 7);
-
-                        PropVariant variant = store.GetValue(key);
-
-                        if (variant != null)
+                        if (variant.Value != null)
                         {
-                            if (variant.Value != null)
+                            if (variant.Value is string str)
                             {
-                                if (variant.Value is string str)
-                                {
-                                    result.Add(new VMFileProperty(name, str));
-                                }
-                                else if (variant.Value is IEnumerable list)
-                                {
-                                    result.Add(new VMFileProperty(name, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
-                                }
-                                else
-                                {
-                                    result.Add(new VMFileProperty(name, variant.Value.ToString()));
-                                }
+                                result.Add(new VMFileProperty(pkey, desc.DisplayName, str));
+                            }
+                            else if (variant.Value is IEnumerable list)
+                            {
+                                result.Add(new VMFileProperty(pkey, desc.DisplayName, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
+                            }
+                            else
+                            {
+                                result.Add(new VMFileProperty(pkey, desc.DisplayName, variant.Value.ToString()));
                             }
                         }
                     }
-                    catch (Exception ex)
-                    {
-                    }
+                }
+                catch (Exception ex)
+                {
                 }
             }
-            /*else
-            {
-                //TODO: Add others or find if contains PropertyStore
-                result.Add(new VMFileProperty(Languages.Localization.Name, _vmFile.Name));
-                if (_vmFile.IsLink)
-                {
-                    result.Add(new VMFileProperty("Link.TargetParsingPath", _vmFile.LinkPath));
-                }
-            }*/
             _Properties = result.OrderBy(T => T.Name);
+            ICollectionView view = CollectionViewSource.GetDefaultView(Properties);
+            view.GroupDescriptions.Add(new PropertyGroupDescription());
+            OnPropertyChanged(nameof(Properties));
         }
 
 

@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SizeOnDisk.ViewModel
+﻿namespace SizeOnDisk.ViewModel
 {
     public class VMFileProperty
     {
-        public VMFileProperty(string name, string value)
+        public VMFileProperty(string key, string name, string value)
         {
+            Key = key;
             Name = name;
             Value = value;
         }
+
+        public string Key { get; }
+
         public string Name { get; }
 
         public string Value { get; }

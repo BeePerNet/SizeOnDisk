@@ -494,7 +494,7 @@
                             <DataGrid Grid.Column="1"
                                       ColumnWidth="175"
                                       cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
-                                      ItemsSource="{Binding SelectedItem.Details.Properties, IsAsync=True}"
+                                      ItemsSource="{Binding SelectedItem.Details.Properties}"
                                       AutoGenerateColumns="False"
                                       BorderThickness="1"
                                       HeadersVisibility="Column"
