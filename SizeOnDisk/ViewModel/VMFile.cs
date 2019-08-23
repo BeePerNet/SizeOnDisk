@@ -59,10 +59,7 @@ namespace SizeOnDisk.ViewModel
         {
         }
 
-
-
         #region constructor
-
 
         internal VMFile(VMFolder parent, string name)
         {
@@ -274,7 +271,7 @@ namespace SizeOnDisk.ViewModel
 
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        private static void CallSelectCommand(object sender, ExecutedRoutedEventArgs e)
+        private void CallSelectCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
@@ -300,7 +297,7 @@ namespace SizeOnDisk.ViewModel
             Root.SelectedItem = this;
         }
 
-        private static void CanCallFollowLinkCommand(object sender, CanExecuteRoutedEventArgs e)
+        private void CanCallFollowLinkCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
 
@@ -314,7 +311,7 @@ namespace SizeOnDisk.ViewModel
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        private static void CallFollowLinkCommand(object sender, ExecutedRoutedEventArgs e)
+        private void CallFollowLinkCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
@@ -360,7 +357,7 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        private static void CanCallDeleteCommand(object sender, CanExecuteRoutedEventArgs e)
+        private void CanCallDeleteCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
             e.CanExecute = false;
@@ -375,7 +372,7 @@ namespace SizeOnDisk.ViewModel
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        private static void CallDeleteCommand(object sender, ExecutedRoutedEventArgs e)
+        private void CallDeleteCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
@@ -402,7 +399,7 @@ namespace SizeOnDisk.ViewModel
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        private static void CallPermanentDeleteCommand(object sender, ExecutedRoutedEventArgs e)
+        private void CallPermanentDeleteCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
@@ -429,13 +426,13 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        private static void CanCallCommand(object sender, CanExecuteRoutedEventArgs e)
+        private void CanCallCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
             e.CanExecute = GetViewModelObject<VMFile>(e.OriginalSource) != null;
         }
 
-        private static void CallShellSelectCommand(object sender, ExecutedRoutedEventArgs e)
+        private void CallShellSelectCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 
@@ -449,7 +446,7 @@ namespace SizeOnDisk.ViewModel
         }
 
 
-        private static void CanCallShellCommand(object sender, CanExecuteRoutedEventArgs e)
+        private void CanCallShellCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
             e.CanExecute = false;

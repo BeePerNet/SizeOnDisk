@@ -164,7 +164,7 @@
                     <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectPreviousCommand}" />
                     <Button Grid.Column="1" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectNextCommand}" />
                     <Button Grid.Column="2" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectParentCommand}" />
-                    <TextBox Grid.Column="3" Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" 
+                    <TextBox Grid.Column="3" Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}"
                          IsReadOnlyCaretVisible="True" 
                          IsReadOnly="True" 
                          Style="{StaticResource CopyTextBox}" />
@@ -360,6 +360,7 @@
                                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                     <Setter Property="IsSelected" Value="{Binding IsTreeSelected, Mode=TwoWay}" />
                                     <Setter Property="ItemsSource" Value="{Binding Folders}" />
+                                    <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
                                     <Setter Property="HeaderTemplate">
                                         <Setter.Value>
                                             <DataTemplate >
@@ -376,119 +377,122 @@
                           Width="5"
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
-                        <ListView Grid.Column="2" MinWidth="25"
-                                  ItemsSource="{Binding SelectedTreeItem.Childs}"
+                        <Grid Grid.Column="2" DataContext="{Binding SelectedTreeItem}">
+                            <ListView MinWidth="25"
+                                  ItemsSource="{Binding Childs}"
                                   BorderThickness="1"
-                                  SelectedItem="{Binding SelectedItem}"
+                                  SelectedItem="{Binding Root.SelectedItem}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ContextMenu="{StaticResource VMContextMenu}"
                                   cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                   cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
-                                  Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
-                            <ListView.Resources>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
-                                </Style>
-                            </ListView.Resources>
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <cmd:VirtualizingWrapPanel ItemHeight="152" ItemWidth="120" />
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Height="150" HorizontalAlignment="Stretch" Width="110">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="96" />
-                                            <RowDefinition Height="*" />
-                                        </Grid.RowDefinitions>
-                                        <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={cmd:IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                            <cmd:AutoDisablingImage Panel.ZIndex="42" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-big.png" 
+                                  Panel.ZIndex="{Binding Root.ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
+                                <ListView.Resources>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
+                                        <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
+                                    </Style>
+                                </ListView.Resources>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <cmd:VirtualizingWrapPanel ItemHeight="152" ItemWidth="120" />
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Height="150" HorizontalAlignment="Stretch" Width="110">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="96" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <Grid Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Bottom"  IsEnabled="{Binding Attributes, Converter={cmd:IsNotEqualConverter}, ConverterParameter=Hidden}">
+                                                <cmd:AutoDisablingImage Panel.ZIndex="42" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-big.png" 
                                                    Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                            <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Thumbnail}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Grid>
+                                            <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                         </Grid>
-                                        <TextBlock Grid.Row="1" Style="{StaticResource ColoredName}" Text="{Binding Name}" MaxHeight="50" TextAlignment="Center" TextWrapping="Wrap" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <DataGrid cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
-                                  Grid.Column="2"
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <DataGrid cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
                                   VirtualizingStackPanel.VirtualizationMode="Standard"
                                   cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                   cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                                   BorderThickness="1"
+                                  SelectedItem="{Binding Root.SelectedItem}"
                                   HeadersVisibility="Column"
-                                  ItemsSource="{Binding SelectedTreeItem.Childs}"
-                                  SelectedItem="{Binding SelectedItem}"
+                                  ItemsSource="{Binding Childs}"
                                   AutoGenerateColumns="False"
                                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                   ContextMenu="{StaticResource VMContextMenu}"
                                   HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                   VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                   ClipboardCopyMode="IncludeHeader"
-                                  Panel.ZIndex="{Binding ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
-                            <DataGrid.Resources>
-                                <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
-                                    <Setter Property="TextAlignment" Value="Right" />
-                                </Style>
-                                <Style TargetType="DataGridRow">
-                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
-                                </Style>
-                            </DataGrid.Resources>
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={cmd:IsNotEqualConverter}, ConverterParameter=Hidden}">
-                                                <cmd:AutoDisablingImage Stretch="None" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-small.png" 
+                                  Panel.ZIndex="{Binding Root.ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
+                                <DataGrid.Resources>
+                                    <Style x:Key="RightAlignStyle" TargetType="{x:Type TextBlock}">
+                                        <Setter Property="TextAlignment" Value="Right" />
+                                    </Style>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
+                                        <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
+                                    </Style>
+                                </DataGrid.Resources>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn SortMemberPath="IsFile" IsReadOnly="True">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="16" Height="16" IsEnabled="{Binding Attributes, Converter={cmd:IsNotEqualConverter}, ConverterParameter=Hidden}">
+                                                    <cmd:AutoDisablingImage Stretch="None" Panel.ZIndex="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="pack://application:,,,/SizeOnDisk;component/Icons/Shortcut-small.png" 
                                                        Visibility="{Binding IsLink, Converter={StaticResource IsEqualConverter}, ConverterParameter=True}" />
-                                                <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="{lex:Loc Name}"
+                                                    <cmd:AutoDisablingImage Stretch="None" Source="{Binding Details.Icon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="{lex:Loc Name}"
                                         Binding="{Binding Name}"
                                         ElementStyle="{StaticResource ColoredName}" />
-                                <DataGridTextColumn Header="Ext"
+                                    <DataGridTextColumn Header="Ext"
                                         IsReadOnly="True"
                                         Binding="{Binding Extension}" />
-                                <DataGridTextColumn Header="{lex:Loc FileType}"
+                                    <DataGridTextColumn Header="{lex:Loc FileType}"
                                         IsReadOnly="True"
                                         Binding="{Binding Details.FileType}" />
-                                <DataGridTextColumn Binding="{Binding Attributes,Converter={conv:FileAttributesConverter}}"
+                                    <DataGridTextColumn Binding="{Binding Attributes,Converter={conv:FileAttributesConverter}}"
                                         Header="{lex:Loc Attributes}"
                                         IsReadOnly="True" />
-                                <DataGridTextColumn Header="{lex:Loc FolderTotal}"
+                                    <DataGridTextColumn Header="{lex:Loc FolderTotal}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FolderTotal,StringFormat=N0}"
                                         IsReadOnly="True" />
-                                <DataGridTextColumn Header="{lex:Loc FileTotal}"
+                                    <DataGridTextColumn Header="{lex:Loc FileTotal}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FileTotal,StringFormat=N0}"
                                         IsReadOnly="True" />
-                                <DataGridTextColumn Header="{lex:Loc FileSize}"
+                                    <DataGridTextColumn Header="{lex:Loc FileSize}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding FileSize,Converter={conv:SizeConverter}}"
                                         IsReadOnly="True" />
-                                <DataGridTextColumn Header="{lex:Loc DiskSize}"
+                                    <DataGridTextColumn Header="{lex:Loc DiskSize}"
                                         ElementStyle="{StaticResource RightAlignStyle}"
                                         Binding="{Binding DiskSize,Converter={conv:SizeConverter}}"
                                         IsReadOnly="True" />
-                                <DataGridTextColumn Binding="{Binding Details.CreationTime}"
+                                    <DataGridTextColumn Binding="{Binding Details.CreationTime}"
                                         Header="{lex:Loc DateCreation}"
                                         IsReadOnly="True" />
-                                <DataGridTextColumn Binding="{Binding Details.LastAccessTime}"
+                                    <DataGridTextColumn Binding="{Binding Details.LastAccessTime}"
                                         Header="{lex:Loc DateLastAccess}"
                                         IsReadOnly="True" />
-                                <DataGridTextColumn Binding="{Binding Details.LastWriteTime}"
+                                    <DataGridTextColumn Binding="{Binding Details.LastWriteTime}"
                                         Header="{lex:Loc DateLastWrite}"
                                         IsReadOnly="True" />
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
                         <Grid Grid.Column="3"
                               MinWidth="50"
                               Visibility="{Binding IsPropertiesVisible, Converter={cmd:IsEqualConverter}, ConverterParameter=True}">
@@ -503,6 +507,7 @@
                                   Background="Transparent"
                                   VerticalAlignment="Stretch" />
                             <DataGrid Grid.Column="1"
+                                      CanUserDeleteRows="False"
                                       ColumnWidth="175"
                                       cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
                                       ItemsSource="{Binding SelectedItem.Details.Properties}"
