@@ -154,10 +154,21 @@
                 </ControlTemplate>
             </Expander.Template>
             <Expander.Header>
-                <TextBox Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" 
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectPreviousCommand}" />
+                    <Button Grid.Column="1" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectNextCommand}" />
+                    <Button Grid.Column="2" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectParentCommand}" />
+                    <TextBox Grid.Column="3" Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}" 
                          IsReadOnlyCaretVisible="True" 
                          IsReadOnly="True" 
                          Style="{StaticResource CopyTextBox}" />
+                </Grid>
             </Expander.Header>
             <Grid>
                 <Grid.Resources>

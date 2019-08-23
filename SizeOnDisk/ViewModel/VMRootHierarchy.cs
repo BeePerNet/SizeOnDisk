@@ -37,7 +37,22 @@ namespace SizeOnDisk.ViewModel
         public VMRootFolder SelectedRootFolder
         {
             get => _SelectedRootFolder;
-            set => SetProperty(ref _SelectedRootFolder, value);
+            set
+            {
+                if (_SelectedRootFolder != value)
+                {
+                    if (_SelectedRootFolder != null)
+                    {
+                        _SelectedRootFolder.SelectedTreeItem.IsTreeSelected = false;
+                        _SelectedRootFolder.SelectedTreeItem = null;
+                    }
+                    SetProperty(ref _SelectedRootFolder, value);
+                    if (value != null)
+                    {
+                        value.LoadHistory();
+                    }
+                }
+            }
         }
 
         private readonly DispatcherTimer _Timer;

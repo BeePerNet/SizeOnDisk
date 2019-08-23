@@ -444,6 +444,12 @@
   <ItemGroup>
     <Resource Include="Readme.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Previous.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

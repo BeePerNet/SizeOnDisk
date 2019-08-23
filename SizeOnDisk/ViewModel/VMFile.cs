@@ -491,7 +491,7 @@ namespace SizeOnDisk.ViewModel
 
         [SuppressMessage("Microsoft.Globalization", "CA1308")]
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        private static void CallShellCommand(object sender, ExecutedRoutedEventArgs e)
+        private void CallShellCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
 

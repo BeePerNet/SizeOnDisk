@@ -1,6 +1,7 @@
 ﻿using SizeOnDisk.Shell;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -23,6 +24,9 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx RefreshCommand = new RoutedCommandEx("refresh", "loc:PresentationCore:ExceptionStringTable:RefreshText", "pack://application:,,,/SizeOnDisk;component/Icons/Refresh.png", typeof(VMRootFolder), new KeyGesture(Key.F5, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:RefreshKeyDisplayString"));
         public static readonly RoutedCommandEx StopCommand = new RoutedCommandEx("stop", "loc:PresentationCore:ExceptionStringTable:StopText", "pack://application:,,,/SizeOnDisk;component/Icons/StopHS.png", typeof(VMRootFolder), new KeyGesture(Key.Escape, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:StopKeyDisplayString"));
         public static readonly RoutedCommandEx CloseCommand = new RoutedCommandEx("close", "loc:PresentationCore:ExceptionStringTable:CloseText", "pack://application:,,,/SizeOnDisk;component/Icons/Close.png", typeof(VMRootFolder));
+        public static readonly RoutedCommandEx SelectParentCommand = new RoutedCommandEx("selectparent", string.Empty, "pack://application:,,,/SizeOnDisk;component/Icons/Up.png", typeof(VMRootFolder));
+        public static readonly RoutedCommandEx SelectPreviousCommand = new RoutedCommandEx("selectprevious", string.Empty, "pack://application:,,,/SizeOnDisk;component/Icons/Previous.png", typeof(VMRootFolder));
+        public static readonly RoutedCommandEx SelectNextCommand = new RoutedCommandEx("selectnext", string.Empty, "pack://application:,,,/SizeOnDisk;component/Icons/Select.png", typeof(VMRootFolder));
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
         {
@@ -35,6 +39,56 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(RefreshCommand, CallRefreshCommand, CanCallRefreshCommand));
             bindingCollection.Add(new CommandBinding(StopCommand, CallStopCommand, CanCallStopCommand));
             bindingCollection.Add(new CommandBinding(CloseCommand, CallCloseCommand));
+            bindingCollection.Add(new CommandBinding(SelectParentCommand, CallSelectParentCommand, CanCallSelectParentCommand));
+            bindingCollection.Add(new CommandBinding(SelectPreviousCommand, CallSelectPreviousCommand, CanCallSelectPreviousCommand));
+            bindingCollection.Add(new CommandBinding(SelectNextCommand, CallSelectNextCommand, CanCallSelectNextCommand));
+        }
+
+
+
+
+        private void CanCallSelectPreviousCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = history.Count > 0 && historyIndex > 0;
+        }
+
+        private void CallSelectPreviousCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (historyIndex > 0)
+            {
+                historyIndex--;
+                LoadHistory();
+            }
+        }
+
+        private void CanCallSelectNextCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = historyIndex < history.Count - 1;
+        }
+
+        private void CallSelectNextCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (historyIndex < history.Count - 1)
+            {
+                historyIndex++;
+                LoadHistory();
+            }
+        }
+
+        private void CanCallSelectParentCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = SelectedTreeItem != null && SelectedTreeItem.Parent != null;
+        }
+
+        private void CallSelectParentCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            SelectedTreeItem.Parent.IsTreeSelected = true;
         }
 
         private void CanCallStopCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -71,6 +125,31 @@ namespace SizeOnDisk.ViewModel
             RefreshAsync();
         }
 
+        private List<VMFolder> history = new List<VMFolder>();
+
+        private bool isLoadingHistory = false;
+        private int historyIndex = 0;
+
+        public void LoadHistory()
+        {
+            isLoadingHistory = true;
+            history[historyIndex].IsTreeSelected = true;
+            isLoadingHistory = false;
+        }
+
+        private void AddHistory(VMFolder folder)
+        {
+            if (!isLoadingHistory && folder != null && (history.Count == 0 || history[historyIndex] != folder))
+            {
+                while (historyIndex < history.Count - 1)
+                {
+                    history.RemoveAt(history.Count - 1);
+                }
+                history.Add(folder);
+                historyIndex = history.Count - 1;
+            }
+        }
+
         #region fields
 
         private readonly Stopwatch _Runwatch = new Stopwatch();
@@ -97,7 +176,11 @@ namespace SizeOnDisk.ViewModel
         public new VMRootHierarchy Parent { get; }
 
         private VMFile selectedItem;
-        public VMFile SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
+        public VMFile SelectedItem
+        {
+            get => selectedItem;
+            set => SetProperty(ref selectedItem, value);
+        }
 
 
         private VMFolder _SelectedTreeItem;
@@ -105,7 +188,13 @@ namespace SizeOnDisk.ViewModel
         public VMFolder SelectedTreeItem
         {
             get => _SelectedTreeItem;
-            set => SetProperty(ref _SelectedTreeItem, value);
+            set
+            {
+                if (SetProperty(ref _SelectedTreeItem, value))
+                {
+                    AddHistory(value);
+                }
+            }
         }
 
         private VMFile _SelectedListItem;
