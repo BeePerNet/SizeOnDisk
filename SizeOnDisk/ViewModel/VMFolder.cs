@@ -13,32 +13,11 @@ namespace SizeOnDisk.ViewModel
 {
     public class VMFolder : VMFile
     {
-        public void PermanentDeleteAllSelectedFiles()
+
+        public override string[] GetSelectedFiles()
         {
-            Root.ExecuteTask(() =>
-            {
-                string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
-
-                if (ShellHelper.PermanentDelete(filenames))
-                {
-                    RefreshAfterCommand();
-                }
-            }, true);
+            return Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
         }
-
-        public void DeleteAllSelectedFiles()
-        {
-            Root.ExecuteTask(() =>
-            {
-                string[] filenames = Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
-
-                if (ShellHelper.MoveToRecycleBin(filenames))
-                {
-                    RefreshAfterCommand();
-                }
-            }, true);
-        }
-
 
         #region constructor
 
@@ -266,7 +245,7 @@ namespace SizeOnDisk.ViewModel
 
 
 
-        public void RefreshCount()
+        public virtual void RefreshCount()
         {
             OnPropertyChanged(nameof(FileCount));
             if (IsProtected)

@@ -283,6 +283,7 @@ namespace SizeOnDisk.ViewModel
 
                     //commands.Add(VMFile.FindCommand);
                     //commands.Add(SeparatorDummyCommand.Instance);
+                    commands.Add(VMFile.CopyCommand);
                     commands.Add(VMFile.DeleteCommand);
                     commands.Add(VMFile.PermanentDeleteCommand);
                     commands.Add(SeparatorDummyCommand.Instance);

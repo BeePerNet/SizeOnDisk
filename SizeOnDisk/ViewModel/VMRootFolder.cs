@@ -320,16 +320,23 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
+        public override void RefreshCount()
+        {
+            base.RefreshCount();
+
+            DriveInfo info = new DriveInfo(HardDrivePath);
+            HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;
+            HardDriveFree = (ulong)info.AvailableFreeSpace;
+            HardDriveSize = (ulong)info.TotalSize;
+        }
+
         public override void Refresh(ParallelOptions parallelOptions)
         {
             try
             {
                 _Runwatch.Restart();
 
-                DriveInfo info = new DriveInfo(HardDrivePath);
-                HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;
-                HardDriveFree = (ulong)info.AvailableFreeSpace;
-                HardDriveSize = (ulong)info.TotalSize;
+                this.RefreshCount();
 
                 base.Refresh(parallelOptions);
             }
