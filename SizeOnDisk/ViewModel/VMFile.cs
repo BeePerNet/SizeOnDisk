@@ -1,6 +1,7 @@
-﻿using SizeOnDisk.Languages;
+﻿using GongSolutions.Wpf.DragDrop;
 using SizeOnDisk.Shell;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WPFByYourCommand.Commands;
@@ -18,7 +20,7 @@ namespace SizeOnDisk.ViewModel
 {
     [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
     [DebuggerDisplay("{GetType().Name}: {Name}")]
-    public class VMFile : CommandViewModel
+    public class VMFile : CommandViewModel, IDragSource, IDropTarget
     {
         private const string MessageIsNotVMFile = "OriginalSource is not VMFile";
 
@@ -73,7 +75,7 @@ namespace SizeOnDisk.ViewModel
             {
                 System.Windows.Clipboard.Clear();
                 StringCollection files = new StringCollection();
-                files.AddRange(file.GetSelectedFiles());
+                files.AddRange(file.GetSelectedFiles().Select(T => T.Path).ToArray());
                 System.Windows.Clipboard.SetFileDropList(files);
             }, true);
         }
@@ -115,7 +117,7 @@ namespace SizeOnDisk.ViewModel
         public virtual string Path { get => System.IO.Path.Combine(Parent.Path, Name); }
 
         private string _Name;
-        [Display(ResourceType = typeof(Localization), Name = nameof(Localization.Name))]
+        [Display(ResourceType = typeof(Languages.Localization), Name = nameof(Languages.Localization.Name))]
         [Required]
         [CustomValidation(typeof(VMFile), nameof(ValidateName))]
         [StringLength(260)]
@@ -147,7 +149,7 @@ namespace SizeOnDisk.ViewModel
         public virtual string Extension => System.IO.Path.GetExtension(Name).Replace(".", "");
 
         protected FileAttributesEx _Attributes = FileAttributesEx.Normal;
-        [Display(ResourceType = typeof(Localization), Name = nameof(Localization.Attributes))]
+        [Display(ResourceType = typeof(Languages.Localization), Name = nameof(Languages.Localization.Attributes))]
         [EnumDataType(typeof(FileAttributesEx))]
         public FileAttributesEx Attributes => _Attributes;
 
@@ -392,14 +394,14 @@ namespace SizeOnDisk.ViewModel
                 return;
             }
 
-            e.CanExecute = !file.IsProtected && !(file is VMRootFolder);
+            e.CanExecute = GetSelectedFiles().All(T => !T.IsProtected && !(T is VMRootFolder));
         }
 
-        public virtual string[] GetSelectedFiles()
+        public IEnumerable<VMFile> GetSelectedFiles()
         {
-            if (this.IsSelected)
+            if (!this.IsSelected)
             {
-                return new string[] { this.Path };
+                return new VMFile[] { this };
             }
             else
             {
@@ -420,7 +422,7 @@ namespace SizeOnDisk.ViewModel
 
             file.Root.ExecuteTaskAsync(() =>
             {
-                if (ShellHelper.MoveToRecycleBin(file.GetSelectedFiles()))
+                if (ShellHelper.MoveToRecycleBin(file.GetSelectedFiles().Select(T => T.Path).ToArray()))
                 {
                     file.Parent.RefreshAfterCommand();
                 }
@@ -440,7 +442,7 @@ namespace SizeOnDisk.ViewModel
 
             file.Root.ExecuteTaskAsync(() =>
             {
-                if (ShellHelper.PermanentDelete(file.GetSelectedFiles()))
+                if (ShellHelper.PermanentDelete(file.GetSelectedFiles().Select(T => T.Path).ToArray()))
                 {
                     file.Parent.RefreshAfterCommand();
                 }
@@ -602,5 +604,47 @@ namespace SizeOnDisk.ViewModel
             }, true, Dispatcher.CurrentDispatcher);
         }
 
+        public void StartDrag(IDragInfo dragInfo)
+        {
+            dragInfo.DataFormat = DataFormats.GetDataFormat(DataFormats.FileDrop);
+            dragInfo.Data = dragInfo.SourceItems.Cast<VMFile>().Select(T => T.Path).ToArray();
+            dragInfo.Effects = DragDropEffects.All;
+        }
+
+        public bool CanStartDrag(IDragInfo dragInfo)
+        {
+            if (dragInfo.DataFormat == GongSolutions.Wpf.DragDrop.DragDrop.DataFormat)
+                return dragInfo.SourceItem != null && dragInfo.SourceItems.Cast<VMFile>().All(T => !T.IsProtected && !(T is VMRootFolder));
+            else
+                return false;
+        }
+
+        public void Dropped(IDropInfo dropInfo)
+        {
+        }
+
+        public void DragDropOperationFinished(DragDropEffects operationResult, IDragInfo dragInfo)
+        {
+            (dragInfo.SourceItem as VMFile).Parent.RefreshAfterCommand();
+        }
+
+        public void DragCancelled()
+        {
+        }
+
+        public bool TryCatchOccurredException(Exception exception)
+        {
+            ExceptionBox.ShowException(exception);
+            this.Root.LogException(exception);
+            return true;
+        }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+        }
     }
 }

@@ -324,10 +324,13 @@ namespace SizeOnDisk.ViewModel
         {
             base.RefreshCount();
 
-            DriveInfo info = new DriveInfo(HardDrivePath);
-            HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;
-            HardDriveFree = (ulong)info.AvailableFreeSpace;
-            HardDriveSize = (ulong)info.TotalSize;
+            if (!IsDesign)
+            {
+                DriveInfo info = new DriveInfo(HardDrivePath);
+                HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;
+                HardDriveFree = (ulong)info.AvailableFreeSpace;
+                HardDriveSize = (ulong)info.TotalSize;
+            }
         }
 
         public override void Refresh(ParallelOptions parallelOptions)

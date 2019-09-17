@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:cmd="http://wpfbyyourcommand.codeplex.com"
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:conv="clr-namespace:SizeOnDisk.Converters"
         xmlns:vm="clr-namespace:SizeOnDisk.ViewModel"
         Style="{StaticResource WindowStyle}"
@@ -349,6 +350,8 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TreeView BorderThickness="1"
+                                      dd:DragDrop.IsDragSource="True"
+                                      dd:DragDrop.DragHandler="{Binding}"
                                   ItemsSource="{Binding DummyMe}"
                                   ContextMenu="{StaticResource VMContextMenu}"
                                   DisplayMemberPath="Name"
@@ -379,6 +382,8 @@
                           VerticalAlignment="Stretch" />
                         <Grid Grid.Column="2" DataContext="{Binding SelectedTreeItem}">
                             <ListView MinWidth="25"
+                                      dd:DragDrop.IsDragSource="True"
+                                      dd:DragDrop.DragHandler="{Binding}"
                                   ItemsSource="{Binding Childs}"
                                   BorderThickness="1"
                                   SelectedItem="{Binding Root.SelectedItem}"
@@ -420,6 +425,8 @@
                                   VirtualizingStackPanel.VirtualizationMode="Standard"
                                   cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                   cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
+                                      dd:DragDrop.IsDragSource="True"
+                                      dd:DragDrop.DragHandler="{Binding}"
                                   BorderThickness="1"
                                   SelectedItem="{Binding Root.SelectedItem}"
                                   HeadersVisibility="Column"

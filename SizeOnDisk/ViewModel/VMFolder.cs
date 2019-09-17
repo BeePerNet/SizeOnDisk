@@ -14,9 +14,9 @@ namespace SizeOnDisk.ViewModel
     public class VMFolder : VMFile
     {
 
-        public override string[] GetSelectedFiles()
+        public new IEnumerable<VMFile> GetSelectedFiles()
         {
-            return Childs.Where(T => T.IsSelected).Select(T => T.Path).ToArray();
+            return Childs.Where(T => T.IsSelected);
         }
 
         #region constructor
@@ -40,8 +40,6 @@ namespace SizeOnDisk.ViewModel
             {
                 _Path = System.IO.Path.Combine(parent.Path, name);
             }
-
-            RefreshCount();
         }
 
         private readonly string _Path;
