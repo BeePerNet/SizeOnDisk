@@ -968,7 +968,7 @@ namespace SizeOnDisk.Shell
             }
             else
             {
-                shfileopstruct2.pTo = TargetPath;
+                shfileopstruct2.pTo = TargetPath + "\0";
             }
             shfileopstruct2.hNameMappings = IntPtr.Zero;
             try
@@ -988,10 +988,10 @@ namespace SizeOnDisk.Shell
         }
 
         [HostProtection(SecurityAction.LinkDemand, Resources = HostProtectionResource.ExternalProcessMgmt, UI = true)]
-        private static bool ShellDeleteOperation(FileOperationFlags OperationFlags, string[] FullSource)
+        private static bool ShellOperation(FileOperationType operationType, FileOperationFlags operationFlags, string[] sources, string destination)
         {
             int num;
-            SHFILEOPSTRUCT lpFileOp = GetShellOperationInfo(FileOperationType.FO_DELETE, OperationFlags, FullSource, null);
+            SHFILEOPSTRUCT lpFileOp = GetShellOperationInfo(operationType, operationFlags, sources, destination);
             num = SafeNativeMethods.SHFileOperation(ref lpFileOp);
             SafeNativeMethods.SHChangeNotify(0x2381f, 3, IntPtr.Zero, IntPtr.Zero);
             if (lpFileOp.fAnyOperationsAborted)
@@ -1005,25 +1005,23 @@ namespace SizeOnDisk.Shell
             return true;
         }
 
-        /// <summary>
-        /// Send file to recycle bin
-        /// </summary>
-        /// <param name="path">Location of directory or file to recycle</param>
-        /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-        public static bool MoveToRecycleBin(params string[] path)
+        public static bool Move(bool copy, string[] sources, string destination)
         {
-            return ShellDeleteOperation(FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, path);
+            return ShellOperation(copy ? FileOperationType.FO_COPY : FileOperationType.FO_MOVE, 0, sources, destination);
         }
 
-
+        public static bool PermanentDelete(params string[] sources)
+        {
+            return ShellOperation(FileOperationType.FO_DELETE, 0, sources, null);
+        }
         /// <summary>
         /// Send file to recycle bin
         /// </summary>
         /// <param name="path">Location of directory or file to recycle</param>
         /// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-        public static bool PermanentDelete(params string[] path)
+        public static bool MoveToRecycleBin(params string[] sources)
         {
-            return ShellDeleteOperation(0, path);
+            return ShellOperation(FileOperationType.FO_DELETE, FileOperationFlags.FOF_ALLOWUNDO | FileOperationFlags.FOF_WANTNUKEWARNING, sources, null);
         }
 
 

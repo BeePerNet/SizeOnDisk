@@ -323,9 +323,9 @@ namespace SizeOnDisk.ViewModel
                                 }
 
                                 addChilds.Add(found);
-                                if (refreshOnNew && Parent.IsTreeSelected)
+                                if (refreshOnNew && found.Parent.IsTreeSelected)
                                 {
-                                    RefreshOnView();
+                                    found.RefreshOnView();
                                 }
                             }
                             else

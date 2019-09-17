@@ -303,7 +303,11 @@ namespace SizeOnDisk.ViewModel
 
         public override VMFile FindVMFile(string path)
         {
-            if (path.StartsWith("\\", StringComparison.Ordinal))
+            if (string.Equals(path, this.Path, StringComparison.OrdinalIgnoreCase))
+            {
+                return this;
+            }
+            else if (path.StartsWith("\\", StringComparison.Ordinal))
             {
                 return base.FindVMFile(path);
             }

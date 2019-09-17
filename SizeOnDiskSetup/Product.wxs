@@ -144,6 +144,16 @@
               Checksum="yes"
               KeyPath="yes" />
       </Component>
+      <Component Id="GongSolutionsWPFDragDropComponent"
+                 Guid="*">
+        <File Name="GongSolutions.WPF.DragDrop.dll"
+              Id="GongSolutionsWPFDragDropFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)GongSolutions.WPF.DragDrop.dll"
+              Vital="yes"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
       <Component Id="SystemCollectionsImmutableComponent"
                  Guid="*">
         <File Name="System.Collections.Immutable.dll"
@@ -206,6 +216,15 @@
               Id="WinPropsDebugFile"
               DiskId="1"
               Source="$(var.SizeOnDisk.TargetDir)WinProps.pdb"
+              Checksum="yes"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="GongSolutionsWPFDragDropDebugComponent"
+                 Guid="*">
+        <File Name="GongSolutions.WPF.DragDrop.pdb"
+              Id="GongSolutionsWPFDragDropDebugFile"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)GongSolutions.WPF.DragDrop.pdb"
               Checksum="yes"
               KeyPath="yes" />
       </Component>
@@ -362,6 +381,7 @@
         <ComponentRef Id="WPFByYourCommandComponent" />
         <ComponentRef Id="WinPropsComponent" />
         <ComponentRef Id="SystemCollectionsImmutableComponent" />
+        <ComponentRef Id="GongSolutionsWPFDragDropComponent" />
       </Feature>
       <Feature Id="MenuShortcutFeature"
                Title="Programs menu shortcut"
@@ -452,6 +472,7 @@
         <ComponentRef Id="WPFLocalizeExtensionDebugComponent" />
         <ComponentRef Id="WPFByYourCommandDebugComponent" />
         <ComponentRef Id="WinPropsDebugComponent" />
+        <ComponentRef Id="GongSolutionsWPFDragDropDebugComponent" />
       </Feature>
     </Feature>
 

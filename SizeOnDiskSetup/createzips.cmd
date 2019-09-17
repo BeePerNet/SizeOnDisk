@@ -18,6 +18,7 @@ xcopy ..\..\..\SizeOnDisk\bin\Release\WPFLocalizeExtension.dll SizeOnDiskMinimal
 xcopy ..\..\..\SizeOnDisk\bin\Release\XAMLMarkupExtensions.dll SizeOnDiskMinimal
 xcopy ..\..\..\SizeOnDisk\bin\Release\System.Collections.Immutable.dll SizeOnDiskMinimal
 xcopy ..\..\..\SizeOnDisk\bin\Release\WinProps.dll SizeOnDiskMinimal
+xcopy ..\..\..\SizeOnDisk\bin\Release\GongSolutions.WPF.DragDrop.dll SizeOnDiskMinimal
 cd SizeOnDiskMinimal
 ..\..\..\7za a -mm=Deflate -mfb=258 -mpass=15 -r ..\FinalMasterInstaller\SizeOnDiskMinimal.zip *
 cd ..

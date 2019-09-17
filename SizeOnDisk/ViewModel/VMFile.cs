@@ -641,10 +641,58 @@ namespace SizeOnDisk.ViewModel
 
         public void DragOver(IDropInfo dropInfo)
         {
+            Tuple<VMFolder, string[]> infos = GetDropInfoValues(dropInfo);
+            if (infos == null)
+                return;
+            if (infos.Item2 != null && infos.Item2.Length > 0)
+            {
+                string first = infos.Item2.First();
+                if (infos.Item1.Path == System.IO.Path.GetDirectoryName(first))
+                    return;
+                if (Keyboard.Modifiers == ModifierKeys.Control)
+                    dropInfo.Effects = DragDropEffects.Copy;
+                else if (Keyboard.Modifiers == ModifierKeys.Shift)
+                    dropInfo.Effects = DragDropEffects.Move;
+                else
+                    dropInfo.Effects = System.IO.Path.GetPathRoot(infos.Item1.Path) == System.IO.Path.GetPathRoot(first) ? DragDropEffects.Move : DragDropEffects.Copy;
+                dropInfo.DropTargetAdorner = dropInfo.TargetItem == null ? DropTargetAdorners.Insert : DropTargetAdorners.Highlight;
+            }
+        }
+
+        private static Tuple<VMFolder, string[]> GetDropInfoValues(IDropInfo dropInfo)
+        {
+            VMFolder targetItem = dropInfo.TargetItem as VMFolder;
+            if (targetItem == null && !(dropInfo.TargetItem is VMFile))
+                targetItem = (dropInfo.VisualTarget as FrameworkElement)?.DataContext as VMFolder;
+            if (targetItem == null || targetItem.IsProtected)
+                return null;
+            string[] files = dropInfo.Data as string[];
+            if (files == null && dropInfo.Data is IDataObject dataObject)
+            {
+                if (dataObject.GetDataPresent(DataFormats.FileDrop))
+                {
+                    files = dataObject.GetData(DataFormats.FileDrop) as string[];
+                }
+            }
+            return new Tuple<VMFolder, string[]>(targetItem, files);
         }
 
         public void Drop(IDropInfo dropInfo)
         {
+            Tuple<VMFolder, string[]> infos = GetDropInfoValues(dropInfo);
+            if (infos == null)
+                return;
+
+            infos.Item1.Root.ExecuteTaskAsync(() =>
+            {
+                if (ShellHelper.Move((dropInfo.Effects & DragDropEffects.Copy) == DragDropEffects.Copy, infos.Item2, infos.Item1.Path))
+                {
+                    infos.Item1.RefreshAfterCommand();
+                    VMFolder vmfolder = infos.Item1.FindVMFile(System.IO.Path.GetDirectoryName(infos.Item2.First())) as VMFolder;
+                    if (vmfolder != null)
+                        vmfolder.RefreshAfterCommand();
+                }
+            }, true, true);
         }
     }
 }
