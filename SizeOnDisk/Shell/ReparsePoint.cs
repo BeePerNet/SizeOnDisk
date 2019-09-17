@@ -467,7 +467,7 @@ namespace SizeOnDisk.Shell
                             }
                             //Debug.Assert(!(string.IsNullOrEmpty(subsString) && string.IsNullOrEmpty(printString)), "Failed to retrieve parse point");
                             // the printstring should give us what we want
-                            if (!string.IsNullOrEmpty(printString))
+                            if (printString.Length > 0)
                             {
                                 normalisedTarget = printString;
                             }

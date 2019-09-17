@@ -13,7 +13,7 @@ namespace SizeOnDisk.Shell
 
         internal LittleFileInfo(string path, string filename)
         {
-            FileName = FileName;
+            FileName = filename;
             Path = path;
             FullPath = filename;
             if (string.IsNullOrEmpty(path))

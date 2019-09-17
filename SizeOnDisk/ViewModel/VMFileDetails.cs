@@ -343,7 +343,7 @@ namespace SizeOnDisk.ViewModel
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
             }

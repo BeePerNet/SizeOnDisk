@@ -1,7 +1,13 @@
 if not exist FinalMasterInstaller md FinalMasterInstaller
 del /q FinalMasterInstaller\*.zip
 
-del /q ..\..\..\SizeOnDisk\bin\Release\*.xml
+del /q ..\..\..\SizeOnDisk\bin\Release\SizeOnDisk.xml
+del /q ..\..\..\SizeOnDisk\bin\Release\WPFByYourCommand.xml
+del /q ..\..\..\SizeOnDisk\bin\Release\WPFLocalizeExtension.xml
+del /q ..\..\..\SizeOnDisk\bin\Release\XAMLMarkupExtensions.xml
+del /q ..\..\..\SizeOnDisk\bin\Release\System.Collections.Immutable.xml
+del /q ..\..\..\SizeOnDisk\bin\Release\WinProps.xml
+del /q ..\..\..\SizeOnDisk\bin\Release\GongSolutions.WPF.DragDrop.xml
 
 md SizeOnDiskFull
 del /s /q SizeOnDiskFull

@@ -12,7 +12,7 @@
            Manufacturer="Sebastien Gariepy (sebasgariepy@gmail.com)"
            UpgradeCode="9d3f227e-e788-4982-a15a-056152359ef6">
     <Package Description="SizeOnDisk !(bind.FileVersion.ApplicationFile)"
-           Manufacturer="Sebastien Gariepy (sebasgariepy@gmail.com)"
+             Manufacturer="Sebastien Gariepy (sebasgariepy@gmail.com)"
              InstallerVersion="200"
              Compressed="yes"
              InstallPrivileges='elevated'
@@ -230,6 +230,45 @@
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="APPLICATIONFOLDER">
+      <Component Id="VisualElementsManifestComponent"
+                 Guid="*">
+        <File Id="VisualElementsManifestFile"
+              Name="SizeOnDisk.VisualElementsManifest.xml"
+              DiskId="1"
+              Source="$(var.SizeOnDisk.TargetDir)SizeOnDisk.VisualElementsManifest.xml"
+              KeyPath="yes"
+              Checksum="yes"
+              Vital="no" />
+      </Component>
+      <Directory Id="WinAssets"
+                 Name="WinAssets">
+        <Component Id="Logo70Component"
+                   Guid="*">
+          <CreateFolder />
+          <RemoveFile Id="AllWinAssets"
+                      Name="*.*"
+                      On="both" />
+          <File Id="Logo70File"
+                Name="Square70x70Logo.png"
+                DiskId="1"
+                Source="$(var.SizeOnDisk.TargetDir)WinAssets\Square70x70Logo.png"
+                KeyPath="yes"
+                Checksum="yes"
+                Vital="no" />
+        </Component>
+        <Component Id="Logo150Component"
+                   Guid="*">
+          <File Id="Logo150File"
+                Name="Square150x150Logo.png"
+                DiskId="1"
+                Source="$(var.SizeOnDisk.TargetDir)WinAssets\Square150x150Logo.png"
+                KeyPath="yes"
+                Checksum="yes"
+                Vital="no" />
+        </Component>
+      </Directory>
+    </DirectoryRef>
+    <DirectoryRef Id="APPLICATIONFOLDER">
       <Directory Id="de"
                  Name="de">
         <Component Id="LanguageDEFileComponent"
@@ -367,8 +406,11 @@
         </Component>
       </Directory>
     </DirectoryRef>
-    <Feature Id="AllFeatures" Display="expand" Title="SizeOnDisk"
-             AllowAdvertise="no" Level="1">
+    <Feature Id="AllFeatures"
+             Display="expand"
+             Title="SizeOnDisk"
+             AllowAdvertise="no"
+             Level="1">
       <Feature Id="ProductFeature"
                Absent="disallow"
                Title="Required files"
@@ -394,6 +436,14 @@
                AllowAdvertise="no"
                Level="1">
         <ComponentRef Id="ApplicationFileDesktopShortcutComponent" />
+      </Feature>
+      <Feature Id="WindowsLogosFeature"
+               Title="Windows menu logos"
+               AllowAdvertise="no"
+               Level="1">
+        <ComponentRef Id="VisualElementsManifestComponent" />
+        <ComponentRef Id="Logo70Component" />
+        <ComponentRef Id="Logo150Component" />
       </Feature>
       <Feature Id="ConfigurationFeature"
                Title="Configuration file"
@@ -588,7 +638,8 @@
                   Return="check"
                   Execute="immediate"
                   BinaryKey="WixTools.CA.dll"
-                  DllEntry="GetLanguages" Impersonate="yes" />
+                  DllEntry="GetLanguages"
+                  Impersonate="yes" />
 
     <Property Id="WixShellExecTarget"
               Value="[#ApplicationFile]" />
