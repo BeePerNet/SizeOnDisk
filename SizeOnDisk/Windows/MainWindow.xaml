@@ -350,6 +350,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TreeView BorderThickness="1"
+                                      FocusManager.IsFocusScope="True"
                                       dd:DragDrop.IsDragSource="True"
                                       dd:DragDrop.DragHandler="{Binding}"
                                       dd:DragDrop.IsDropTarget="True"
@@ -384,6 +385,7 @@
                           VerticalAlignment="Stretch" />
                         <Grid Grid.Column="2" DataContext="{Binding SelectedTreeItem}">
                             <ListView MinWidth="25"
+                                      FocusManager.IsFocusScope="True"
                                       dd:DragDrop.IsDragSource="True"
                                       dd:DragDrop.DragHandler="{Binding}"
                                       dd:DragDrop.IsDropTarget="True"
@@ -435,6 +437,7 @@
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}"
                                       dd:DragDrop.SelectDroppedItems="True"
+                                      FocusManager.IsFocusScope="True"
                                   BorderThickness="1"
                                   SelectedItem="{Binding Root.SelectedItem}"
                                   HeadersVisibility="Column"
@@ -522,6 +525,7 @@
                                   Background="Transparent"
                                   VerticalAlignment="Stretch" />
                             <DataGrid Grid.Column="1"
+                                      FocusManager.IsFocusScope="True"
                                       CanUserDeleteRows="False"
                                       ColumnWidth="175"
                                       cmd:GlobalizationBehavior.UpdateItemsDefaultView=",UISize"
