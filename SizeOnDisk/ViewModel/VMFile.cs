@@ -675,7 +675,7 @@ namespace SizeOnDisk.ViewModel
             e.Handled = true;
 
             VMFolder file = GetViewModelObject<VMFolder>(e.OriginalSource);
-            if (file != null)
+            if (file == null)
             {
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
             }
