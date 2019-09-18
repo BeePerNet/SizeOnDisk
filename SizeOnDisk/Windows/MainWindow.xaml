@@ -383,9 +383,8 @@
                           Width="5"
                           Background="Transparent"
                           VerticalAlignment="Stretch" />
-                        <Grid Grid.Column="2" DataContext="{Binding SelectedTreeItem}">
+                        <Grid Grid.Column="2" DataContext="{Binding SelectedTreeItem}" FocusManager.IsFocusScope="True">
                             <ListView MinWidth="25"
-                                      FocusManager.IsFocusScope="True"
                                       dd:DragDrop.IsDragSource="True"
                                       dd:DragDrop.DragHandler="{Binding}"
                                       dd:DragDrop.IsDropTarget="True"
@@ -437,7 +436,6 @@
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}"
                                       dd:DragDrop.SelectDroppedItems="True"
-                                      FocusManager.IsFocusScope="True"
                                   BorderThickness="1"
                                   SelectedItem="{Binding Root.SelectedItem}"
                                   HeadersVisibility="Column"
