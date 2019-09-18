@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:provider="clr-namespace:WPFLocalizeExtension.Providers;assembly=WPFLocalizeExtension"
+                    xmlns:vm="clr-namespace:SizeOnDisk.ViewModel"
                     xmlns:engine="clr-namespace:WPFLocalizeExtension.Engine;assembly=WPFLocalizeExtension"
                     xmlns:beh="clr-namespace:WPFByYourCommand.Behaviors;assembly=WPFByYourCommand"
                     xmlns:cmd="http://wpfbyyourcommand.codeplex.com">
@@ -37,6 +38,10 @@
     </Style>
     <ContextMenu x:Key="DefaultCopyMenu">
         <MenuItem Command="Copy" />
+    </ContextMenu>
+    <ContextMenu x:Key="DefaultCopyPasteMenu">
+        <MenuItem Command="Copy" />
+        <MenuItem Command="{x:Static vm:VMFile.PasteCommand}" />
     </ContextMenu>
     <Style x:Key="CopyTextBox" BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type TextBox}">
         <Setter Property="ContextMenu" Value="{StaticResource DefaultCopyMenu}" />

@@ -389,11 +389,11 @@
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}"
                                       dd:DragDrop.SelectDroppedItems="True"
+                                      ContextMenu="{StaticResource VMContextMenu}"
                                   ItemsSource="{Binding Childs}"
                                   BorderThickness="1"
                                   SelectedItem="{Binding Root.SelectedItem}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                      ContextMenu="{StaticResource VMContextMenu}"
                                   cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                   cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                                   Panel.ZIndex="{Binding Root.ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
@@ -440,10 +440,10 @@
                                   HeadersVisibility="Column"
                                   ItemsSource="{Binding Childs}"
                                   AutoGenerateColumns="False"
+                                      ContextMenu="{StaticResource VMContextMenu}"
                                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                   HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                   VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                                  ContextMenu="{StaticResource VMContextMenu}"
                                   ClipboardCopyMode="IncludeHeader"
                                   Panel.ZIndex="{Binding Root.ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
                                 <DataGrid.Resources>
@@ -528,6 +528,7 @@
                                       ItemsSource="{Binding SelectedItem.Details.Properties}"
                                       AutoGenerateColumns="False"
                                       BorderThickness="1"
+                                      Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                       HeadersVisibility="Column"
                                       HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                       VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"

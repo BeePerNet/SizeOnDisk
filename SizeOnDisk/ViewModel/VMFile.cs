@@ -666,7 +666,7 @@ namespace SizeOnDisk.ViewModel
             if (file != null)
             {
                 e.Handled = true;
-                e.CanExecute = file is VMFolder && Clipboard.ContainsFileDropList();
+                e.CanExecute = file is VMFolder && !file.IsProtected && Clipboard.ContainsFileDropList();
             }
         }
 
