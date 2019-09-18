@@ -30,7 +30,7 @@
     </Window.Resources>
     <DockPanel cmd:CommandBehavior.Context="{Binding SelectedRootFolder}">
         <ToolBarTray DockPanel.Dock="Top">
-            <ToolBar>
+            <ToolBar KeyboardNavigation.TabNavigation="Continue">
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Padding="3" />
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.RefreshCommand}" Padding="3" />
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.StopCommand}" Padding="3" />
