@@ -344,7 +344,7 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="275" MinWidth="50" />
+                            <ColumnDefinition Width="225" MinWidth="50" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" MinWidth="100" />
                             <ColumnDefinition Width="Auto" />
