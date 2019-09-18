@@ -57,7 +57,7 @@ namespace SizeOnDisk.ViewModel
             //TODO: bindingCollection.Add(new CommandBinding(FindCommand, CallShellCommand, CanCallCommand));
             bindingCollection.Add(new CommandBinding(DeleteCommand, CallDeleteCommand, CanCallSelectedItemsCommand));
             bindingCollection.Add(new CommandBinding(PermanentDeleteCommand, CallPermanentDeleteCommand, CanCallSelectedItemsCommand));
-            bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand, CanCallCommand));
+            bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand));
             bindingCollection.Add(new CommandBinding(FollowLinkCommand, CallFollowLinkCommand, CanCallFollowLinkCommand));
             bindingCollection.Add(new CommandBinding(SelectCommand, CallSelectCommand));
             bindingCollection.Add(new CommandBinding(CopyCommand, CallCutCopyCommand, CanCallSelectedItemsCommand));
@@ -310,15 +310,12 @@ namespace SizeOnDisk.ViewModel
 
         private void CanCallFollowLinkCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.Handled = true;
-
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
-            if (file == null)
+            if (file != null)
             {
-                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+                e.Handled = true;
+                e.CanExecute = !file.IsProtected && file.IsLink;
             }
-
-            e.CanExecute = !file.IsProtected && file.IsLink;
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
@@ -370,16 +367,12 @@ namespace SizeOnDisk.ViewModel
 
         private void CanCallSelectedItemsCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.Handled = true;
-            e.CanExecute = false;
-
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
-            if (file == null)
+            if (file != null)
             {
-                return;
+                e.Handled = true;
+                e.CanExecute = file.GetSelectedFiles().All(T => !T.IsProtected && !(T is VMRootFolder));
             }
-
-            e.CanExecute = GetSelectedFiles().All(T => !T.IsProtected && !(T is VMRootFolder));
         }
 
         public IEnumerable<VMFile> GetSelectedFiles()
@@ -437,8 +430,11 @@ namespace SizeOnDisk.ViewModel
 
         private void CanCallCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.Handled = true;
-            e.CanExecute = GetViewModelObject<VMFile>(e.OriginalSource) != null;
+            if (GetViewModelObject<VMFile>(e.OriginalSource) != null)
+            {
+                e.Handled = true;
+                e.CanExecute = true;
+            }
         }
 
         private void CallShellSelectCommand(object sender, ExecutedRoutedEventArgs e)
@@ -457,14 +453,14 @@ namespace SizeOnDisk.ViewModel
 
         private void CanCallShellCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.Handled = true;
-            e.CanExecute = false;
-
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
             if (file == null)
             {
                 return;
             }
+
+            e.Handled = true;
+            e.CanExecute = false;
 
             if (!(e.Command is RoutedCommand command))
             {
@@ -666,15 +662,12 @@ namespace SizeOnDisk.ViewModel
 
         private void CanCallPasteCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.Handled = true;
-
             VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
-            if (file == null)
+            if (file != null)
             {
-                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+                e.Handled = true;
+                e.CanExecute = file is VMFolder && Clipboard.ContainsFileDropList();
             }
-
-            e.CanExecute = file is VMFolder && Clipboard.ContainsFileDropList();
         }
 
         private void CallPasteCommand(object sender, ExecutedRoutedEventArgs e)
@@ -682,7 +675,7 @@ namespace SizeOnDisk.ViewModel
             e.Handled = true;
 
             VMFolder file = GetViewModelObject<VMFolder>(e.OriginalSource);
-            if (file == null)
+            if (file != null)
             {
                 throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
             }

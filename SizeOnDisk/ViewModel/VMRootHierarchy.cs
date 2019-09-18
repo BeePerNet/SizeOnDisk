@@ -80,13 +80,7 @@ namespace SizeOnDisk.ViewModel
 
         public void AddRootFolder(string path)
         {
-            string name = path;
-            if (name.Count(T => T == '\\') > 1)
-            {
-                name = Path.GetFileName(path);
-            }
-
-            VMRootFolder newFolder = new VMRootFolder(this, name, path);
+            VMRootFolder newFolder = new VMRootFolder(this, path);
             Folders.Add(newFolder);
             SelectedRootFolder = newFolder;
             newFolder.RefreshAsync();

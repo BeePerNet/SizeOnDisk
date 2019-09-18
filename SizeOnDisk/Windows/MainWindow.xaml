@@ -25,10 +25,10 @@
     <Window.Resources>
         <ContextMenu x:Key="VMContextMenu"
                      Style="{StaticResource CommandContextMenu}"
-                     DataContext="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}"
+                     DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
                      ItemsSource="{Binding Details.FileCommands}" />
     </Window.Resources>
-    <DockPanel cmd:CommandBehavior.Context="{Binding SelectedRootFolder}">
+    <DockPanel cmd:CommandBehavior.Context="{Binding SelectedRootFolder.DummyMe}">
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootHierarchy.OpenFolderCommand}" Padding="3" />

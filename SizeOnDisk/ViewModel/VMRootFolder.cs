@@ -282,8 +282,8 @@ namespace SizeOnDisk.ViewModel
             HardDriveFree = HardDriveSize - HardDriveUsage;
         }
 
-        internal VMRootFolder(VMRootHierarchy parent, string name, string path)
-            : base(null, name, path)
+        internal VMRootFolder(VMRootHierarchy parent, string path)
+            : base(null, path, path)
         {
             ClusterSize = ShellHelper.GetClusterSize(path);
             Parent = parent;
