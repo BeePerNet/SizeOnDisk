@@ -307,6 +307,10 @@ namespace SizeOnDisk.ViewModel
             {
                 return this;
             }
+            else if (path.StartsWith("\\\\", StringComparison.Ordinal))
+            {
+                return Parent.FindVMFile(path);
+            }
             else if (path.StartsWith("\\", StringComparison.Ordinal))
             {
                 return base.FindVMFile(path);
@@ -328,7 +332,7 @@ namespace SizeOnDisk.ViewModel
         {
             base.RefreshCount();
 
-            if (!IsDesign)
+            if (!IsDesign && !this.Path.StartsWith("\\\\"))
             {
                 DriveInfo info = new DriveInfo(HardDrivePath);
                 HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;

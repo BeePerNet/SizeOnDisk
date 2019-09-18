@@ -211,7 +211,7 @@ namespace SizeOnDisk.ViewModel
 
         public virtual VMFile FindVMFile(string path)
         {
-            if (path.StartsWith("\\", StringComparison.Ordinal))
+            if (!path.StartsWith("\\\\", StringComparison.Ordinal) && path.StartsWith("\\", StringComparison.Ordinal))
             {
                 string subpath = path.Remove(0, 1);
                 string fileName = subpath;
@@ -397,6 +397,24 @@ namespace SizeOnDisk.ViewModel
 
             RefreshCount();
         }
+
+        public void DoPaste(bool copy, string[] files)
+        {
+            this.Root.ExecuteTaskAsync(() =>
+            {
+                if (ShellHelper.Move(copy, files.Cast<string>().ToArray(), this.Path))
+                {
+                    this.RefreshAfterCommand();
+                    if (!copy)
+                    {
+                        VMFolder vmfolder = this.FindVMFile(System.IO.Path.GetDirectoryName(files.Cast<string>().First())) as VMFolder;
+                        if (vmfolder != null)
+                            vmfolder.RefreshAfterCommand();
+                    }
+                }
+            }, true, true);
+        }
+
 
         #endregion functions
     }

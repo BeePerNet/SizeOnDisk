@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -36,7 +37,9 @@ namespace SizeOnDisk.ViewModel
         public static readonly RoutedCommandEx PropertiesCommand = new RoutedCommandEx("properties", "loc:PresentationCore:ExceptionStringTable:PropertiesText", "pack://application:,,,/SizeOnDisk;component/Icons/Properties.png", typeof(VMFile), new KeyGesture(Key.F4, ModifierKeys.None, "loc:PresentationCore:ExceptionStringTable:PropertiesKeyDisplayString"));
         public static readonly RoutedCommandEx FollowLinkCommand = new RoutedCommandEx("followlink", "loc:FollowLink", "pack://application:,,,/SizeOnDisk;component/Icons/Shortcut.png", typeof(VMFile), new KeyGesture(Key.Enter, ModifierKeys.Alt));
         public static readonly RoutedCommandEx SelectCommand = new RoutedCommandEx("select", "Select", "pack://application:,,,/SizeOnDisk;component/Icons/Select.png", typeof(VMFile));
-        public static readonly RoutedCommandEx CopyCommand = new RoutedCommandEx("copy", "Copy", typeof(VMFile), new KeyGesture(Key.C, ModifierKeys.Control));
+        public static readonly RoutedCommandEx CopyCommand = new RoutedCommandEx("copy", "loc:PresentationCore:ExceptionStringTable:CopyText", typeof(VMFile), new KeyGesture(Key.C, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:CopyKeyDisplayString"));
+        public static readonly RoutedCommandEx CutCommand = new RoutedCommandEx("cut", "loc:PresentationCore:ExceptionStringTable:CutText", typeof(VMFile), new KeyGesture(Key.X, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:CutKeyDisplayString"));
+        public static readonly RoutedCommandEx PasteCommand = new RoutedCommandEx("paste", "loc:PresentationCore:ExceptionStringTable:PasteText", typeof(VMFile), new KeyGesture(Key.V, ModifierKeys.Control, "loc:PresentationCore:ExceptionStringTable:PasteKeyDisplayString"));
 
 
         public override void AddCommandModels(CommandBindingCollection bindingCollection)
@@ -57,27 +60,9 @@ namespace SizeOnDisk.ViewModel
             bindingCollection.Add(new CommandBinding(PropertiesCommand, CallShellCommand, CanCallCommand));
             bindingCollection.Add(new CommandBinding(FollowLinkCommand, CallFollowLinkCommand, CanCallFollowLinkCommand));
             bindingCollection.Add(new CommandBinding(SelectCommand, CallSelectCommand));
-            bindingCollection.Add(new CommandBinding(CopyCommand, CallCopyCommand, CanCallSelectedItemsCommand));
-        }
-
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        private void CallCopyCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-
-            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
-            }
-
-            file.Root.ExecuteTask(() =>
-            {
-                System.Windows.Clipboard.Clear();
-                StringCollection files = new StringCollection();
-                files.AddRange(file.GetSelectedFiles().Select(T => T.Path).ToArray());
-                System.Windows.Clipboard.SetFileDropList(files);
-            }, true);
+            bindingCollection.Add(new CommandBinding(CopyCommand, CallCutCopyCommand, CanCallSelectedItemsCommand));
+            bindingCollection.Add(new CommandBinding(CutCommand, CallCutCopyCommand, CanCallSelectedItemsCommand));
+            bindingCollection.Add(new CommandBinding(PasteCommand, CallPasteCommand, CanCallPasteCommand));
         }
 
 
@@ -606,8 +591,11 @@ namespace SizeOnDisk.ViewModel
 
         public void StartDrag(IDragInfo dragInfo)
         {
-            dragInfo.DataFormat = DataFormats.GetDataFormat(DataFormats.FileDrop);
-            dragInfo.Data = dragInfo.SourceItems.Cast<VMFile>().Select(T => T.Path).ToArray();
+            //dragInfo.DataObject = new DataObject(DataFormats.FileDrop, dragInfo.SourceItems.Cast<VMFile>().Select(T => T.Path).ToArray());
+            dragInfo.DataObject = GetCopyDataObject(dragInfo.SourceItems.Cast<VMFile>());
+
+            //dragInfo.DataFormat = DataFormats.GetDataFormat(DataFormats.FileDrop);
+            //dragInfo.Data = dragInfo.SourceItems.Cast<VMFile>().Select(T => T.Path).ToArray();
             dragInfo.Effects = DragDropEffects.All;
         }
 
@@ -666,15 +654,52 @@ namespace SizeOnDisk.ViewModel
                 targetItem = (dropInfo.VisualTarget as FrameworkElement)?.DataContext as VMFolder;
             if (targetItem == null || targetItem.IsProtected)
                 return null;
-            string[] files = dropInfo.Data as string[];
-            if (files == null && dropInfo.Data is IDataObject dataObject)
+            if (dropInfo.Data is IDataObject dataObject)
             {
                 if (dataObject.GetDataPresent(DataFormats.FileDrop))
                 {
-                    files = dataObject.GetData(DataFormats.FileDrop) as string[];
+                    return new Tuple<VMFolder, string[]>(targetItem, dataObject.GetData(DataFormats.FileDrop) as string[]);
                 }
             }
-            return new Tuple<VMFolder, string[]>(targetItem, files);
+            return null;
+        }
+
+        private void CanCallPasteCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
+
+            e.CanExecute = file is VMFolder && Clipboard.ContainsFileDropList();
+        }
+
+        private void CallPasteCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            VMFolder file = GetViewModelObject<VMFolder>(e.OriginalSource);
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
+
+            file.Root.ExecuteTask(() =>
+            {
+                MemoryStream obj = Clipboard.GetData("Preferred DropEffect") as MemoryStream;
+                StringCollection files = Clipboard.GetFileDropList();
+                bool copy = true;
+                if (obj != null)
+                {
+                    byte[] values = obj.ToArray();
+                    copy = ((DragDropEffects)values[0] & DragDropEffects.Copy) == DragDropEffects.Copy;
+                }
+
+                file.DoPaste(copy, files.Cast<string>().ToArray());
+            }, true);
         }
 
         public void Drop(IDropInfo dropInfo)
@@ -683,16 +708,80 @@ namespace SizeOnDisk.ViewModel
             if (infos == null)
                 return;
 
-            infos.Item1.Root.ExecuteTaskAsync(() =>
-            {
-                if (ShellHelper.Move((dropInfo.Effects & DragDropEffects.Copy) == DragDropEffects.Copy, infos.Item2, infos.Item1.Path))
-                {
-                    infos.Item1.RefreshAfterCommand();
-                    VMFolder vmfolder = infos.Item1.FindVMFile(System.IO.Path.GetDirectoryName(infos.Item2.First())) as VMFolder;
-                    if (vmfolder != null)
-                        vmfolder.RefreshAfterCommand();
-                }
-            }, true, true);
+            infos.Item1.DoPaste((dropInfo.Effects & DragDropEffects.Copy) == DragDropEffects.Copy, infos.Item2);
         }
+
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
+        private void CallCutCopyCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            VMFile file = GetViewModelObject<VMFile>(e.OriginalSource);
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(e), MessageIsNotVMFile);
+            }
+
+            file.Root.ExecuteTask(() =>
+            {
+                IEnumerable<VMFile> list = file.GetSelectedFiles();
+                IDataObject obj = GetCopyDataObject(list, e.Command == CutCommand);
+                Clipboard.Clear();
+                Clipboard.SetDataObject(obj, false);
+                if (e.Command == CutCommand)
+                {
+                    VMFile cutfile = list.FirstOrDefault();
+                    Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+                    file.Root.ExecuteTaskAsync(() =>
+                    {
+                        bool loop = cutfile != null;
+                        while (loop)
+                        {
+                            if (cutfile is VMFolder)
+                            {
+                                if (!Directory.Exists(cutfile.Path))
+                                {
+                                    loop = false;
+                                }
+                            }
+                            else
+                            {
+                                if (!File.Exists(cutfile.Path))
+                                {
+                                    loop = false;
+                                }
+                            }
+                            if (loop)
+                            {
+                                dispatcher.Invoke(() =>
+                                {
+                                    if (!Clipboard.IsCurrent(obj))
+                                        loop = false;
+                                });
+                            }
+                            if (loop)
+                            {
+                                Thread.Sleep(1000);
+                            }
+                        }
+                        file.Parent.RefreshAfterCommand();
+                    }, true, false);
+                }
+            }, true);
+        }
+
+        private static IDataObject GetCopyDataObject(IEnumerable<VMFile> files, bool? cut = null)
+        {
+            IDataObject data = new DataObject(DataFormats.FileDrop, files.Select(T => T.Path).ToArray());
+            if (cut.HasValue)
+            {
+                MemoryStream memo = new MemoryStream(4);
+                byte[] bytes = new byte[] { (byte)(cut.Value ? 2 : 5), 0, 0, 0 };
+                memo.Write(bytes, 0, bytes.Length);
+                data.SetData("Preferred DropEffect", memo);
+            }
+            return data;
+        }
+
     }
 }

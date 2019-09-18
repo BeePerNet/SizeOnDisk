@@ -123,7 +123,8 @@ namespace SizeOnDisk.Shell
         {
             WIN32_FIND_DATA win_find_data = new WIN32_FIND_DATA();
             string prefixedfolderPath = folderPath.TrimEnd(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
-            prefixedfolderPath = string.Concat("\\\\?\\", prefixedfolderPath);
+            if (!prefixedfolderPath.StartsWith("\\\\"))
+                prefixedfolderPath = string.Concat("\\\\?\\", prefixedfolderPath);
             int num2 = SafeNativeMethods.SetErrorMode(1);
             try
             {

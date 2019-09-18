@@ -11,6 +11,7 @@ namespace SizeOnDisk.Themes
         {
             if (sender is ContextMenu ctx && ctx.PlacementTarget is System.Windows.Controls.TextBlock tb)
             {
+                Clipboard.Clear();
                 Clipboard.SetText(tb.Text);
             }
             else
