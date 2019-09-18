@@ -3,6 +3,7 @@ using SizeOnDisk.Utilities;
 using SizeOnDisk.ViewModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using WPFByYourCommand.Commands;
 
@@ -81,6 +82,5 @@ namespace SizeOnDisk.Windows
         {
             new ErrorList((DataContext as VMRootHierarchy).SelectedRootFolder).Show();
         }
-
     }
 }

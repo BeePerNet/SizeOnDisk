@@ -356,7 +356,7 @@
                                       dd:DragDrop.DropHandler="{Binding}"
                                   ItemsSource="{Binding DummyMe}"
                                   DisplayMemberPath="Name"
-                                      ContextMenu="{StaticResource DefaultCopyMenu}"
+                                      ContextMenu="{StaticResource VMContextMenu}"
                                   cmd:ControlBehavior.FocusMouseRightButtonDown="True">
                             <TreeView.ItemContainerStyle>
                                 <Style TargetType="{x:Type TreeViewItem}">
@@ -366,7 +366,6 @@
                                     <Setter Property="IsSelected" Value="{Binding IsTreeSelected, Mode=TwoWay}" />
                                     <Setter Property="ItemsSource" Value="{Binding Folders}" />
                                     <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
-                                    <Setter Property="ContextMenu" Value="{StaticResource VMContextMenu}"/>
                                     <Setter Property="HeaderTemplate">
                                         <Setter.Value>
                                             <DataTemplate >
@@ -394,13 +393,12 @@
                                   BorderThickness="1"
                                   SelectedItem="{Binding Root.SelectedItem}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                      ContextMenu="{StaticResource DefaultCopyMenu}"
+                                      ContextMenu="{StaticResource VMContextMenu}"
                                   cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                   cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
                                   Panel.ZIndex="{Binding Root.ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Tile}}">
                                 <ListView.Resources>
                                     <Style TargetType="ListViewItem">
-                                        <Setter Property="ContextMenu" Value="{StaticResource VMContextMenu}"/>
                                         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                         <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                         <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
@@ -445,7 +443,7 @@
                                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                   HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                   VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
-                                      ContextMenu="{StaticResource DefaultCopyMenu}"
+                                  ContextMenu="{StaticResource VMContextMenu}"
                                   ClipboardCopyMode="IncludeHeader"
                                   Panel.ZIndex="{Binding Root.ViewMode, Mode=OneWay, Converter={StaticResource IsEqualConverter}, ConverterParameter={x:Static vm:VMViewMode.Details}}">
                                 <DataGrid.Resources>
@@ -453,7 +451,6 @@
                                         <Setter Property="TextAlignment" Value="Right" />
                                     </Style>
                                     <Style TargetType="DataGridRow">
-                                        <Setter Property="ContextMenu" Value="{StaticResource VMContextMenu}"/>
                                         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                         <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                         <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
