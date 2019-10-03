@@ -34,13 +34,13 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock VerticalAlignment="Center" Padding="4,0" Margin="0" Text="{Binding File.Path}" ToolTip="{Binding File.Path}" MouseLeftButtonDown="Path_MouseLeftButtonDown" />
+                                <TextBlock VerticalAlignment="Center" Padding="4,0" Margin="0" TextTrimming="CharacterEllipsis" Text="{Binding File.Path}" ToolTip="{Binding File.Path}" MouseLeftButtonDown="Path_MouseLeftButtonDown" />
                                 <Button Grid.Column="1" cmd:CommandBehavior.Command="{x:Static vm:VMFile.SelectCommand}" VerticalAlignment="Center" />
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>                    
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn SortMemberPath="ShortText" Header="Message">
+                <DataGridTemplateColumn SortMemberPath="ShortText" Header="Message" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
@@ -48,7 +48,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock VerticalAlignment="Center" Padding="4,0" Margin="0" Text="{Binding ShortText}" ToolTip="{Binding ShortText}" MouseLeftButtonDown="Exception_MouseLeftButtonDown" />
+                                <TextBlock VerticalAlignment="Center" Padding="4,0" Margin="0" TextTrimming="WordEllipsis" Text="{Binding ShortText}" ToolTip="{Binding ShortText}" MouseLeftButtonDown="Exception_MouseLeftButtonDown" />
                                 <Button Content="..." Grid.Column="1" Click="ExceptionButton_Click"
                                         Height="19"
                                         Width="19" 
