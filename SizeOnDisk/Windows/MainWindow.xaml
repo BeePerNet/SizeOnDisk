@@ -366,6 +366,7 @@
                                   dd:DragDrop.DropHandler="{Binding}"
                                   ItemsSource="{Binding DummyMe}"
                                   ContextMenu="{StaticResource VMContextMenu}"
+                                  cmd:CommandBehavior.Context="{Binding}"
                                   DisplayMemberPath="Name"
                                   cmd:ControlBehavior.FocusMouseRightButtonDown="True">
                             <TreeView.ItemContainerStyle>
@@ -400,6 +401,7 @@
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}"
                                       dd:DragDrop.SelectDroppedItems="True"
+                                  cmd:CommandBehavior.Context="{Binding}"
                                   ItemsSource="{Binding Childs}"
                                   BorderThickness="1"
                                   ContextMenu="{StaticResource VMContextMenu}"
@@ -453,6 +455,7 @@
                                   ItemsSource="{Binding Childs}"
                                   AutoGenerateColumns="False"
                                   ContextMenu="{StaticResource VMContextMenu}"
+                                  cmd:CommandBehavior.Context="{Binding}"
                                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                   HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                   VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
