@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -191,6 +192,7 @@ namespace SizeOnDisk.ViewModel
             {
                 if (SetProperty(ref _SelectedTreeItem, value))
                 {
+                    SelectedListItemsChanged();
                     AddHistory(value);
                 }
             }
@@ -201,8 +203,104 @@ namespace SizeOnDisk.ViewModel
         public VMFile SelectedListItem
         {
             get => _SelectedListItem;
-            set => SetProperty(ref _SelectedListItem, value);
+            set
+            {
+                SetProperty(ref _SelectedListItem, value);
+                SelectedListItemsChanged();
+            }
         }
+
+        internal void SelectedListItemsChanged()
+        {
+            VMFile[] list = SelectedTreeItem.Childs.Where(T => T.IsSelected).ToArray();
+            if (list.Length > 0)
+            {
+                if (list.Length == 1)
+                    SelectedListItemsName = list.First().Path;
+                else
+                    SelectedListItemsName = $"{list.Length} selected items";
+                SelectedListItemsCount = (ulong)list.Length;
+                SelectedListItemsFileSize = Sum(list.Select(T => T.FileSize));
+                SelectedListItemsDiskSize = Sum(list.Select(T => T.DiskSize));
+                SelectedListItemsFolderTotal = Sum(list.Select(T => T.FolderTotal));
+                SelectedListItemsFileTotal = Sum(list.Select(T => T.FileTotal));
+                SelectedListItemsFolderCount = (ulong)list.Count(T => !T.IsFile);
+                SelectedListItemsFileCount = (ulong)list.Count(T => T.IsFile);
+            }
+            else
+            {
+                SelectedListItemsName = SelectedTreeItem.Path;
+                SelectedListItemsCount = (ulong)SelectedTreeItem.Childs.Count;
+                SelectedListItemsFileSize = SelectedTreeItem.FileSize ?? 0;
+                SelectedListItemsDiskSize = SelectedTreeItem.DiskSize ?? 0;
+                SelectedListItemsFolderTotal = SelectedTreeItem.FolderTotal ?? 0;
+                SelectedListItemsFileTotal = SelectedTreeItem.FileTotal ?? 0;
+                SelectedListItemsFolderCount = (ulong)SelectedTreeItem.Folders.Count;
+                SelectedListItemsFileCount = SelectedTreeItem.FileCount ?? 0;
+            }
+        }
+
+        string _SelectedListItemsName = string.Empty;
+        public string SelectedListItemsName
+        {
+            get => _SelectedListItemsName;
+            private set => SetProperty(ref _SelectedListItemsName, value);
+        }
+
+        ulong _SelectedListItemsCount = 0;
+        public ulong SelectedListItemsCount
+        {
+            get => _SelectedListItemsCount;
+            private set => SetProperty(ref _SelectedListItemsCount, value);
+        }
+
+        ulong _SelectedListItemsFileSize = 0;
+        public ulong SelectedListItemsFileSize
+        {
+            get => _SelectedListItemsFileSize;
+            private set => SetProperty(ref _SelectedListItemsFileSize, value);
+        }
+
+        ulong _SelectedListItemsDiskSize = 0;
+        public ulong SelectedListItemsDiskSize
+        {
+            get => _SelectedListItemsDiskSize;
+            private set => SetProperty(ref _SelectedListItemsDiskSize, value);
+        }
+
+        ulong _SelectedListItemsFolderTotal = 0;
+        public ulong SelectedListItemsFolderTotal
+        {
+            get => _SelectedListItemsFolderTotal;
+            private set => SetProperty(ref _SelectedListItemsFolderTotal, value);
+        }
+
+        ulong _SelectedListItemsFileTotal = 0;
+        public ulong SelectedListItemsFileTotal
+        {
+            get => _SelectedListItemsFileTotal;
+            private set => SetProperty(ref _SelectedListItemsFileTotal, value);
+        }
+
+        ulong _SelectedListItemsFolderCount = 0;
+        public ulong SelectedListItemsFolderCount
+        {
+            get => _SelectedListItemsFolderCount;
+            private set => SetProperty(ref _SelectedListItemsFolderCount, value);
+        }
+
+        ulong _SelectedListItemsFileCount = 0;
+        public ulong SelectedListItemsFileCount
+        {
+            get => _SelectedListItemsFileCount;
+            private set => SetProperty(ref _SelectedListItemsFileCount, value);
+        }
+
+
+
+
+
+
 
         public string HardDrivePath { get; }
 
@@ -332,7 +430,9 @@ namespace SizeOnDisk.ViewModel
         {
             base.RefreshCount();
 
-            if (!IsDesign && !this.Path.StartsWith("\\\\"))
+            this.SelectedListItemsChanged();
+
+            if (!IsDesign && !this.Path.StartsWith("\\\\", StringComparison.Ordinal))
             {
                 DriveInfo info = new DriveInfo(HardDrivePath);
                 HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;

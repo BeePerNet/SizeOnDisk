@@ -10,7 +10,9 @@ namespace WinProps {
 			[Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszName);
 		void GetPropertyType(
 			[Out, MarshalAs(UnmanagedType.U2)] out VARENUM pvartype);
-		void GetDisplayName(
+        
+        [PreserveSig]
+        HRESULT GetDisplayName(
 			[Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszName);
 		void GetEditInvitation(
 			[Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszInvite);

@@ -376,6 +376,8 @@ namespace WinProps {
 			get {
 				string name;
 				_propDescription.GetDisplayName(out name);
+                if (string.IsNullOrEmpty(name))
+                    return this.CanonicalName;
 				return name;
 			}
 		}

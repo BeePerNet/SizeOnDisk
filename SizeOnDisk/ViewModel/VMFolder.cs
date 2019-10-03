@@ -341,6 +341,9 @@ namespace SizeOnDisk.ViewModel
                         if (tmpChilds.Contains(Root.SelectedItem))
                             Root.SelectedItem = null;
 
+                        foreach (VMFile file in tmpChilds)
+                            file.IsSelected = false;
+
                         Folders.DoOperation((l) => l.RemoveRange(tmpChilds.OfType<VMFolder>(), EqualityComparer<VMFolder>.Default));
                         Childs.DoOperation((l) => l.RemoveRange(tmpChilds, EqualityComparer<VMFile>.Default));
 

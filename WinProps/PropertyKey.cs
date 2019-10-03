@@ -95,7 +95,8 @@ namespace WinProps {
 			get {
 				string name;
 				HRESULT hr = PSGetNameFromPropertyKey(MarshalledPointer, out name);
-				if (hr.Failed) throw hr.GetException();
+                if (hr.Failed) //throw hr.GetException();
+                    return null;
 				return name;
 			}
 		}

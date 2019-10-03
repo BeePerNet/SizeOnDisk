@@ -324,24 +324,27 @@ namespace SizeOnDisk.ViewModel
                     string pkey = key.CanonicalName;
                     /*if (name.StartsWith("System."))
                         name = name.Remove(0, 7);*/
-                    PropertyDescription desc = new PropertyDescription(key);
-                    PropVariant variant = store.GetValue(key);
-
-                    if (variant != null)
+                    if (pkey != null)
                     {
-                        if (variant.Value != null)
+                        PropertyDescription desc = new PropertyDescription(key);
+                        PropVariant variant = store.GetValue(key);
+
+                        if (variant != null)
                         {
-                            if (variant.Value is string str)
+                            if (variant.Value != null)
                             {
-                                result.Add(new VMFileProperty(pkey, desc.DisplayName, str));
-                            }
-                            else if (variant.Value is IEnumerable list)
-                            {
-                                result.Add(new VMFileProperty(pkey, desc.DisplayName, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
-                            }
-                            else
-                            {
-                                result.Add(new VMFileProperty(pkey, desc.DisplayName, variant.Value.ToString()));
+                                if (variant.Value is string str)
+                                {
+                                    result.Add(new VMFileProperty(pkey, desc.DisplayName, str));
+                                }
+                                else if (variant.Value is IEnumerable list)
+                                {
+                                    result.Add(new VMFileProperty(pkey, desc.DisplayName, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
+                                }
+                                else
+                                {
+                                    result.Add(new VMFileProperty(pkey, desc.DisplayName, variant.Value.ToString()));
+                                }
                             }
                         }
                     }

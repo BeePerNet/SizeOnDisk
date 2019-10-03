@@ -110,13 +110,13 @@
                                                                 <ColumnDefinition Width="*"/>
                                                             </Grid.ColumnDefinitions>
                                                             <Ellipse Grid.Column="1" Opacity="0.6" x:Name="circle" Fill="White" HorizontalAlignment="Center" Height="16" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center" Width="16"/>
-                                                            <Path Grid.Column="1" Opacity="0.6" x:Name="arrow" Data="M0,0L4,6L8,0" HorizontalAlignment="Center" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center"/>
+                                                            <Path Grid.Column="1" Opacity="0.6" x:Name="arrow" Data="M4,5 L8,11 L12,5" HorizontalAlignment="Center" Stroke="#FF333333" StrokeThickness="1" VerticalAlignment="Center" Width="16" Height="16"/>
                                                             <ContentPresenter Grid.Column="2" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
                                                         </Grid>
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsChecked" Value="True">
-                                                            <Setter Property="Data" TargetName="arrow" Value="M0,6L4,0 8,6"/>
+                                                            <Setter Property="Data" TargetName="arrow" Value="M4,11 L8,5 L12,11"/>
                                                         </Trigger>
                                                         <Trigger Property="IsMouseOver" Value="True">
                                                             <Setter Property="Stroke" TargetName="circle" Value="#FF5593FF"/>
@@ -171,15 +171,17 @@
                          Style="{StaticResource CopyTextBox}" />
                 </Grid>
             </Expander.Header>
-            <Grid>
+            <Grid HorizontalAlignment="Left">
                 <Grid.Resources>
                     <Style BasedOn="{StaticResource CopyTextBlock}" TargetType="{x:Type TextBlock}">
-                        <Setter Property="Margin" Value="2,0" />
+                        <Setter Property="Margin" Value="5,0" />
+                        <Setter Property="HorizontalAlignment" Value="Right" />
                     </Style>
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
+                    <ColumnDefinition Width="20" />
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -195,52 +197,55 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.HardDrivePath, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="1" Text="Hard drive size" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveSize,Converter={conv:SizeConverter}, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="2" Text="{lex:Loc HardDriveUsage}" />
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveUsage,Converter={conv:SizeConverter}, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="3" Text="{lex:Loc HardDriveFree}" />
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveFree,Converter={conv:SizeConverter}, Mode=OneWay}" />
+                <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.HardDrivePath}" />
+                <TextBlock Grid.Row="1" Text="Hard drive size" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveSize,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="2" Text="{lex:Loc HardDriveUsage}" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveUsage,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="3" Text="{lex:Loc HardDriveFree}" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedRootFolder.HardDriveFree,Converter={conv:SizeConverter}}" />
 
-                <TextBlock HorizontalAlignment="Right" Grid.Row="5" Text="Status" />
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SelectedRootFolder.ExecutionState, Converter={conv:IsRunningConverter}, FallbackValue=..., Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="6" Text="Running time" />
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding SelectedRootFolder.RunTime, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="7" Text="Threads" />
-                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding RunningThreads, Mode=OneWay}" />
+                <TextBlock Grid.Row="5" Text="Status" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SelectedRootFolder.ExecutionState, Converter={conv:IsRunningConverter}, FallbackValue=...}" />
+                <TextBlock Grid.Row="6" Text="Running time" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding SelectedRootFolder.RunTime}" />
+                <TextBlock Grid.Row="7" Text="Threads" />
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding RunningThreads}" />
 
-                <TextBlock Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.Path, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="1" Grid.Column="2" Text="Total file size" />
-                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding SelectedRootFolder.FileSize,Converter={conv:SizeConverter}, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="2" Grid.Column="2" Text="Total disk size" />
-                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding SelectedRootFolder.DiskSize,Converter={conv:SizeConverter}, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="3" Grid.Column="2" Text="Total number of folders" />
-                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding SelectedRootFolder.FolderTotal, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="4" Grid.Column="2" Text="Total number of files" />
-                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding SelectedRootFolder.FileTotal, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="5" Grid.Column="2" Text="Number of folders" />
-                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding SelectedRootFolder.Folders.Count, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="6" Grid.Column="2" Text="Number of files" />
-                <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding SelectedRootFolder.FileCount, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="7" Grid.Column="2" Text="Number of items" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding SelectedRootFolder.Childs.Count, StringFormat=N0, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Grid.Column="3" Text="Total file size" />
+                <TextBlock Grid.Row="2" Grid.Column="3" Text="Total disk size" />
+                <TextBlock Grid.Row="3" Grid.Column="3" Text="Total number of folders" />
+                <TextBlock Grid.Row="4" Grid.Column="3" Text="Total number of files" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Text="Number of folders" />
+                <TextBlock Grid.Row="6" Grid.Column="3" Text="Number of files" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Text="Number of items" />
 
-                <TextBlock Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding SelectedRootFolder.SelectedTreeItem.Path, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="1" Grid.Column="4" Text="Total file size" />
-                <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileSize,Converter={conv:SizeConverter}, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="2" Grid.Column="4" Text="Total disk size" />
-                <TextBlock Grid.Row="2" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.DiskSize,Converter={conv:SizeConverter}, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="3" Grid.Column="4" Text="Total number of folders" />
-                <TextBlock Grid.Row="3" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FolderTotal, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="4" Grid.Column="4" Text="Total number of files" />
-                <TextBlock Grid.Row="4" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileTotal, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="5" Grid.Column="4" Text="Number of folders" />
-                <TextBlock Grid.Row="5" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.Folders.Count, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="6" Grid.Column="4" Text="Number of files" />
-                <TextBlock Grid.Row="6" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileCount, StringFormat=N0, Mode=OneWay}" />
-                <TextBlock HorizontalAlignment="Right" Grid.Row="7" Grid.Column="4" Text="Number of items" />
-                <TextBlock Grid.Row="7" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.Childs.Count, StringFormat=N0, Mode=OneWay}" />
+                <TextBlock Grid.Column="4" TextTrimming="CharacterEllipsis" MaxWidth="125" Text="{Binding SelectedRootFolder.Path}" ToolTip="{Binding SelectedRootFolder.Path}" />
+                <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding SelectedRootFolder.FileSize,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding SelectedRootFolder.DiskSize,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding SelectedRootFolder.FolderTotal, StringFormat=N0}" />
+                <TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding SelectedRootFolder.FileTotal, StringFormat=N0}" />
+                <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding SelectedRootFolder.Folders.Count, StringFormat=N0}" />
+                <TextBlock Grid.Row="6" Grid.Column="4" Text="{Binding SelectedRootFolder.FileCount, StringFormat=N0}" />
+                <TextBlock Grid.Row="7" Grid.Column="4" Text="{Binding SelectedRootFolder.Childs.Count, StringFormat=N0}" />
+
+                <TextBlock Grid.Column="5" TextTrimming="CharacterEllipsis" MaxWidth="125" Text="{Binding SelectedRootFolder.SelectedTreeItem.Path}" ToolTip="{Binding SelectedRootFolder.SelectedTreeItem.Path}" />
+                <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileSize,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="2" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.DiskSize,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="3" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FolderTotal, StringFormat=N0}" />
+                <TextBlock Grid.Row="4" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileTotal, StringFormat=N0}" />
+                <TextBlock Grid.Row="5" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.Folders.Count, StringFormat=N0}" />
+                <TextBlock Grid.Row="6" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.FileCount, StringFormat=N0}" />
+                <TextBlock Grid.Row="7" Grid.Column="5" Text="{Binding SelectedRootFolder.SelectedTreeItem.Childs.Count, StringFormat=N0}" />
+
+                <TextBlock Grid.Column="6" TextTrimming="CharacterEllipsis" MaxWidth="125" Text="{Binding SelectedRootFolder.SelectedListItemsName}" ToolTip="{Binding SelectedRootFolder.SelectedListItemsName}" />
+                <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding SelectedRootFolder.SelectedListItemsFileSize,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="2" Grid.Column="6" Text="{Binding SelectedRootFolder.SelectedListItemsDiskSize,Converter={conv:SizeConverter}}" />
+                <TextBlock Grid.Row="3" Grid.Column="6" Text="{Binding SelectedRootFolder.SelectedListItemsFolderTotal, StringFormat=N0}" />
+                <TextBlock Grid.Row="4" Grid.Column="6" Text="{Binding SelectedRootFolder.SelectedListItemsFileTotal, StringFormat=N0}" />
+                <TextBlock Grid.Row="5" Grid.Column="6" Text="{Binding SelectedRootFolder.SelectedListItemsFolderCount, StringFormat=N0}" />
+                <TextBlock Grid.Row="6" Grid.Column="6" Text="{Binding SelectedRootFolder.SelectedListItemsFileCount, StringFormat=N0}" />
+                <TextBlock Grid.Row="7" Grid.Column="6" Text="{Binding SelectedRootFolder.SelectedListItemsCount, StringFormat=N0}" />
             </Grid>
         </Expander>
         <StatusBar DockPanel.Dock="Bottom"
@@ -292,31 +297,31 @@
                            Content="{Binding SelectedRootFolder.RunTime}" />
 
             <StatusBarItem Grid.Column="6"
-                           Content="{Binding SelectedRootFolder.SelectedTreeItem.Folders.Count}"
+                           Content="{Binding SelectedRootFolder.SelectedListItemsFolderCount}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFolders}" />
             <Separator Grid.Column="7" />
             <StatusBarItem Grid.Column="8"
-                           Content="{Binding SelectedRootFolder.SelectedTreeItem.FileCount}"
+                           Content="{Binding SelectedRootFolder.SelectedListItemsFileCount}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFiles}" />
             <Separator Grid.Column="9" />
             <StatusBarItem Grid.Column="10"
-                           Content="{Binding SelectedRootFolder.SelectedTreeItem.FolderTotal}"
+                           Content="{Binding SelectedRootFolder.SelectedListItemsFolderTotal}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFolders}" />
             <Separator Grid.Column="11" />
             <StatusBarItem Grid.Column="12"
-                           Content="{Binding SelectedRootFolder.SelectedTreeItem.FileTotal}"
+                           Content="{Binding SelectedRootFolder.SelectedListItemsFileTotal}"
                            ContentStringFormat="N0"
                            ToolTip="{lex:Loc TotalFiles}" />
             <Separator Grid.Column="13" />
             <StatusBarItem Grid.Column="14"
-                           Content="{Binding SelectedRootFolder.SelectedTreeItem.FileSize, Converter={conv:SizeConverter}}"
+                           Content="{Binding SelectedRootFolder.SelectedListItemsFileSize, Converter={conv:SizeConverter}}"
                            ToolTip="{lex:Loc TotalFileSize}" />
             <Separator Grid.Column="15" />
             <StatusBarItem Grid.Column="16"
-                           Content="{Binding SelectedRootFolder.SelectedTreeItem.DiskSize, Converter={conv:SizeConverter}}"
+                           Content="{Binding SelectedRootFolder.SelectedListItemsDiskSize, Converter={conv:SizeConverter}}"
                            ToolTip="{lex:Loc TotalDiskSize}" />
             <Separator Grid.Column="17" />
             <StatusBarItem Grid.Column="18"
@@ -540,7 +545,7 @@
                                       ContextMenu="{StaticResource DefaultCopyMenu}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Width="175" Header="Name" Binding="{Binding Name}" />
-                                    <DataGridTextColumn Width="175" Header="Value" Binding="{Binding Value}" />
+                                    <DataGridTextColumn Width="*" Header="Value" Binding="{Binding Value}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
