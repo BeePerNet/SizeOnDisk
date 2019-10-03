@@ -180,7 +180,7 @@ namespace SizeOnDisk.ViewModel
             }
             protected set
             {
-                if (value != _FileSize)
+                if (value != FileSize)
                 {
                     if (value.HasValue)
                     {

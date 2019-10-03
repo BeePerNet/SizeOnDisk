@@ -59,7 +59,7 @@ namespace SizeOnDisk.ViewModel
         private ulong _FileTotal = 1;
         private ulong _FolderTotal = 0;
 
-        public ulong? FileCount => (ulong?)(Childs?.Count - Folders?.Count);
+        public ulong? FileCount => (ulong)(Childs.Count - Folders.Count);
 
         public override ulong? FolderTotal
         {
