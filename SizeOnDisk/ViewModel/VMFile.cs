@@ -140,14 +140,61 @@ namespace SizeOnDisk.ViewModel
 
         public virtual bool IsFile => true;
 
-        private ulong? _FileSize = null;
-        private ulong? _DiskSize = null;
-
+        private ulong _FileSize = 0;
+        private ulong _DiskSize = 0;
 
         public virtual ulong? FileTotal { get => 1; protected set { } }
         public virtual ulong? FolderTotal { get => null; protected set { } }
-        public ulong? DiskSize { get => _DiskSize; protected set => SetProperty(ref _DiskSize, value); }
-        public ulong? FileSize { get => _FileSize; protected set => SetProperty(ref _FileSize, value); }
+        public ulong? DiskSize
+        {
+            get
+            {
+                if ((_Attributes & FileAttributesEx.DiskSizeValue) == FileAttributesEx.DiskSizeValue)
+                    return _DiskSize;
+                return null;
+            }
+            protected set
+            {
+                if (value != DiskSize)
+                {
+                    if (value.HasValue)
+                    {
+                        _DiskSize = value.Value;
+                        _Attributes |= FileAttributesEx.DiskSizeValue;
+                    }
+                    else
+                    {
+                        _Attributes &= ~FileAttributesEx.DiskSizeValue;
+                    }
+                    OnPropertyChanged(nameof(DiskSize));
+                }
+            }
+        }
+        public ulong? FileSize
+        {
+            get
+            {
+                if ((_Attributes & FileAttributesEx.FileSizeValue) == FileAttributesEx.FileSizeValue)
+                    return _FileSize;
+                return null;
+            }
+            protected set
+            {
+                if (value != _FileSize)
+                {
+                    if (value.HasValue)
+                    {
+                        _FileSize = value.Value;
+                        _Attributes |= FileAttributesEx.FileSizeValue;
+                    }
+                    else
+                    {
+                        _Attributes &= ~FileAttributesEx.FileSizeValue;
+                    }
+                    OnPropertyChanged(nameof(FileSize));
+                }
+            }
+        }
 
         public bool IsProtected
         {
@@ -253,7 +300,7 @@ namespace SizeOnDisk.ViewModel
 
         internal virtual void Refresh(LittleFileInfo fileInfo)
         {
-            _Attributes = ((FileAttributesEx)fileInfo.Attributes) | (_Attributes & FileAttributesEx.ExMask);
+            _Attributes = ((FileAttributesEx)fileInfo.Attributes) | (_Attributes & FileAttributesEx.Mask);
             OnPropertyChanged(nameof(Attributes));
             OnPropertyChanged(nameof(IsLink));
             if (IsFile)
@@ -261,7 +308,6 @@ namespace SizeOnDisk.ViewModel
                 FileSize = fileInfo.Size;
                 DiskSize = (((fileInfo.CompressedSize ?? FileSize) + Root.ClusterSize - 1) / Root.ClusterSize) * Root.ClusterSize;
             }
-
         }
 
         public void RefreshOnView()

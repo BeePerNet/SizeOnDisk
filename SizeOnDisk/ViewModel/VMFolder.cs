@@ -56,22 +56,64 @@ namespace SizeOnDisk.ViewModel
 
         public override string Extension => string.Empty;
 
-        private ulong? _FileTotal = 1;
-        private ulong? _FolderTotal = null;
+        private ulong _FileTotal = 1;
+        private ulong _FolderTotal = 0;
 
         public ulong? FileCount => (ulong?)(Childs?.Count - Folders?.Count);
 
-        public override ulong? FileTotal
-        {
-            get => _FileTotal;
-            protected set => SetProperty(ref _FileTotal, value);
-        }
-
         public override ulong? FolderTotal
         {
-            get => _FolderTotal;
-            protected set => SetProperty(ref _FolderTotal, value);
+            get
+            {
+                if ((_Attributes & FileAttributesEx.FolderTotalValue) == FileAttributesEx.FolderTotalValue)
+                    return _FolderTotal;
+                return null;
+            }
+            protected set
+            {
+                if (value != FolderTotal)
+                {
+                    if (value.HasValue)
+                    {
+                        _FolderTotal = value.Value;
+                        _Attributes |= FileAttributesEx.FolderTotalValue;
+                    }
+                    else
+                    {
+                        _Attributes &= ~FileAttributesEx.FolderTotalValue;
+                    }
+                    OnPropertyChanged(nameof(FolderTotal));
+                }
+            }
         }
+
+
+        public override ulong? FileTotal
+        {
+            get
+            {
+                if ((_Attributes & FileAttributesEx.FileTotalValue) == FileAttributesEx.FileTotalValue)
+                    return _FileTotal;
+                return null;
+            }
+            protected set
+            {
+                if (value != FileTotal)
+                {
+                    if (value.HasValue)
+                    {
+                        _FileTotal = value.Value;
+                        _Attributes |= FileAttributesEx.FileTotalValue;
+                    }
+                    else
+                    {
+                        _Attributes &= ~FileAttributesEx.FileTotalValue;
+                    }
+                    OnPropertyChanged(nameof(FileTotal));
+                }
+            }
+        }
+
 
 
         public bool IsTreeSelected
@@ -217,7 +259,7 @@ namespace SizeOnDisk.ViewModel
                 string fileName = subpath;
                 if (fileName.Contains("\\"))
                 {
-                    int idx = fileName.IndexOf("\\");
+                    int idx = fileName.IndexOf("\\", StringComparison.Ordinal);
                     fileName = fileName.Remove(idx);
                     subpath = subpath.Remove(0, idx);
                 }
@@ -225,7 +267,7 @@ namespace SizeOnDisk.ViewModel
                 {
                     subpath = null;
                 }
-                VMFile vmfile = Childs.SingleOrDefault(T => T.Name.Equals(fileName, StringComparison.CurrentCultureIgnoreCase));
+                VMFile vmfile = Childs.SingleOrDefault(T => T.Name.Equals(fileName, StringComparison.OrdinalIgnoreCase));
                 if (vmfile == null)
                     throw new FileNotFoundException(null, path);
                 if (subpath != null && vmfile is VMFolder folder)
@@ -246,7 +288,7 @@ namespace SizeOnDisk.ViewModel
         public virtual void RefreshCount()
         {
             OnPropertyChanged(nameof(FileCount));
-            if (IsProtected)
+            if (IsProtected || IsLink)
             {
                 FileTotal = null;
                 FolderTotal = null;

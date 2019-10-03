@@ -153,9 +153,9 @@ namespace SizeOnDisk.ViewModel
         #region fields
 
         private readonly Stopwatch _Runwatch = new Stopwatch();
-        private ulong _HardDriveUsage;
-        private ulong _HardDriveFree;
-        private ulong _HardDriveSize;
+        private ulong? _HardDriveUsage;
+        private ulong? _HardDriveFree;
+        private ulong? _HardDriveSize;
         private TaskExecutionState _ExecutionState = TaskExecutionState.Ready;
 
         #endregion fields
@@ -212,31 +212,34 @@ namespace SizeOnDisk.ViewModel
 
         internal void SelectedListItemsChanged()
         {
-            VMFile[] list = SelectedTreeItem.Childs.Where(T => T.IsSelected).ToArray();
-            if (list.Length > 0)
+            if (SelectedTreeItem != null)
             {
-                if (list.Length == 1)
-                    SelectedListItemsName = list.First().Path;
+                VMFile[] list = SelectedTreeItem.Childs.Where(T => T.IsSelected).ToArray();
+                if (list.Length > 0)
+                {
+                    if (list.Length == 1)
+                        SelectedListItemsName = list.First().Path;
+                    else
+                        SelectedListItemsName = $"{list.Length} selected items";
+                    SelectedListItemsCount = (ulong)list.Length;
+                    SelectedListItemsFileSize = Sum(list.Select(T => T.FileSize));
+                    SelectedListItemsDiskSize = Sum(list.Select(T => T.DiskSize));
+                    SelectedListItemsFolderTotal = Sum(list.Select(T => T.FolderTotal));
+                    SelectedListItemsFileTotal = Sum(list.Select(T => T.FileTotal));
+                    SelectedListItemsFolderCount = (ulong)list.Count(T => !T.IsFile);
+                    SelectedListItemsFileCount = (ulong)list.Count(T => T.IsFile);
+                }
                 else
-                    SelectedListItemsName = $"{list.Length} selected items";
-                SelectedListItemsCount = (ulong)list.Length;
-                SelectedListItemsFileSize = Sum(list.Select(T => T.FileSize));
-                SelectedListItemsDiskSize = Sum(list.Select(T => T.DiskSize));
-                SelectedListItemsFolderTotal = Sum(list.Select(T => T.FolderTotal));
-                SelectedListItemsFileTotal = Sum(list.Select(T => T.FileTotal));
-                SelectedListItemsFolderCount = (ulong)list.Count(T => !T.IsFile);
-                SelectedListItemsFileCount = (ulong)list.Count(T => T.IsFile);
-            }
-            else
-            {
-                SelectedListItemsName = SelectedTreeItem.Path;
-                SelectedListItemsCount = (ulong)SelectedTreeItem.Childs.Count;
-                SelectedListItemsFileSize = SelectedTreeItem.FileSize ?? 0;
-                SelectedListItemsDiskSize = SelectedTreeItem.DiskSize ?? 0;
-                SelectedListItemsFolderTotal = SelectedTreeItem.FolderTotal ?? 0;
-                SelectedListItemsFileTotal = SelectedTreeItem.FileTotal ?? 0;
-                SelectedListItemsFolderCount = (ulong)SelectedTreeItem.Folders.Count;
-                SelectedListItemsFileCount = SelectedTreeItem.FileCount ?? 0;
+                {
+                    SelectedListItemsName = SelectedTreeItem.Path;
+                    SelectedListItemsCount = (ulong)SelectedTreeItem.Childs.Count;
+                    SelectedListItemsFileSize = SelectedTreeItem.FileSize ?? 0;
+                    SelectedListItemsDiskSize = SelectedTreeItem.DiskSize ?? 0;
+                    SelectedListItemsFolderTotal = SelectedTreeItem.FolderTotal ?? 0;
+                    SelectedListItemsFileTotal = SelectedTreeItem.FileTotal ?? 0;
+                    SelectedListItemsFolderCount = (ulong)SelectedTreeItem.Folders.Count;
+                    SelectedListItemsFileCount = SelectedTreeItem.FileCount ?? 0;
+                }
             }
         }
 
@@ -306,19 +309,19 @@ namespace SizeOnDisk.ViewModel
 
         public TimeSpan RunTime => _Runwatch.Elapsed;
 
-        public ulong HardDriveUsage
+        public ulong? HardDriveUsage
         {
             get => _HardDriveUsage;
             protected set => SetProperty(ref _HardDriveUsage, value);
         }
 
-        public ulong HardDriveFree
+        public ulong? HardDriveFree
         {
             get => _HardDriveFree;
             protected set => SetProperty(ref _HardDriveFree, value);
         }
 
-        public ulong HardDriveSize
+        public ulong? HardDriveSize
         {
             get => _HardDriveSize;
             protected set => SetProperty(ref _HardDriveSize, value);
@@ -375,7 +378,7 @@ namespace SizeOnDisk.ViewModel
             _ExecutionState = TaskExecutionState.Designing;
 
 
-            HardDriveUsage = DiskSize ?? 0;
+            HardDriveUsage = DiskSize;
             HardDriveSize = 1000202039296000000;
             HardDriveFree = HardDriveSize - HardDriveUsage;
         }

@@ -39,7 +39,7 @@ namespace SizeOnDisk.ViewModel
                                     /// <summary>Le fichier ou le répertoire est chiffré. Cela signifie pour un fichier, que toutes ses données sont chiffrées. Pour un répertoire, cela signifie que tous les fichiers et répertoires créés sont chiffrés par défaut.</summary>
         Encrypted = 0x4000, // 0x00004000
 
-        Write_Through = 0x80000000,
+        WriteThrough = 0x80000000,
         Overlapped = 0x40000000,
         NoBuffering = 0x20000000,
         RandomAccess = 0x10000000,
@@ -55,16 +55,23 @@ namespace SizeOnDisk.ViewModel
         [ComVisible(false)] IntegrityStream = 0x8000, // 0x00008000
                                                       /// <summary>Le fichier ou le répertoire est exclu de l’analyse d’intégrité des données. Quand cette valeur est appliquée à un répertoire, tous les nouveaux fichiers et sous-répertoires de ce répertoire sont exclus par défaut de l’analyse d’intégrité des données.</summary>
         [ComVisible(false)] NoScrubData = 0x00020000, // 0x00020000
+                     
+        Protected = 0x1000000,
 
-        //Custom ones
-        Protected = 0x10000000,
+        Selected = 0x2000000,
 
-        Selected = 0x20000000,
+        Expanded = 0x4000000,
 
-        Expanded = 0x40000000,
+        TreeSelected = 0x8000000,
 
-        TreeSelected = 0x80000000,
+        FileSizeValue = 0x10000000,
 
-        ExMask = 0xF0000000
+        DiskSizeValue = 0x20000000,
+
+        FileTotalValue = 0x40000000,
+
+        FolderTotalValue = 0x80000000,
+
+        Mask=0xFF000000
     }
 }

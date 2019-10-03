@@ -69,7 +69,7 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <Expander Margin="1" Padding="1" DockPanel.Dock="Top">
+        <Expander Margin="1" Padding="1" DockPanel.Dock="Top" FocusManager.IsFocusScope="True">
             <Expander.Template>
                 <ControlTemplate TargetType="{x:Type Expander}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="3">
@@ -156,22 +156,26 @@
             </Expander.Template>
             <Expander.Header>
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="9*"/>
+                        <RowDefinition Height="10*"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectPreviousCommand}" />
-                    <Button Grid.Column="1" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectNextCommand}" />
-                    <Button Grid.Column="2" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectParentCommand}" />
+                    <Button cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectPreviousCommand}" Grid.RowSpan="2" />
+                    <Button Grid.Column="1" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectNextCommand}" Grid.RowSpan="2" />
+                    <Button Grid.Column="2" cmd:CommandBehavior.Command="{x:Static vm:VMRootFolder.SelectParentCommand}" Grid.RowSpan="2" />
                     <TextBox Grid.Column="3" Text="{Binding SelectedRootFolder.SelectedListItem.Path,Mode=OneWay}"
                          IsReadOnlyCaretVisible="True" 
                          IsReadOnly="True" 
-                         Style="{StaticResource CopyTextBox}" />
+                         Style="{StaticResource CopyTextBox}" Grid.RowSpan="2" />
                 </Grid>
             </Expander.Header>
-            <Grid HorizontalAlignment="Left">
+            <Grid HorizontalAlignment="Left" cmd:GlobalizationBehavior.UpdateChildsBindings=",UISize">
                 <Grid.Resources>
                     <Style BasedOn="{StaticResource CopyTextBlock}" TargetType="{x:Type TextBlock}">
                         <Setter Property="Margin" Value="5,0" />
@@ -258,7 +262,7 @@
             </StatusBar.Resources>
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Grid>
+                    <Grid cmd:GlobalizationBehavior.UpdateChildsBindings=",UISize">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -355,14 +359,14 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TreeView BorderThickness="1"
-                                      FocusManager.IsFocusScope="True"
-                                      dd:DragDrop.IsDragSource="True"
-                                      dd:DragDrop.DragHandler="{Binding}"
-                                      dd:DragDrop.IsDropTarget="True"
-                                      dd:DragDrop.DropHandler="{Binding}"
+                                  FocusManager.IsFocusScope="True"
+                                  dd:DragDrop.IsDragSource="True"
+                                  dd:DragDrop.DragHandler="{Binding}"
+                                  dd:DragDrop.IsDropTarget="True"
+                                  dd:DragDrop.DropHandler="{Binding}"
                                   ItemsSource="{Binding DummyMe}"
+                                  ContextMenu="{StaticResource VMContextMenu}"
                                   DisplayMemberPath="Name"
-                                      ContextMenu="{StaticResource VMContextMenu}"
                                   cmd:ControlBehavior.FocusMouseRightButtonDown="True">
                             <TreeView.ItemContainerStyle>
                                 <Style TargetType="{x:Type TreeViewItem}">
@@ -372,6 +376,7 @@
                                     <Setter Property="IsSelected" Value="{Binding IsTreeSelected, Mode=TwoWay}" />
                                     <Setter Property="ItemsSource" Value="{Binding Folders}" />
                                     <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
+                                    <Setter Property="ContextMenu" Value="{StaticResource VMContextMenu}" />
                                     <Setter Property="HeaderTemplate">
                                         <Setter.Value>
                                             <DataTemplate >
@@ -395,9 +400,9 @@
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}"
                                       dd:DragDrop.SelectDroppedItems="True"
-                                      ContextMenu="{StaticResource VMContextMenu}"
                                   ItemsSource="{Binding Childs}"
                                   BorderThickness="1"
+                                  ContextMenu="{StaticResource VMContextMenu}"
                                   SelectedItem="{Binding Root.SelectedItem}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
@@ -408,6 +413,7 @@
                                         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                         <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                         <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
+                                        <Setter Property="ContextMenu" Value="{StaticResource VMContextMenu}" />
                                     </Style>
                                 </ListView.Resources>
                                 <ListView.ItemsPanel>
@@ -436,17 +442,17 @@
                                   VirtualizingStackPanel.VirtualizationMode="Standard"
                                   cmd:SelectorBehavior.SyncIsSelectedWhenSelected="IsSelected"
                                   cmd:SelectorBehavior.IsBroughtIntoViewWhenSelected="True"
-                                      dd:DragDrop.IsDragSource="True"
-                                      dd:DragDrop.DragHandler="{Binding}"
-                                      dd:DragDrop.IsDropTarget="True"
-                                      dd:DragDrop.DropHandler="{Binding}"
-                                      dd:DragDrop.SelectDroppedItems="True"
+                                  dd:DragDrop.IsDragSource="True"
+                                  dd:DragDrop.DragHandler="{Binding}"
+                                  dd:DragDrop.IsDropTarget="True"
+                                  dd:DragDrop.DropHandler="{Binding}"
+                                  dd:DragDrop.SelectDroppedItems="True"
                                   BorderThickness="1"
                                   SelectedItem="{Binding Root.SelectedItem}"
                                   HeadersVisibility="Column"
                                   ItemsSource="{Binding Childs}"
                                   AutoGenerateColumns="False"
-                                      ContextMenu="{StaticResource VMContextMenu}"
+                                  ContextMenu="{StaticResource VMContextMenu}"
                                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                   HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                   VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
@@ -460,6 +466,7 @@
                                         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                         <EventSetter Event="MouseDoubleClick" Handler="Selector_MouseDoubleClick"/>
                                         <Setter Property="cmd:CommandBehavior.Context" Value="{Binding}" />
+                                        <Setter Property="ContextMenu" Value="{StaticResource VMContextMenu}" />
                                     </Style>
                                 </DataGrid.Resources>
                                 <DataGrid.Columns>
