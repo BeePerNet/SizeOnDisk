@@ -26,7 +26,7 @@ namespace SizeOnDisk.Shell
             }
 
             string fullfilename = FullPath;
-            if (!fullfilename.StartsWith("\\\\"))
+            if (!fullfilename.StartsWith("\\\\", StringComparison.Ordinal))
                 fullfilename = string.Concat("\\\\?\\", fullfilename);
             ShellHelper.FillAttributeInfo(fullfilename, ref _data);
             if ((Attributes & FileAttributes.Compressed) == FileAttributes.Compressed)

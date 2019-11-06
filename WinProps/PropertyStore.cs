@@ -108,9 +108,8 @@ namespace WinProps {
 		/// Creates an in-memory <see cref="GetFlags.ReadWrite"/> <see cref="PropertyStore"/> 
 		/// </summary>
 		public PropertyStore() {
-			IntPtr ppv = IntPtr.Zero;
-			PSCreateMemoryPropertyStore(IID.IPropertyStore, out ppv);
-			_pStore = (IPropertyStore)Marshal.GetUniqueObjectForIUnknown(ppv);
+            PSCreateMemoryPropertyStore(IID.IPropertyStore, out IntPtr ppv);
+            _pStore = (IPropertyStore)Marshal.GetUniqueObjectForIUnknown(ppv);
 			Marshal.Release(ppv);
 		}
 
@@ -215,18 +214,22 @@ namespace WinProps {
 					else
 						file = Path.GetFileName(path);
 					WIN32_FIND_DATA fd = new WIN32_FIND_DATA() { nFileSizeLow = 42 };
-					FakeFile f = new FakeFile(ref fd, file);
-					_pSource = (IShellItem2)f.GetShellItem();
-					IntPtr pUnk = IntPtr.Zero;
-					try {
-						_pSource.GetPropertyStoreForKeys(keyArray, (uint)nKeys, (GETPROPERTYSTOREFLAGS)flags, IID.IPropertyStore, out pUnk);
-						_pStore = (IPropertyStore)Marshal.GetUniqueObjectForIUnknown(pUnk);
-					}
-					finally {
-						if (pUnk != IntPtr.Zero)
-							Marshal.Release(pUnk);
-					}
-				}
+                    using (FakeFile f = new FakeFile(ref fd, file))
+                    {
+                        _pSource = (IShellItem2)f.GetShellItem();
+                        IntPtr pUnk = IntPtr.Zero;
+                        try
+                        {
+                            _pSource.GetPropertyStoreForKeys(keyArray, (uint)nKeys, (GETPROPERTYSTOREFLAGS)flags, IID.IPropertyStore, out pUnk);
+                            _pStore = (IPropertyStore)Marshal.GetUniqueObjectForIUnknown(pUnk);
+                        }
+                        finally
+                        {
+                            if (pUnk != IntPtr.Zero)
+                                Marshal.Release(pUnk);
+                        }
+                    }
+                }
 			}
 			finally {
 				if (keyArray != IntPtr.Zero)
@@ -234,36 +237,50 @@ namespace WinProps {
 			}
 		}
 
-		/// <summary>
-		/// Releases the reference to the internal COM objects required for this object
-		/// </summary>
-		public void Dispose() {
-			if (_pStore != null) {
-				Marshal.FinalReleaseComObject(_pStore);
-				_pStore = null;
-			}
-			if (_pSource != null) {
-				Marshal.FinalReleaseComObject(_pSource);
-				_pSource = null;
-			}
-			GC.SuppressFinalize(this);
-		}
 
-		/// <summary>
-		/// Ensures all COM objects are released when the object is finalised
-		/// </summary>
-		~PropertyStore() {
-			Dispose();
-		}
+        #region IDisposable
+
+        private bool _disposed = false;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+
+            }
+            if (_pStore != null)
+            {
+                Marshal.FinalReleaseComObject(_pStore);
+                _pStore = null;
+            }
+            if (_pSource != null)
+            {
+                Marshal.FinalReleaseComObject(_pSource);
+                _pSource = null;
+            }
+            // free native resources
+            _disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion IDisposable
 
 		/// <summary>
 		/// Gets the number of properties in the <see cref="PropertyStore"/> 
 		/// </summary>
 		public int Count {
 			get {
-				uint count;
-				_pStore.GetCount(out count);
-				return (int)count;
+                _pStore.GetCount(out uint count);
+                return (int)count;
 			}
 		}
 
@@ -343,9 +360,8 @@ namespace WinProps {
 		/// <returns>The state of the requested property</returns>
 		public PropertyState GetState(PropertyKey propKey) {
 			try {
-				PSC_STATE state;
-				IPropertyStoreCache cache = (IPropertyStoreCache)_pStore;
-				cache.GetState(propKey.MarshalledPointer, out state);
+                IPropertyStoreCache cache = (IPropertyStoreCache)_pStore;
+                cache.GetState(propKey.MarshalledPointer, out PSC_STATE state);
 				return (PropertyState)state;
 			}
 			catch (Exception e) {

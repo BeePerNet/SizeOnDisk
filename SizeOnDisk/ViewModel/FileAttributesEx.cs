@@ -7,6 +7,9 @@ namespace SizeOnDisk.ViewModel
     [Flags]
     [ComVisible(true)]
     [Serializable]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1028:Enum Storage should be Int32", Justification = "<En attente>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1008:Enums should have zero value", Justification = "<En attente>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "<En attente>")]
     public enum FileAttributesEx : uint
     {
         Error = 0x0,

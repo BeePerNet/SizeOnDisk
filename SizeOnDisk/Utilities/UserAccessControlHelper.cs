@@ -15,7 +15,6 @@ namespace SizeOnDisk.Utilities
     public static class UserAccessControlHelper
     {
         private const string UnableToGetElevationMessage = "Unable to determine the current elevation.";
-        private const string CouldNotGetTokenMessage = "Could not get process token.";
         private const uint STANDARD_RIGHTS_READ = 0x00020000;
         private const uint TOKEN_QUERY = 0x0008;
         private const uint TOKEN_READ = (STANDARD_RIGHTS_READ | TOKEN_QUERY);

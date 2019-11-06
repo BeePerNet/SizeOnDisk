@@ -68,9 +68,9 @@ namespace SizeOnDisk.Shell
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "False positive")]
         public static string GetShellLinkPath(string file)
         {
-            if (System.IO.Path.GetExtension(file).ToLower() != ".lnk")
+            if (System.IO.Path.GetExtension(file).ToLower(CultureInfo.CurrentCulture) != ".lnk")
             {
-                throw new Exception("Supplied file must be a .LNK file");
+                throw new ArgumentOutOfRangeException(nameof(file), "Supplied file must be a .LNK file");
             }
 
             FileStream fileStream = File.Open(file, FileMode.Open, FileAccess.Read);
@@ -99,10 +99,10 @@ namespace SizeOnDisk.Shell
                 char[] linkTarget = fileReader.ReadChars((int)pathLength); // should be unicode safe
                 var link = new string(linkTarget);
 
-                int begin = link.IndexOf("\0\0");
+                int begin = link.IndexOf("\0\0", StringComparison.Ordinal);
                 if (begin > -1)
                 {
-                    int end = link.IndexOf("\\\\", begin + 2) + 2;
+                    int end = link.IndexOf("\\\\", begin + 2, StringComparison.Ordinal) + 2;
                     end = link.IndexOf('\0', end) + 1;
 
                     string firstPart = link.Substring(0, begin);
@@ -123,7 +123,7 @@ namespace SizeOnDisk.Shell
         {
             WIN32_FIND_DATA win_find_data = new WIN32_FIND_DATA();
             string prefixedfolderPath = folderPath.TrimEnd(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
-            if (!prefixedfolderPath.StartsWith("\\\\"))
+            if (!prefixedfolderPath.StartsWith("\\\\", StringComparison.Ordinal))
                 prefixedfolderPath = string.Concat("\\\\?\\", prefixedfolderPath);
             int num2 = SafeNativeMethods.SetErrorMode(1);
             try
@@ -255,6 +255,14 @@ namespace SizeOnDisk.Shell
             return sectorsPerCluster * bytesPerSector;
         }
 
+        public static void GetDiskFreeSpace(string path, ref long lpFreeBytesAvailableToCaller, ref long lpTotalNumberOfBytes, ref long lpTotalNumberOfFreeBytes)
+        {
+            bool result = SafeNativeMethods.GetDiskFreeSpaceEx(path, ref lpFreeBytesAvailableToCaller, ref lpTotalNumberOfBytes, ref lpTotalNumberOfFreeBytes);
+            if (!result)
+            {
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+            }
+        }
 
         public static string GetFriendlyName(string extension)
         {
@@ -865,6 +873,7 @@ namespace SizeOnDisk.Shell
         /// Run process in elevated privilege
         /// </summary>
         //[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Execution)]
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<En attente>")]
         public static void Restart(bool runAsAdministrator)
         {
             ProcessStartInfo processStartInfo = new ProcessStartInfo

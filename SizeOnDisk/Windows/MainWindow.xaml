@@ -329,8 +329,7 @@
                            ToolTip="{lex:Loc TotalDiskSize}" />
             <Separator Grid.Column="17" />
             <StatusBarItem Grid.Column="18"
-                           Content="{Binding SelectedRootFolder.HardDrivePath}"
-                           ToolTip="{lex:Loc HardDriveUsage}" />
+                           Content="{Binding SelectedRootFolder.HardDrivePath}" />
             <Separator Grid.Column="19" />
             <StatusBarItem Grid.Column="20"
                            Content="{Binding SelectedRootFolder.HardDriveUsage,Converter={conv:SizeConverter}}"

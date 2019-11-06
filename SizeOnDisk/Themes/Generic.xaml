@@ -17,7 +17,7 @@
         <Setter Property="beh:GlobalizationBehavior.UpdateWindow" Value=",UISize" />
         <Setter Property="Icon" Value="../Icons/Hard_Drive.ico" />
     </Style>
-    <Style x:Key="ColoredName" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+    <Style x:Key="ColoredName" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding Attributes, Converter={StaticResource IsEqualConverter},ConverterParameter=Compressed}" Value="True">
                 <Setter Property="Foreground" Value="#3299CA" />

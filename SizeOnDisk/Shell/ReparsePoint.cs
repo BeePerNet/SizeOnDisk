@@ -12,6 +12,8 @@ namespace SizeOnDisk.Shell
     {
 
         [Flags]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1028:Enum Storage should be Int32", Justification = "<En attente>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1008:Enums should have zero value", Justification = "<En attente>")]
         public enum EMethod : uint
         {
             Buffered = 0,
@@ -100,6 +102,9 @@ namespace SizeOnDisk.Shell
         ///     http://msdn.microsoft.com/en-us/library/windows/hardware/ff543023(v=vs.85).aspx
         /// </summary>
         [Flags]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1028:Enum Storage should be Int32", Justification = "<En attente>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2217:Ne pas marquer les enums avec l'attribut FlagsAttribute", Justification = "<En attente>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "<En attente>")]
         public enum EIOControlCode : uint
         {
             // STORAGE
@@ -253,7 +258,7 @@ namespace SizeOnDisk.Shell
         }
 
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool DeviceIoControl(
+        private static extern bool DeviceIoControl(
             IntPtr hDevice,
             EIOControlCode IoControlCode,
             IntPtr InBuffer,
@@ -332,7 +337,7 @@ namespace SizeOnDisk.Shell
             out uint lpBytesReturned,
             IntPtr lpOverlapped);*/
 
-        [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern SafeFileHandle CreateFile(
             string fileName,
             [MarshalAs(UnmanagedType.U4)] EFileAccess fileAccess,
@@ -463,7 +468,7 @@ namespace SizeOnDisk.Shell
                                 // This could be a junction or a mounted drive - a mounted drive starts with "\\??\\Volume"
                                 subsString = new string(buffer.ReparseTarget, buffer.SubsNameOffset / 2, buffer.SubsNameLength / 2);
                                 printString = new string(buffer.ReparseTarget, buffer.PrintNameOffset / 2, buffer.PrintNameLength / 2);
-                                tag = subsString.StartsWith(@"\??\Volume") ? TagType.MountPoint : TagType.JunctionPoint;
+                                tag = subsString.StartsWith(@"\??\Volume", StringComparison.InvariantCultureIgnoreCase) ? TagType.MountPoint : TagType.JunctionPoint;
                             }
                             //Debug.Assert(!(string.IsNullOrEmpty(subsString) && string.IsNullOrEmpty(printString)), "Failed to retrieve parse point");
                             // the printstring should give us what we want
@@ -486,7 +491,7 @@ namespace SizeOnDisk.Shell
                                         normalisedTarget.StartsWith(@"\??\Volume") ||
                                         normalisedTarget[1] == ':',
                                     "Relative junction point");*/
-                                if (normalisedTarget.StartsWith(@"\??\"))
+                                if (normalisedTarget.StartsWith(@"\??\", StringComparison.Ordinal))
                                 {
                                     normalisedTarget = normalisedTarget.Substring(4);
                                 }
@@ -500,7 +505,7 @@ namespace SizeOnDisk.Shell
                                 {
                                     normalisedTarget = normalisedTarget.Substring(1);
                                 }
-                                if (path.EndsWith(@"\"))
+                                if (path.EndsWith(@"\", StringComparison.Ordinal))
                                 {
                                     path = path.Substring(0, path.Length - 1);
                                 }
@@ -509,7 +514,7 @@ namespace SizeOnDisk.Shell
                                 // Note that if the symlink target path contains any ..s these are not normalised but returned as is.
                             }
                             // Remove any final slash for consistency
-                            if (normalisedTarget.EndsWith("\\"))
+                            if (normalisedTarget.EndsWith("\\", StringComparison.Ordinal))
                             {
                                 normalisedTarget = normalisedTarget.Substring(0, normalisedTarget.Length - 1);
                             }

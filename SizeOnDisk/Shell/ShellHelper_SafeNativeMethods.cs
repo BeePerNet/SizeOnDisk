@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 
 namespace SizeOnDisk.Shell
@@ -80,6 +82,20 @@ namespace SizeOnDisk.Shell
                out uint lpSectorsPerCluster, out uint lpBytesPerSector, out uint lpNumberOfFreeClusters,
                out uint lpTotalNumberOfClusters);
 
+
+
+            [SuppressMessage("Microsoft.Security", "CA2118:ReviewSuppressUnmanagedCodeSecurityUsage"), SuppressUnmanagedCodeSecurity]
+            [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+
+            public static extern bool GetDiskFreeSpaceEx
+            (
+                string lpszPath,                    // Must name a folder, must end with '\'.
+                ref long lpFreeBytesAvailableToCaller,
+                ref long lpTotalNumberOfBytes,
+                ref long lpTotalNumberOfFreeBytes
+            );
+                                                                                
             [DllImport("shell32.dll", CharSet = CharSet.Auto)]
             public static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 

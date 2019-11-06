@@ -51,12 +51,12 @@ namespace SizeOnDisk.Properties
                 DeleteFiles(parentPath);
                 foreach (string dir in Directory.GetDirectories(parentPath))
                 {
-                    if (fullFilePath.StartsWith(dir))
+                    if (fullFilePath.StartsWith(dir, StringComparison.Ordinal))
                     {
                         DeleteFiles(dir);
                         foreach (string versiondir in Directory.GetDirectories(dir))
                         {
-                            if (!fullFilePath.StartsWith(versiondir))
+                            if (!fullFilePath.StartsWith(versiondir, StringComparison.Ordinal))
                             {
                                 Directory.Delete(versiondir, true);
                             }

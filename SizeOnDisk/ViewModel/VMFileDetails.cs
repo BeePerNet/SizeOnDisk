@@ -74,6 +74,8 @@ namespace SizeOnDisk.ViewModel
         public DateTime CreationTime { get; private set; }
         public DateTime LastAccessTime { get; private set; }
         public DateTime LastWriteTime { get; private set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<En attente>")]
         public BitmapSource Icon
         {
             get
@@ -111,6 +113,8 @@ namespace SizeOnDisk.ViewModel
 
         //Seems to have problems with VOB
         private BitmapSource _Thumbnail = null;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<En attente>")]
         public BitmapSource Thumbnail
         {
             get
@@ -312,45 +316,49 @@ namespace SizeOnDisk.ViewModel
             }
         }
 
-
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<En attente>")]
         private void FillProperties()
         {
             List<VMFileProperty> result = new List<VMFileProperty>();
-            PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort);
-            foreach (PropertyKey key in store)
+            using (PropertyStore store = new PropertyStore(_vmFile.Path, PropertyStore.GetFlags.BestEffort))
             {
-                try
+                foreach (PropertyKey key in store)
                 {
-                    string pkey = key.CanonicalName;
-                    /*if (name.StartsWith("System."))
-                        name = name.Remove(0, 7);*/
-                    if (pkey != null)
+                    try
                     {
-                        PropertyDescription desc = new PropertyDescription(key);
-                        PropVariant variant = store.GetValue(key);
-
-                        if (variant != null)
+                        string pkey = key.CanonicalName;
+                        /*if (name.StartsWith("System."))
+                            name = name.Remove(0, 7);*/
+                        if (pkey != null)
                         {
-                            if (variant.Value != null)
+                            using (PropertyDescription desc = new PropertyDescription(key))
                             {
-                                if (variant.Value is string str)
+                                PropVariant variant = store.GetValue(key);
+
+                                if (variant != null)
                                 {
-                                    result.Add(new VMFileProperty(pkey, desc.DisplayName, str));
-                                }
-                                else if (variant.Value is IEnumerable list)
-                                {
-                                    result.Add(new VMFileProperty(pkey, desc.DisplayName, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
-                                }
-                                else
-                                {
-                                    result.Add(new VMFileProperty(pkey, desc.DisplayName, variant.Value.ToString()));
+                                    if (variant.Value != null)
+                                    {
+                                        if (variant.Value is string str)
+                                        {
+                                            result.Add(new VMFileProperty(pkey, desc.DisplayName, str));
+                                        }
+                                        else if (variant.Value is IEnumerable list)
+                                        {
+                                            result.Add(new VMFileProperty(pkey, desc.DisplayName, string.Join(Environment.NewLine, list.Cast<object>().Select(T => T.ToString()))));
+                                        }
+                                        else
+                                        {
+                                            result.Add(new VMFileProperty(pkey, desc.DisplayName, variant.Value.ToString()));
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                catch (Exception)
-                {
+                    catch (Exception)
+                    {
+                    }
                 }
             }
             _Properties = result.OrderBy(T => T.Name);

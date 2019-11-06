@@ -5,6 +5,7 @@ namespace SizeOnDisk.ViewModel
 {
     public static class TaskHelper
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<En attente>")]
         public static Exception SafeExecute(Action action, bool showException)
         {
             try

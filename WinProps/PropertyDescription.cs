@@ -292,9 +292,8 @@ namespace WinProps {
 		/// <param name="CanonicalName">The canonical name of the property for which the <see cref="PropertyDescription"/> is requested</param>
 		/// <example>new PropertyDescription("System.Title")</example>
 		public PropertyDescription(string CanonicalName) {
-			IntPtr ppv;
-			HRESULT hr = PSGetPropertyDescriptionByName(CanonicalName, IID.IPropertyDescription, out ppv);
-			if (hr.Failed) throw hr.GetException();
+            HRESULT hr = PSGetPropertyDescriptionByName(CanonicalName, IID.IPropertyDescription, out IntPtr ppv);
+            if (hr.Failed) throw hr.GetException();
 			try {
 				_propDescription = (IPropertyDescription)Marshal.GetUniqueObjectForIUnknown(ppv);
 			}
@@ -310,9 +309,8 @@ namespace WinProps {
 		/// <param name="key">The <see cref="PropertyKey"/> for which the <see cref="PropertyDescription"/> is required
 		/// </param>
 		public PropertyDescription(PropertyKey key) {
-			IntPtr ppv;
-			HRESULT hr = PSGetPropertyDescription(key.MarshalledPointer, IID.IPropertyDescription, out ppv);
-			if (hr.Failed) throw hr.GetException();
+            HRESULT hr = PSGetPropertyDescription(key.MarshalledPointer, IID.IPropertyDescription, out IntPtr ppv);
+            if (hr.Failed) throw hr.GetException();
 			try {
 				_propDescription = (IPropertyDescription)Marshal.GetUniqueObjectForIUnknown(ppv);
 			}
@@ -341,9 +339,8 @@ namespace WinProps {
 		/// </summary>
 		public AggregateMethod AggregateType {
 			get {
-				PROPDESC_AGGREGATION_TYPE method;
-				_propDescription.GetAggregationType(out method);
-				return (AggregateMethod)method;
+                _propDescription.GetAggregationType(out PROPDESC_AGGREGATION_TYPE method);
+                return (AggregateMethod)method;
 			}
 		}
 
@@ -352,9 +349,8 @@ namespace WinProps {
 		/// </summary>
 		public string CanonicalName {
 			get {
-				string name;
-				_propDescription.GetCanonicalName(out name);
-				return name;
+                _propDescription.GetCanonicalName(out string name);
+                return name;
 			}
 		}
 
@@ -363,9 +359,8 @@ namespace WinProps {
 		/// </summary>
 		public VarEnum PropertyType {
 			get {
-				VARENUM vt;
-				_propDescription.GetPropertyType(out vt);
-				return (VarEnum)vt;
+                _propDescription.GetPropertyType(out VARENUM vt);
+                return (VarEnum)vt;
 			}
 		}
 
@@ -374,8 +369,7 @@ namespace WinProps {
 		/// </summary>
 		public string DisplayName {
 			get {
-				string name;
-				_propDescription.GetDisplayName(out name);
+                _propDescription.GetDisplayName(out string name);
                 if (string.IsNullOrEmpty(name))
                     return this.CanonicalName;
 				return name;
@@ -387,9 +381,8 @@ namespace WinProps {
 		/// </summary>
 		public string EditInvitation {
 			get {
-				string value;
-				_propDescription.GetEditInvitation(out value);
-				return value;
+                _propDescription.GetEditInvitation(out string value);
+                return value;
 			}
 		}
 
@@ -397,7 +390,7 @@ namespace WinProps {
 		/// Describes a set of values that describe the type of data contained in a property
 		/// </summary>
 		public class _TypeFlags {
-			PROPDESC_TYPE_FLAGS _flags;
+            readonly PROPDESC_TYPE_FLAGS _flags;
 
 			internal _TypeFlags(PROPDESC_TYPE_FLAGS flags) { _flags = flags; }
 
@@ -454,9 +447,8 @@ namespace WinProps {
 		public _TypeFlags TypeFlags {
 			get {
 				if (_typeFlags == null) {
-					PROPDESC_TYPE_FLAGS flags;
-					_propDescription.GetTypeFlags(PROPDESC_TYPE_FLAGS.PDTF_MASK_ALL, out flags);
-					_typeFlags = new _TypeFlags(flags);
+                    _propDescription.GetTypeFlags(PROPDESC_TYPE_FLAGS.PDTF_MASK_ALL, out PROPDESC_TYPE_FLAGS flags);
+                    _typeFlags = new _TypeFlags(flags);
 				}
 				return _typeFlags;
 			}
@@ -469,10 +461,11 @@ namespace WinProps {
 			PROPDESC_VIEW_FLAGS _flags;
 			internal _ViewFlags(PROPDESC_VIEW_FLAGS flags) { _flags = flags; }
 
-			/// <summary>
-			/// Defines how a property should be aligned within a column. <seealso cref="PropertyDescription.Alignment"/>
-			/// </summary>
-			public Alignment Alignment {
+            /// <summary>
+            /// Defines how a property should be aligned within a column. <seealso cref="PropertyDescription.Alignment"/>
+            /// </summary>
+            public Alignment Alignment
+            {
 				get {
 					switch (_flags & (PROPDESC_VIEW_FLAGS.PDVF_CENTERALIGN | PROPDESC_VIEW_FLAGS.PDVF_RIGHTALIGN)) {
 					case PROPDESC_VIEW_FLAGS.PDVF_RIGHTALIGN:
@@ -534,9 +527,8 @@ namespace WinProps {
 		public _ViewFlags ViewFlags {
 			get {
 				if (_vFlags == null) {
-					PROPDESC_VIEW_FLAGS f;
-					_propDescription.GetViewFlags(out f);
-					_vFlags = new _ViewFlags(f);
+                    _propDescription.GetViewFlags(out PROPDESC_VIEW_FLAGS f);
+                    _vFlags = new _ViewFlags(f);
 				}
 				return _vFlags;
 			}
@@ -547,9 +539,8 @@ namespace WinProps {
 		/// </summary>
 		public int DefaultColumnWidth {
 			get {
-				uint w;
-				_propDescription.GetDefaultColumnWidth(out w);
-				return (int)w;
+                _propDescription.GetDefaultColumnWidth(out uint w);
+                return (int)w;
 			}
 		}
 
@@ -558,9 +549,8 @@ namespace WinProps {
 		/// </summary>
 		public Display DisplayType {
 			get {
-				PROPDESC_DISPLAYTYPE display;
-				_propDescription.GetDisplayType(out display);
-				return (Display)display;
+                _propDescription.GetDisplayType(out PROPDESC_DISPLAYTYPE display);
+                return (Display)display;
 			}
 		}
 
@@ -632,9 +622,8 @@ namespace WinProps {
 		public _ColumnFlags ColumnState {
 			get {
 				if (_columnFlags == null) {
-					SHCOLSTATE flags;
-					_propDescription.GetColumnState(out flags);
-					_columnFlags = new _ColumnFlags(flags);
+                    _propDescription.GetColumnState(out SHCOLSTATE flags);
+                    _columnFlags = new _ColumnFlags(flags);
 				}
 				return _columnFlags;
 			}
@@ -645,13 +634,12 @@ namespace WinProps {
 		/// </summary>
 		public RelativeDescriptions RelativeDescriptionType {
 			get {
-				PROPDESC_RELATIVEDESCRIPTION_TYPE type;
-				_propDescription.GetRelativeDescriptionType(out type);
-				return (RelativeDescriptions)type;
+                _propDescription.GetRelativeDescriptionType(out PROPDESC_RELATIVEDESCRIPTION_TYPE type);
+                return (RelativeDescriptions)type;
 			}
 		}
 
-		/// <summary>
+		/*/// <summary>
 		/// Compares two properties, and returns a descriptive result of the comparison.
 		/// </summary>
 		/// <param name="value1">The first property value to compare</param>
@@ -660,19 +648,17 @@ namespace WinProps {
 		/// how <paramref name="value2"/> relates to <paramref name="value1"/>
 		/// </returns>
 		Tuple<string, string> GetRelativeDescription(PropVariant value1, PropVariant value2) {
-			string d1, d2;
-			_propDescription.GetRelativeDescription(value1.MarshalledPointer, value1.MarshalledPointer, out d1, out d2);
-			return new Tuple<string, string>(d1, d2);
-		}
+            _propDescription.GetRelativeDescription(value1.MarshalledPointer, value1.MarshalledPointer, out string d1, out string d2);
+            return new Tuple<string, string>(d1, d2);
+		}*/
 
 		/// <summary>
 		/// Gets the <see cref="SortMethod"/> describing how the property is sorted.
 		/// </summary>
 		public SortMethod SortDescription {
 			get {
-				PROPDESC_SORTDESCRIPTION sort;
-				_propDescription.GetSortDescription(out sort);
-				return (SortMethod)sort;
+                _propDescription.GetSortDescription(out PROPDESC_SORTDESCRIPTION sort);
+                return (SortMethod)sort;
 			}
 		}
 
@@ -681,9 +667,8 @@ namespace WinProps {
 		/// </summary>
 		public string SortDescriptionLabel {
 			get {
-				string desc;
-				_propDescription.GetSortDescriptionLabel(false, out desc);
-				return desc;
+                _propDescription.GetSortDescriptionLabel(false, out string desc);
+                return desc;
 			}
 		}
 
@@ -693,17 +678,14 @@ namespace WinProps {
 		/// </summary>
 		public string SortDescriptionLabelDescending {
 			get {
-				string desc;
-				_propDescription.GetSortDescriptionLabel(true, out desc);
-				return desc;
+                _propDescription.GetSortDescriptionLabel(true, out string desc);
+                return desc;
 			}
 		}
 
 		internal IntPtr GetEnumTypeListPointer() {
-			IntPtr pUnk;
-
-			_propDescription.GetEnumTypeList(IID.IPropertyEnumTypeList, out pUnk);
-			return pUnk;
+            _propDescription.GetEnumTypeList(IID.IPropertyEnumTypeList, out IntPtr pUnk);
+            return pUnk;
 		}
 
 		/// <summary>
@@ -711,10 +693,9 @@ namespace WinProps {
 		/// </summary>
 		public PropertyEnumeration EnumType {
 			get {
-				IntPtr pUnk;
-				PropertyEnumeration pe;
-				
-				_propDescription.GetEnumTypeList(IID.IPropertyEnumTypeList, out pUnk);
+                PropertyEnumeration pe;
+
+                _propDescription.GetEnumTypeList(IID.IPropertyEnumTypeList, out IntPtr pUnk);
 				pe = new PropertyEnumeration(pUnk);
 				Marshal.Release(pUnk);
 				return pe;
@@ -748,9 +729,8 @@ namespace WinProps {
 		/// <param name="flags">Additional <see cref="FormatFlags"/> with formatting instructions.</param>
 		/// <returns>A string containing the property's value in a suitably formatted structure</returns>
 		public string FormatForDisplay(PropVariant value, FormatFlags flags) {
-			string sFormatted;
-			_propDescription.FormatForDisplay(value.MarshalledPointer, (PROPDESC_FORMAT_FLAGS)flags, out sFormatted);
-			return sFormatted;
+            _propDescription.FormatForDisplay(value.MarshalledPointer, (PROPDESC_FORMAT_FLAGS)flags, out string sFormatted);
+            return sFormatted;
 		}
 
 		/// <summary>

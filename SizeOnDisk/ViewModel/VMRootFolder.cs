@@ -125,7 +125,7 @@ namespace SizeOnDisk.ViewModel
             RefreshAsync();
         }
 
-        private List<VMFolder> history = new List<VMFolder>();
+        private readonly List<VMFolder> history = new List<VMFolder>();
 
         private bool isLoadingHistory = false;
         private int historyIndex = 0;
@@ -372,7 +372,7 @@ namespace SizeOnDisk.ViewModel
             newFile = new VMFile(this, "64.lnk", 1339);
             Childs.Add(newFile);
 
-            LogException(new Exception("Flagada"));
+            LogException(new ArgumentOutOfRangeException(nameof(parent), "Designing sample"));
 
             RefreshCount();
             _ExecutionState = TaskExecutionState.Designing;
@@ -434,13 +434,36 @@ namespace SizeOnDisk.ViewModel
             base.RefreshCount();
 
             this.SelectedListItemsChanged();
+        }
 
-            if (!IsDesign && !this.Path.StartsWith("\\\\", StringComparison.Ordinal))
+
+        //TODO: Do a better way to calculate cluster size and drive size. Cleanup.
+        public void RefreshDiskSize()
+        {
+            if (!IsDesign)
             {
-                DriveInfo info = new DriveInfo(HardDrivePath);
-                HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;
-                HardDriveFree = (ulong)info.AvailableFreeSpace;
-                HardDriveSize = (ulong)info.TotalSize;
+                /*if (!this.Path.StartsWith("\\\\", StringComparison.Ordinal))
+                {
+                    DriveInfo info = new DriveInfo(HardDrivePath);
+                    this.HardDriveUsage = (ulong)info.TotalSize - (ulong)info.TotalFreeSpace;
+                    this.HardDriveFree = (ulong)info.AvailableFreeSpace;
+                    this.HardDriveSize = (ulong)info.TotalSize;
+                } 
+                else*/
+                {
+                    string path = this.Path;
+                    if (!path.EndsWith("\\", StringComparison.Ordinal))
+                        path += "\\";
+                    long lpFreeBytesAvailableToCaller = 0;
+                    long lpTotalNumberOfBytes = 0;
+                    long lpTotalNumberOfFreeBytes = 0;
+                    ShellHelper.GetDiskFreeSpace(path, ref lpFreeBytesAvailableToCaller, ref lpTotalNumberOfBytes, ref lpTotalNumberOfFreeBytes);
+                    this.HardDriveUsage = (ulong)lpTotalNumberOfBytes - (ulong)lpTotalNumberOfFreeBytes;
+                    this.HardDriveFree = (ulong)lpTotalNumberOfFreeBytes;
+                    this.HardDriveSize = (ulong)lpTotalNumberOfBytes;
+
+                }
+
             }
         }
 
@@ -448,11 +471,15 @@ namespace SizeOnDisk.ViewModel
         {
             try
             {
+                this.RefreshDiskSize();
+
                 _Runwatch.Restart();
+
+                base.Refresh(parallelOptions);
 
                 this.RefreshCount();
 
-                base.Refresh(parallelOptions);
+                this.RefreshDiskSize();
             }
             finally
             {

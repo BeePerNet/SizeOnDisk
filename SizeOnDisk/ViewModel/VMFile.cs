@@ -263,7 +263,7 @@ namespace SizeOnDisk.ViewModel
             int i = name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars());
             if (i != -1)
             {
-                throw new ArgumentException("Invalid character: " + name[i], nameof(Name));
+                throw new ArgumentException("Invalid character: " + name[i], nameof(name));
             }
         }
 
@@ -728,16 +728,18 @@ namespace SizeOnDisk.ViewModel
 
             file.Root.ExecuteTask(() =>
             {
-                MemoryStream obj = Clipboard.GetData("Preferred DropEffect") as MemoryStream;
-                StringCollection files = Clipboard.GetFileDropList();
-                bool copy = true;
-                if (obj != null)
+                if (Clipboard.GetData("Preferred DropEffect") is MemoryStream obj)
                 {
-                    byte[] values = obj.ToArray();
-                    copy = ((DragDropEffects)values[0] & DragDropEffects.Copy) == DragDropEffects.Copy;
-                }
+                    StringCollection files = Clipboard.GetFileDropList();
+                    bool copy = true;
+                    if (obj != null)
+                    {
+                        byte[] values = obj.ToArray();
+                        copy = ((DragDropEffects)values[0] & DragDropEffects.Copy) == DragDropEffects.Copy;
+                    }
 
-                file.DoPaste(copy, files.Cast<string>().ToArray());
+                    file.DoPaste(copy, files.Cast<string>().ToArray());
+                }
             }, true);
         }
 
@@ -814,10 +816,12 @@ namespace SizeOnDisk.ViewModel
             IDataObject data = new DataObject(DataFormats.FileDrop, files.Select(T => T.Path).ToArray());
             if (cut.HasValue)
             {
-                MemoryStream memo = new MemoryStream(4);
-                byte[] bytes = new byte[] { (byte)(cut.Value ? 2 : 5), 0, 0, 0 };
-                memo.Write(bytes, 0, bytes.Length);
-                data.SetData("Preferred DropEffect", memo);
+                using (MemoryStream memo = new MemoryStream(4))
+                {
+                    byte[] bytes = new byte[] { (byte)(cut.Value ? 2 : 5), 0, 0, 0 };
+                    memo.Write(bytes, 0, bytes.Length);
+                    data.SetData("Preferred DropEffect", memo);
+                }
             }
             return data;
         }
