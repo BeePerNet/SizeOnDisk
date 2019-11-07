@@ -17,7 +17,8 @@ namespace SizeOnDisk.Configurations
     {
         [XmlArray("editors")]
         [XmlArrayItem("editor")]
-        public IEnumerable<DefaultEditorItem> Editors { get; set; }
+        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "<En attente>")]
+        public DefaultEditorItem[] Editors { get; set; }
 
         private const string sectionName = "SizeOnDisk";
 
